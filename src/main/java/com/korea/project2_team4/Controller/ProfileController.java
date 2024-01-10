@@ -4,10 +4,13 @@ import com.korea.project2_team4.Model.Dto.ProfileDto;
 import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Model.Form.ProfileForm;
 import com.korea.project2_team4.Repository.MessageRepository;
+import com.korea.project2_team4.Repository.SaveMessageRepository;
 import com.korea.project2_team4.Service.*;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import lombok.Builder;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.HtmlUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -388,7 +392,31 @@ public class ProfileController {
         return "redirect:/Proflle/dmpage";
     }
 
+////////////////////////웹소켓 테스트. 선영추ㅡ가//////////////////////////////////////////
 
+    private final SaveMessageRepository saveMessageRepository;
+
+    @MessageMapping("/hello")
+    @SendTo("/topic/messaging")
+    public SaveMessage greeting(SendMessage message, Principal principal) throws Exception {
+        // 메시지에서 이름 추출
+        String content = message.getContent();
+        String user = principal.getName();
+        LocalDateTime timenow = LocalDateTime.now();
+
+//        Member sitemember = this.memberService.getMember(principal.getName());
+//        Profile user = sitemember.getProfile();
+
+
+        SaveMessage saveMessage = new SaveMessage(HtmlUtils.htmlEscape(content), user, timenow);
+        SaveMessage savedSaveMessage = saveMessageRepository.save(saveMessage);
+
+        DmPage dmPage = new DmPage();
+
+
+        // 저장된 SaveMessage 엔터티 반환
+        return savedSaveMessage;
+    }
 
 
 }

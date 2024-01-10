@@ -10,18 +10,18 @@
                         <h2 class="pt-2 mt-5 mb-5">채팅방 목록</h2>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <form th:action="@{/chatList/createRoom}" method="post">
-                            <label for="name">채팅방 이름:</label>
-                            <input type="text" id="name" name="name" required>
+                        <form th:action="@{/chat/createRoom}" method="post">
+                            <label for="roomName">채팅방 이름:</label>
+                            <input type="text" id="roomName" name="roomName" required>
                             <button class="btn btn-primary" type="submit">채팅방 생성</button>
                         </form>
                     </div>
                     <br>
                     <div>
                         <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;" th:each="room : ${list}">
-                            <div class="card-body" th:onclick="@{|window.location='/chatList/room?roomId=${room.roomId}'|}">
+                            <div class="card-body" th:onclick="@{|window.location='/chat/chatList/room?roomId=${room.id}'|}">
                                 <span th:text="${room.roomName}"></span>
-                                <span th:text="${room.userCount}"></span>
+                                <span th:text="${room.adminName}"></span>
                             </div>
                         </div>
                     </div>

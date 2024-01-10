@@ -64,6 +64,9 @@ public class Profile {
     private DmPage myDm;
 
 
+    //    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE )
+//    private List<SaveMessage> saveMessages;
+
 
 
 

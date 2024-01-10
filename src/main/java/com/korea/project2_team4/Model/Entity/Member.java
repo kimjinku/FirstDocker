@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,12 @@ public class  Member {
 
 //    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
 //    private Set<ChatMessage> sendMessage = new HashSet<>();
+
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.REMOVE)
+    private Set<ChatRoom> adminChatRooms = new HashSet<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private Set<MemberChatRoom> memberChatRooms = new HashSet<>();
 
     // 패스워드
     private String password;

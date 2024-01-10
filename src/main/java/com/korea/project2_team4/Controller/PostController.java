@@ -94,6 +94,7 @@ public class PostController {
         Post post = new Post();
 //        System.out.println(imageFiles.size());
         Member sitemember = this.memberService.getMember(principal.getName());
+        System.out.println("회원 권환 : "+ sitemember.getRole());
         post.setTitle(postForm.getTitle());
         post.setContent(postForm.getContent());
         post.setCreateDate(LocalDateTime.now());

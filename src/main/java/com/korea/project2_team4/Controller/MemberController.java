@@ -134,9 +134,6 @@ public class MemberController {
     @PostMapping("/login")
     public String login(String username, String password) {
 
-
-
-
         return "redirect:/";
 
     }
@@ -373,16 +370,17 @@ public class MemberController {
         return "redirect:/member/findPassword";
     }
     @PostMapping("/block/{username}")
-    public ResponseEntity<String> blockMember(@PathVariable String username,
-                                              @RequestParam Duration blockDuration) {
+    public String blockMember(@PathVariable String username,
+                              @RequestParam Long reportDurationDays) {
+        Duration blockDuration = Duration.ofDays(reportDurationDays);
         memberService.blockMember(username, blockDuration);
-        return ResponseEntity.ok("User blocked successfully");
+        return "redirect:/member/adminPage";
     }
 
     @PostMapping("/unblock/{username}")
-    public ResponseEntity<String> unblockUser(@PathVariable String username) {
+    public String unblockMember(@PathVariable String username) {
         memberService.unblockMember(username);
-        return ResponseEntity.ok("User unblocked successfully");
+        return "redirect:/member/adminPage";
     }
 
 }

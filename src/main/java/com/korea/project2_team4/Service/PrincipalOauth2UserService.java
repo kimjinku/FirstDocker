@@ -8,6 +8,7 @@ import com.korea.project2_team4.Model.Entity.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.Builder;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 
@@ -66,6 +68,11 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         String username = provider + "_" + providerId;
 
         Member member = memberService.getMember(username);
+        if(member != null){
+            if (member.isBlocked() && (member.getUnblockDate() == null || LocalDateTime.now().isBefore(member.getUnblockDate()))) {
+                throw new LockedException("User is blocked until " + member.getUnblockDate());
+            }
+        }
         //처음 서비스를 이용한 회원일 경우
         if (member == null) {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
