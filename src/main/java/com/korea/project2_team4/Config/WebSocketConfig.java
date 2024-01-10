@@ -1,4 +1,4 @@
-package com.korea.project2_team4;
+package com.korea.project2_team4.Config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

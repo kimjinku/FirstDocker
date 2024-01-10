@@ -19,14 +19,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 public class MainController {
-//    private final PostService postService;
-//    @GetMapping("/")
-//    public String root(Model model) {
-//        List<Post> postList = postService.getPostslikes();
-//
-//        model.addAttribute("postList", postList);
-//        return "main_form";
-//    }
+    private final PostService postService;
+    @GetMapping("/")
+    public String root(Model model) {
+        List<Post> postList = postService.getPostslikes();
+
+        model.addAttribute("postList", postList);
+        return "main_form";
+    }
 
 
 }
