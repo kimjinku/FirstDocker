@@ -26,14 +26,17 @@ public class ChatRoom {
     @ManyToOne
     private Member admin; // 관리자
 
-    @OneToMany(mappedBy = "chatroom")
-    private Set<MemberChatRoom> memberChatRooms = new HashSet<>();
+    @OneToMany(mappedBy = "chatroom", cascade = CascadeType.REMOVE)
+    private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
+
+    private String password;
 
     @Builder
-    public ChatRoom(Long id, String roomName, Member admin) {
+    public ChatRoom(Long id, String roomName, Member admin, String password) {
         this.id = id;
         this.roomName = roomName;
         this.admin = admin;
+        this.password = password;
     }
     public void changeAdmin(Member admin){
         this.admin = admin;

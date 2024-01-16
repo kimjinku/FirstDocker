@@ -3,27 +3,22 @@ package com.korea.project2_team4.Controller;
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
-import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Service.ChatService;
 import com.korea.project2_team4.Service.MemberService;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 // 채팅을 수신(sub) 하고 송신(pub) 하기위한 Controller
 @Controller
@@ -39,15 +34,15 @@ public class ChatController {
 
 
     @PostMapping("/createRoom")
-    public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName) {
-        ChatRoom chatRoom = chatService.createChatRoom(roomName, principal);
+    public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName, @RequestParam("password") String password) {
+        ChatRoom chatRoom = chatService.createChatRoom(roomName, password,principal);
         model.addAttribute("chatRoom", chatRoom);
         return "redirect:/chat/chatRoomList";
     }
 
     @GetMapping("/chatRoomList")
-    public String showChatRoomList(Model model) {
-        List<ChatRoomListResponseDto> chatRooms = chatService.findAllRoom();
+    public String showChatRoomList(Model model, Principal principal) {
+        List<ChatRoomListResponseDto> chatRooms = chatService.findAllRoom(principal);
 
         model.addAttribute("list", chatRooms);
         log.info("SHOW ALL ChatList{}", chatRooms);
@@ -55,24 +50,51 @@ public class ChatController {
         return "Chat/chatList_form";
     }
 
-    @GetMapping("/chatRoom/{id}")
-    public String goChatRoom(Model model, @PathVariable("id") Long id) {
+
+
+    @PostMapping("/chatRoom")
+    public String goChatRoom(Model model,Principal principal, @RequestParam("roomId") Long id,
+                             @RequestParam(value = "password", required = false) String password,
+                             @RequestParam(value = "inChat") Boolean inChat) {
+        System.out.println("Received roomId: " + id);
+
+        if (!inChat) {
+            chatService.enterChatRoom(id, password, principal);
+        }
+
+        ChatRoom chatRoomId = chatService.findChatRoomById(id);
+
+        Map<String, Object> chatData = chatService.showChatDate(id);
+
+        model.addAttribute("chatRoomId", id);
+        model.addAttribute("chatRoomName", chatRoomId.getRoomName());
+
+        model.addAttribute("members", chatData.get("members"));
+        model.addAttribute("messages", chatData.get("messages"));
 
         return "Chat/chatRoom_form";
     }
 
     @MessageMapping("/chat/sendMessage")
-    public void sendMessage(@Payload ChatDTO chat) {
-        log.info("Chat {}", chat);
+    public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
 
-        chat.setMessage(chat.getMessage());
+        try {
 
-        template.convertAndSend("/sub/chat/room?roomId=" + chat.getRoomId(), chat);
+            chatDTO.setSender(principal.getName());
+
+            chatService.saveChatMessage(chatDTO, principal);
+            template.convertAndSend("/sub/chat/chatRoom/id/" + chatDTO.getRoomId(), chatDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
-
-
+    @PostMapping("/deleteChatRoom/{id}")
+    public String deleteChatRoom(@PathVariable Long id) {
+        chatService.deleteChatRoom(id);
+        return "redirect:/chat/chatRoomList";
+    }
 
 }
 

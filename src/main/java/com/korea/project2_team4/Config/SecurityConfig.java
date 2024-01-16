@@ -36,7 +36,10 @@ public class SecurityConfig {
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
                 .formLogin((formLogin) -> formLogin
                         .loginPage("/member/login")
-                        .defaultSuccessUrl("/"))
+                        .defaultSuccessUrl("/")
+                        .failureHandler((request, response, exception) -> {
+                            response.sendRedirect("/member/login");
+                        }))
                 .oauth2Login((oauth2Login) -> oauth2Login
                         .loginPage("/member/login")
                         .defaultSuccessUrl("/")

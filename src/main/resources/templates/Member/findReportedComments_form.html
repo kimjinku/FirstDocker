@@ -13,7 +13,8 @@
             <div>
                 <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
                     <div>
-                        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
+<!--                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"-->
+                        <a class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
                         <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/posts|}" data-page="2">게시글 관리</a>
                         <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/comments|}" data-page="3">댓글 관리</a>
                     </div>
@@ -78,6 +79,16 @@
                                         <button type="button" class="btn btn-warning" data-bs-toggle="modal" th:data-bs-target="'#reportModal' + ${comment.id}">
                                             신고 정보 보기
                                         </button>
+                                        <div th:if="${comment.author.member.getRole != 'ROLE_ADMIN'}">
+                                            <form th:action="@{|/member/block/${comment.author.member.userName}|}" th:method="post">
+                                                <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->
+                                                <input type="number" name="reportDurationDays" placeholder="차단 기간(일)" required/>
+                                                <button class="btn btn-danger flex-container admin-btn" style="margin-left: 20px" type="submit"
+                                                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"
+                                                        onclick="confirmUserBlock()">유저 차단
+                                                </button>
+                                            </form>
+                                        </div>
                                         <!-- 신고 모달 -->
                                         <div class="modal fade" th:id="'reportModal' + ${comment.id}" tabindex="-1" role="dialog" aria-labelledby="'reportModalLabel' + ${comment.id}" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
@@ -105,7 +116,7 @@
                                         </div>
                                         <!-- 신고 모달 끝 -->
                                         <div class="col-md-auto"
-                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                             th:if="${(#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and comment.author.member.role != 'ROLE_ADMIN'}">
                                             <button type="button" class="btn btn-primary admin-btn"
                                                     style="margin-right: 0.1rem"
                                                     data-bs-toggle="modal"
@@ -182,7 +193,7 @@
 <!--                                        <div class="col-md-auto"-->
 <!--                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">-->
                                             <div class="col-md-auto"
-                                                 th:if="${comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                                 th:if="${(comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and comment.author.member.role != 'ROLE_ADMIN'}">
                                                 <form th:action="@{|/comment/deleteReportedComment/${comment.id}|}" method="post"
                                                       onsubmit="return DeleteComment();">
                                                     <button type="submit" class="btn btn-danger admin-btn"

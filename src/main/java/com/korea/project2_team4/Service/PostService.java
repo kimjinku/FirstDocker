@@ -70,7 +70,6 @@ public class PostService {
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return postRepository.findByLikeMembers(member, pageable);
-
     }
 ////    신고
 //    public void report(Post post, Member member) {
@@ -147,6 +146,8 @@ public class PostService {
             }
         }
     }
+
+
 
 
     // 게시물 검색기능

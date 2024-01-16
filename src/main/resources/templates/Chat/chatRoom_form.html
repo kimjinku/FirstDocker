@@ -1,40 +1,57 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
     <div class="container">
-        <div>
-            <div class="row row-cols-1 align-items-center">
-                <div class="col">
+        <div class="row">
+
+            <div class="col">
+
+            </div>
+<!--            메인 채팅창-->
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                    <h2 class="pt-2 mt-5 mb-5">채팅방: <span th:text="${chatRoomName}"></span>
+                        <span style="display: none" th:text="${chatRoomId}" id="chatRoomId" name="chatRoomId"></span></h2>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <!-- 채팅방 ID와 참여자 수 표시 -->
+                </div>
+                <div class="d-flex justify-content-center">
+                    <h2>채팅 메시지</h2>
+                </div>
+                <div class="d-flex justify-content-center" style="margin-bottom: 30px;">
+                    <div id="chatMessages" style="width: 500px; height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; display: flex; flex-direction: column-reverse;">
+                        <div class="mb-2" th:each="message : ${messages}"
+                             th:text="${message.sender.userName + ': ' + message.message
+                             + ' (' + #temporals.format(message.time, (message.time.hour >= 12 ? '오후 ' : '오전 ') + 'h:mm:ss') + ')'}"></div>
+
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <form id="sendMessageForm" class="d-flex">
+                                <input class="form-control" type="text" id="message" name="message" placeholder="메시지 입력하기" required>
+                                <button class="btn btn-primary" type="submit">전송</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--            참여자 목록-->
+            <div class="col">
+                <div class="d-flex flex-column mt-5">
                     <div class="d-flex justify-content-center">
-                        <h2 class="pt-2 mt-5 mb-5">채팅방: <span th:if="${room}" th:text="${room.roomName}"></span></h2>
+                        <form th:action="@{|/chat/deleteChatRoom/${chatRoomId}|}" method="post">
+                            <button class="btn btn-danger" type="submit" onsubmit="return confirmDeleteChatRoom()">채팅방 삭제</button>
+                        </form>
                     </div>
-                    <div class="d-flex flex-column align-items-end">
-                        <p>채팅방 ID: <span th:if="${room}" th:text="${room.roomId}"></span></p>
-                        <p>참여자 수: <span th:if="${room}" th:text="${room.userCount}"></span></p>
-                    </div>
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex justify-content-center mt-5">
                         <h2>참여자 목록</h2>
                     </div>
-                    <div class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center mt-5">
                         <ul>
-                            <li th:each="user : ${userList}">
-                                <span th:text="${user}"></span>
-                            </li>
+                            <li th:each="member : ${members}" th:text="${member.userName}"></li>
                         </ul>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <h2>채팅 메시지</h2>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <ul id="chatMessages">
-                            <!-- 메시지는 JavaScript를 사용하여 동적으로 여기에 추가됩니다 -->
-                        </ul>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <form id="sendMessageForm" class="d-flex">
-                            <label for="message" class="mr-2" style="width: 50%;">메시지:</label>
-                            <input class="form-control mr-2" type="text" id="message" name="message" required>
-                            <button class="btn btn-primary" type="submit">전송</button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -45,7 +62,9 @@
 
         // roomId 파라미터 가져오기
         const url = new URL(location.href).searchParams;
-        const roomId = url.get('roomId');
+        const id = location.pathname.split("/").pop();
+
+        const chatRoomId = document.getElementById('chatRoomId').textContent;
 
         // WebSocket 연결
         var socket = new SockJS('/ws-stomp');
@@ -57,11 +76,13 @@
         // WebSocket 연결 시
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
+
+            var username = frame.headers['user-name'];
             // 특정 채팅방의 메시지 구독
-            stompClient.subscribe('/sub/chat/room?roomId=' + roomId, function (response) {
+            stompClient.subscribe('/sub/chat/chatRoom/id/' + chatRoomId, function (response) {
                 var chat = JSON.parse(response.body);
                 console.log(chat.message);
-                addMessageToChat(chat.sender, chat.message);
+                addMessageToChat(chat.sender, chat.message, chat.time);
             });
         });
 
@@ -71,14 +92,14 @@
 
             var messageInput = document.getElementById('message');
             var message = messageInput.value.trim();
-
             if (message !== '') {
                 // 메시지 전송
                 stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
                     type: 'TALK',
-                    roomId: roomId,
+                    roomId: chatRoomId,
                     sender: 'username',
-                    message: message
+                    message: message,
+                    time: new Date().toLocaleTimeString()
                 }));
 
                 // 입력 폼 초기화
@@ -87,10 +108,15 @@
         });
 
         // 채팅 메시지를 목록에 추가
-        function addMessageToChat(sender, message) {
-            var messageItem = document.createElement('li');
-            messageItem.textContent = sender + ': ' + message;
-            chatMessages.appendChild(messageItem);
+        function addMessageToChat(sender, message, time) {
+            var messageItem = document.createElement('div');
+            messageItem.textContent = sender + ': ' + message + ' (' + time + ')';
+            messageItem.style.marginBottom = '10px';
+            chatMessages.insertBefore(messageItem, chatMessages.firstChild);
+        }
+
+        function confirmDeleteChatRoom() {
+            return confirm("채팅방을 삭제하시겠습니까?");
         }
 
     </script>

@@ -1,9 +1,6 @@
 package com.korea.project2_team4.Model.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,22 +17,28 @@ public class SaveMessage {
 
 //    @ManyToOne
 //    private Profile user;
-    private String user;
+    private String author;
+    private String receiver;
+
 
     private String content;
 
     private LocalDateTime createDate;
 
+    @ManyToOne
+    private DmPage dmPage;
 
 
     public SaveMessage() {
     }
 
-    public SaveMessage(String content, String user, LocalDateTime timenow) {
+    public SaveMessage(String content, String author, String receiver,LocalDateTime timenow, DmPage dmPage) {
 
         this.content = content;
-        this.user = user;
+        this.author = author;
+        this.receiver = receiver;
         this.createDate = timenow;
+        this.dmPage = dmPage;
     }
 
 

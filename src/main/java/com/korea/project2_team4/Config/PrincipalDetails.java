@@ -1,7 +1,9 @@
 package com.korea.project2_team4.Config;
 
 import com.korea.project2_team4.Model.Entity.Member;
+import com.korea.project2_team4.Model.Entity.Profile;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -12,15 +14,19 @@ import java.util.Collection;
 import java.util.Map;
 
 @Data
+@Getter
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private Member member;
+    private Profile profile;
     private Map<String, Object> attributes;
+
 
 
     //일반 로그인 생성자
     public PrincipalDetails(Member member) {
         this.member = member;
+        this.profile = member.getProfile();
     }
     // 차단 여부
     private boolean isBlocked;

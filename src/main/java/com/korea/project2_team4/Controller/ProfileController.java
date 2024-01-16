@@ -1,13 +1,16 @@
 package com.korea.project2_team4.Controller;
 
 import com.korea.project2_team4.Model.Dto.ProfileDto;
+import com.korea.project2_team4.Model.Dto.SaveMessageDTO;
 import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Model.Form.ProfileForm;
+import com.korea.project2_team4.Repository.DmPageRepository;
 import com.korea.project2_team4.Repository.MessageRepository;
 import com.korea.project2_team4.Repository.SaveMessageRepository;
 import com.korea.project2_team4.Service.*;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -46,6 +49,7 @@ public class ProfileController {
     private final MessageRepository messageRepository; //서비스로 추후수정. 테스트용임
     private TagService tagService;
     private TagMapService tagMapService;
+    private final DmPageService dmPageService;
 
     @GetMapping("/my")
     public String myProfile(Model model, Principal principal) {
@@ -120,8 +124,11 @@ public class ProfileController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
-    public String profileupdate(ProfileForm profileForm, @RequestParam(value = "profileImage") MultipartFile newprofileImage,
+    public String profileupdate(@Valid ProfileForm profileForm, @RequestParam(value = "profileImage") MultipartFile newprofileImage,
                                 BindingResult bindingResult, Principal principal) throws Exception {
+//        if (bindingResult.hasErrors()) {
+//            return "Profile/profile_form";
+//        }
         Member sitemember = this.memberService.getMember(principal.getName());
 
         if (profileForm.getProfileImage() != null && !profileForm.getProfileImage().isEmpty()) {
@@ -129,6 +136,14 @@ public class ProfileController {
         }
 
         profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
+
+//
+//        try {
+//            profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
+//        } catch () {
+//
+//        }
+
 
         String encodedProfileName = URLEncoder.encode(sitemember.getProfile().getProfileName(), "UTF-8");
         return "redirect:/profile/detail/" + encodedProfileName;
@@ -334,18 +349,18 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/detail/followers/{profileid}")
-    public String followers(Model model, @PathVariable("profileid") Long profileid) {//@RequestParam(value = "profileId")Long profileId
-        Profile targetprofile = profileService.getProfileById(profileid);
+    @GetMapping("/detail/followers/{profileName}")
+    public String followers(Model model, @PathVariable("profileName") String profileName) {//@RequestParam(value = "profileId")Long profileId
+        Profile targetprofile = profileService.getProfileByName(profileName);
         List<Profile> followerList = followingMapService.getMyfollowers(targetprofile);
 
         model.addAttribute("followerList", followerList);
         return "Profile/followers";
     }
 
-    @GetMapping("/detail/followings/{profileid}")
-    public String followings(Model model, @PathVariable("profileid") Long profileid) {//@RequestParam(value = "profileId")Long profileId
-        Profile targetprofile = profileService.getProfileById(profileid);
+    @GetMapping("/detail/followings/{profileName}")
+    public String followings(Model model, @PathVariable("profileName") String profileName) {
+        Profile targetprofile = profileService.getProfileByName(profileName);
         List<Profile> followingList = followingMapService.getMyfollowings(targetprofile);
 
         model.addAttribute("followingList", followingList);
@@ -354,68 +369,123 @@ public class ProfileController {
 
 
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 1:1 디엠 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+    private final SaveMessageDTOService saveMessageDTOService;
     @GetMapping("/dmTo/{profileName}")
     public String dmPage(Principal principal, Model model,@PathVariable("profileName") String profileName) {
-        System.out.println(principal.getName());
+
         Member sitemember = this.memberService.getMember(principal.getName());
         Profile partner = profileService.getProfileByName(profileName);
         Profile me = sitemember.getProfile();
-        List<Message> messageList = me.getMyMessages();
-        List<Message> receivedmessageList = me.getReceivedMessages();
-        //위에 두개 메시지 리스트 붙여서 재조합해서, 시간순으로 정렬해서 리스트 새로 만들기
+
+
+        DmPage dmPage = dmPageService.getMyDmPage(me,partner); //없으면새로추가함..
+        List<SaveMessageDTO> dmPageMessages = saveMessageDTOService.getDmPageMessages(dmPage.getId());
 
         model.addAttribute("me", me);
         model.addAttribute("partner", partner);
-        model.addAttribute("messageList", messageList);
-        model.addAttribute("receivedmessageList",receivedmessageList);
+        model.addAttribute("dmPageMessages",dmPageMessages);
         return "Profile/dmPage";
     }
 
-
-    @PostMapping("/sendmessageTo/{profileName}")
-    public String sendmessage(Principal principal, Model model, @PathVariable("profileName") String profileName, @RequestParam(value = "message") String message) {
+    @GetMapping("/dmTo/{profileName}/delete")
+    public String deleteDmPage(Principal principal,@PathVariable("profileName") String profileName) throws UnsupportedEncodingException {
         Member sitemember = this.memberService.getMember(principal.getName());
         Profile partner = profileService.getProfileByName(profileName);
-        Message sendmessage = new Message();
-        sendmessage.setAuthor(sitemember.getProfile());
-        sendmessage.setReceiver(partner);
-        sendmessage.setContent(message);
-        sendmessage.setCreateDate(LocalDateTime.now());
-        messageRepository.save(sendmessage);
+        Profile me = sitemember.getProfile();
 
-        String encodedValue = URLEncoder.encode(profileName, StandardCharsets.UTF_8);
-        return "redirect:/profile/dmTo/" + encodedValue;
+        List<DmPage> myDmList = dmPageService.getMyDmPageList(me);
+        DmPage dmPage = dmPageService.getMyDmPage(me,partner);
+        myDmList.remove(dmPage); //어케할지,.
+
+        String encodedProfileName = URLEncoder.encode(me.getProfileName(), "UTF-8");
+        return "redirect:/profile/myDmPages/" + encodedProfileName;
     }
 
-    @PostMapping("/sendmessage")
-    public String sendmessage() {
-        return "redirect:/Proflle/dmpage";
+
+    @GetMapping("/myDmPages/{profileName}")
+    public String myDmPages(Principal principal, Model model,@PathVariable("profileName") String profileName) {
+        Member sitemember = this.memberService.getMember(principal.getName());
+        Profile me = sitemember.getProfile();
+        List<DmPage> myDmList = dmPageService.getMyDmPageList(me);
+
+        model.addAttribute("myDmList",myDmList);
+        return "Profile/myDmPages";
     }
+
+
+//    @PostMapping("/sendmessageTo/{profileName}")
+//    public String sendmessage(Principal principal, Model model, @PathVariable("profileName") String profileName, @RequestParam(value = "message") String message) {
+//        Member sitemember = this.memberService.getMember(principal.getName());
+//        Profile partner = profileService.getProfileByName(profileName);
+//        Message sendmessage = new Message();
+//        sendmessage.setAuthor(sitemember.getProfile());
+//        sendmessage.setReceiver(partner);
+//        sendmessage.setContent(message);
+//        sendmessage.setCreateDate(LocalDateTime.now());
+//        messageRepository.save(sendmessage);
+//
+//        String encodedValue = URLEncoder.encode(profileName, StandardCharsets.UTF_8);
+//        return "redirect:/profile/dmTo/" + encodedValue;
+//    }
+//
+//    @PostMapping("/sendmessage")
+//    public String sendmessage() {
+//        return "redirect:/Proflle/dmpage";
+//    }
 
 ////////////////////////웹소켓 테스트. 선영추ㅡ가//////////////////////////////////////////
 
     private final SaveMessageRepository saveMessageRepository;
+    private final DmPageRepository dmPageRepository;
 
     @MessageMapping("/hello")
-    @SendTo("/topic/messaging")
-    public SaveMessage greeting(SendMessage message, Principal principal) throws Exception {
+    @SendTo("/sub/messaging")
+    public SaveMessageDTO messaging(SendMessage message, Principal principal) throws Exception {
         // 메시지에서 이름 추출
+        Member sitemember = this.memberService.getMember(principal.getName());
+        Profile writer = sitemember.getProfile();
+
         String content = message.getContent();
-        String user = principal.getName();
+        String receiver = message.getReceiver();
+        String sendTime = message.getCreateDate();
+//        String sender = message.getSender();
+
+        String author = writer.getProfileName();
+
+        Profile partner = profileService.getProfileByName(receiver);
+
         LocalDateTime timenow = LocalDateTime.now();
+//        방생성과동시엥ㅇ?
+        //dmPage생성, 저장
+        //상대메시지저장 이름불러와서 partner
 
 //        Member sitemember = this.memberService.getMember(principal.getName());
 //        Profile user = sitemember.getProfile();
 
+        DmPage dmPage = dmPageService.getMyDmPage(writer, partner);
+//        DmPage dmPage = new DmPage();
+//       dmPageRepository.save(dmPage);
+        SaveMessage saveMessage = new SaveMessage(HtmlUtils.htmlEscape(content), author, receiver, timenow, dmPage); //
+        saveMessageRepository.save(saveMessage);
 
-        SaveMessage saveMessage = new SaveMessage(HtmlUtils.htmlEscape(content), user, timenow);
-        SaveMessage savedSaveMessage = saveMessageRepository.save(saveMessage);
+        Profile profile = profileService.getProfileByName(saveMessage.getAuthor());
 
-        DmPage dmPage = new DmPage();
+        SaveMessageDTO messageDTO = new SaveMessageDTO();
+        messageDTO.setAuthorId(profile.getId());
+        messageDTO.setAuthor(saveMessage.getAuthor());
+        messageDTO.setContent(saveMessage.getContent());
+        messageDTO.setCreateDate(saveMessage.getCreateDate());
+//        dmPageService.addSaveMessages(dmPage, saveMessage);
 
 
         // 저장된 SaveMessage 엔터티 반환
-        return savedSaveMessage;
+        return messageDTO; //화면 출력하는거 JSON으로전달해서 ?
+    }
+
+    @GetMapping("/chatting")
+    public String chatting() {
+        return "Profile/sample_chatting";
     }
 
 

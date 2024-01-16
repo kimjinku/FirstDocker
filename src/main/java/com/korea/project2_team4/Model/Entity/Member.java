@@ -72,4 +72,6 @@ public class  Member {
     private boolean isBlocked;
     //차단 해제 날짜
     private LocalDateTime unblockDate;
+
+    private boolean isSubscribed;
 }

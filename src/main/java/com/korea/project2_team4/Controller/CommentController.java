@@ -36,7 +36,14 @@ public class CommentController {
         Member member = this.memberService.getMember(principal.getName());
         commentService.create(post, content, member.getProfile());
 
+
+
         return "redirect:/post/detail/" + id + "/1";
+    }
+    private String getUserDeviceToken(Long memberId) {
+        // 사용자의 FCM 디바이스 토큰을 데이터베이스에서 가져오는 로직
+        // 실제 구현은 데이터베이스에 따라 다를 수 있습니다.
+        return "USER_DEVICE_TOKEN";
     }
 
     @PostMapping("/commentLike")
@@ -190,6 +197,17 @@ public class CommentController {
 
 
         return "redirect:/report/comments";
+    }
+
+    //대댓글 생성 메서드
+    @PostMapping("reply/{id}")
+    public String addReply(@PathVariable("id") Long commentId,
+                           @RequestParam(value = "commentreply", required = false) String commentreply, Principal principal) {
+        Comment comment = commentService.getComment(commentId);
+        Member member = this.memberService.getMember(principal.getName());
+        commentService.createCommentReply(commentId,commentreply, member.getProfile());
+
+        return "redirect:/post/detail/" + comment.getPost().getId() + "/1";
     }
 
 

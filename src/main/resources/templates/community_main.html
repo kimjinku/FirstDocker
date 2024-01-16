@@ -38,10 +38,10 @@
 
 
                                     <div class="card-body">
-                                        <h5 class="card-title">게시물제목 :
-                                            <a th:href=@{|/post/detail/${post.id}/0|} th:text="${post.title}"></a>
+                                        <h5 class="card-title">
+                                            <a th:href=@{|/post/detail/${post.id}/0|} th:text="${post.title}" style="font-weight:bold; text-decoration: none; color:inherit;"></a>
                                         </h5>
-                                        <p class="card-text" th:text="${post.content}">게시물내용</p>
+                                        <p class="card-text text-muted" th:text="${post.content}" style=""></p>
                                         <div>
                                             <form th:if="${post.author.member.role != 'ROLE_ADMIN'}" th:action="@{|/profile/detail/${post.author.profileName}|}">
 <!--                                                <input type="hidden" name="postid" th:value="${post.id}">-->

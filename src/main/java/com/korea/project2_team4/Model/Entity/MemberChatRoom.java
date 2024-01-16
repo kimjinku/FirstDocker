@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 public class MemberChatRoom {
@@ -20,12 +23,20 @@ public class MemberChatRoom {
     @ManyToOne
     private ChatRoom chatroom;
 
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE)
+    private List<ChatMessage> messages = new ArrayList<>();
+
     @Builder
-    public MemberChatRoom(Long id, Member member, ChatRoom chatroom){
+    public MemberChatRoom(Long id, Member member, ChatRoom chatroom, List<ChatMessage> messages){
         this.id = id;
         this.changeMember(member);
         this.changeChatRoom(chatroom);
+        this.messages = (messages != null) ? messages : new ArrayList<>();
 
+    }
+
+    public MemberChatRoom() {
+        //있어야 회원이 여러개의 방을 만들 때 에러가 안나고 db저장도 잘 된다.
     }
 
     public void changeMember(Member member){

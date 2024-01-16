@@ -24,11 +24,37 @@
                     </div>
                     <a type="button" class="btn btn-primary" th:href="@{|/profile/myPage/update|}">회원 정보 수정</a>
                     <a type="button" class="btn btn-primary" th:href="@{|/member/resetPassword|}">비밀 번호 변경</a>
+<!--                    <form th:action="@{|/notifications/subscribe/${siteMember.getId()}|}" th:method="post">-->
+<!--                        <input type="checkbox" id="admin" name="subscribe"-->
+<!--                               th:checked="${siteMember != null and siteMember.isSubscribed}"/>-->
+<!--                        <button th:if="${siteMember != null and siteMember.isSubscribed}" type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">알림 설정 해제</button>-->
+<!--                        <button th:if="${siteMember != null and !siteMember.isSubscribed}" type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">알림 설정 받기</button>-->
+<!--                    </form>-->
                 </div>
             </div>
         </div>
     </div>
+    <div id="notification-container"></div>
 
+    <script th:inline="javascript">
+        const userId = /*[[${siteMember.getId()}]]*/; // Thymeleaf를 사용하여 사용자 ID 가져오기
+        const eventSource = new EventSource("/notifications/subscribe/" + userId);
+
+        eventSource.onmessage = function(event) {
+            const notificationContainer = document.getElementById("notification-container");
+            const data = JSON.parse(event.data);
+
+            const notificationElement = document.createElement("div");
+            notificationElement.innerHTML = `<p>${data.message}</p>`;
+            notificationContainer.appendChild(notificationElement);
+        };
+
+        const eventSource = new EventSource('http://localhost:8888/notifications/subscribe/1');
+
+        eventSource.addEventListener('sse', event => {
+            console.log(event);
+        });
+    </script>
 
 </div>
 </html>

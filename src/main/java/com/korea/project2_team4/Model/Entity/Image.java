@@ -22,6 +22,10 @@ public class Image {
     @JoinColumn(name = "post_id")
     private Post postImages;
 
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "resalePost_id")
+    private ResalePost resalePostImages;
+
     @OneToOne
     private Profile profileImage;
 

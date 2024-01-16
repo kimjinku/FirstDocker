@@ -35,6 +35,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
+
+
+
         //"registraionId" 로 어떤 OAuth 로 로그인 했는지 확인 가능(google,naver등)
         System.out.println("getClientRegistration: " + userRequest.getClientRegistration());
         System.out.println("getAccessToken: " + userRequest.getAccessToken().getTokenValue());
@@ -70,6 +73,11 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         Member member = memberService.getMember(username);
         if(member != null){
             if (member.isBlocked() && (member.getUnblockDate() == null || LocalDateTime.now().isBefore(member.getUnblockDate()))) {
+                String msg = member.getUnblockDate() + " 까지 차단된 아이디입니다";
+                // HttpSession을 가져옴
+                ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+                HttpSession session = attr.getRequest().getSession(true); // true == allow create
+                session.setAttribute("BLOCK_MSG", msg);
                 throw new LockedException("User is blocked until " + member.getUnblockDate());
             }
         }

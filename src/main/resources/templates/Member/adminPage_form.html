@@ -12,7 +12,13 @@
     <div th:if="${menu==1}">
         <div th:replace="~{member/user_account_content::MemberAccountContentFragment}"></div>
     </div>
-
+        <form th:action="@{/member/search}" class="d-flex" role="search">
+            <div class="input-group">
+                <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="찾으시는 회원정보를 입력해주세요." aria-label="Search"
+                       style="width: 330px;" th:value="${kw}">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </div>
+        </form>
     <div th:if="${!#lists.isEmpty(memberList)}">
         <table class="table">
             <thead>
@@ -20,7 +26,7 @@
                 <th scope="col">이름</th>
                 <th scope="col">아이디</th>
                 <th scope="col">닉네임</th>
-                <th scope="col">등급</th>
+                <th scope="col">등급 변경(관리자만)</th>
                 <th class="text-center" scope="col">관리</th>
                 <th scope="col">차단 여부 확인</th>
                 <th scope="col">차단</th>
@@ -38,7 +44,7 @@
                 <td th:hidden="${member.role}"></td>
 
                 <td style="width: 21rem">
-                    <form th:action="@{|/member/adminPage/changeMemberRole/${member.id}|}" th:method="post">
+                    <form th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" th:action="@{|/member/adminPage/changeMemberRole/${member.id}|}" th:method="post">
                         <input type="hidden" name="id" th:value="${member.id}"/>
 
                         <label for="user">매니저</label>
@@ -49,24 +55,27 @@
                                th:checked="${member.role == 'ROLE_USER'}"/>
                         <button class="btn btn-primary admin-btn" style="margin-left: 10px" type="submit">등급 변경</button>
                     </form>
+                    <div th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <p th:text="${member.role == 'ROLE_MANAGER' ? '매니저' : '일반 사용자'}"></p>
+                    </div>
                 </td>
                 <td style="width: 9rem">
                     <form th:action="@{|/member/delete|}" th:method="post">
                         <input type="hidden" name="userNames" th:value="${member.userName}"/>
                         <button class="btn btn-danger flex-container admin-btn" style="margin-left: 20px" type="submit"
-                                th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                                th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"
                                 onclick="confirmUserDelete()">유저 삭제
                         </button>
                     </form>
                 </td>
                 <td th:if="${!member.isBlocked}" style="width: 8rem">차단되지 않은 유저</td>
-                <td th:if="${member.isBlocked}" style="width: 8rem" th:text="${member.unblockDate +'일 까지 차단되었습니다.'}"></td>
+                <td th:if="${member.isBlocked}" style="width: 8rem" th:text="${member.unblockDate +' 까지 차단되었습니다.'}"></td>
                 <td style="width: 9rem">
                     <form th:action="@{|/member/block/${member.userName}|}" th:method="post">
 <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->
                         <input type="number" name="reportDurationDays" placeholder="차단 기간(일)" required/>
                         <button class="btn btn-danger flex-container admin-btn" style="margin-left: 20px" type="submit"
-                                th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                                th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"
                                 onclick="confirmUserBlock()">유저 차단
                         </button>
                     </form>
@@ -76,7 +85,7 @@
                         <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->
 <!--                        <input type="number" name="reportDurationDays" placeholder="차단 기간(일)" required/>-->
                         <button class="btn btn-danger flex-container admin-btn" style="margin-left: 20px" type="submit"
-                                th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                                th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"
                                 onclick="confirmUserUnBlock()">유저 차단 해제
                         </button>
                     </form>

@@ -48,12 +48,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'net.nurigo:sdk:4.2.7'
+	//API Key = NCSBOX6VGDQKOFZ1 , API Secret = Y79GYYHL6G3816HNTTTDFPS2JGT4GIXV
 	implementation 'org.springframework.boot:spring-boot-starter-websocket:3.2.1'
 	implementation 'org.webjars:sockjs-client:1.5.1'
 	implementation 'org.webjars:stomp-websocket:2.3.4'
 	implementation 'com.google.code.gson:gson:2.9.0'
 //	// https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
 //	compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
 
 }
 

@@ -1,0 +1,99 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+
+    <div class="container">
+        <div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <div class="pt-5">
+                        <div class="border-bottom pt-2 mb-4">
+                            <h2 th:text="${post.title}"></h2>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div style="background-color: #f0f0f0; padding: 10px; display: inline-block; border-radius: 1rem;">
+
+                        <div >
+                            <form th:action="@{|/profile/detail/${post.seller.profileName}|}">
+                                <!--                                <input type="hidden" name="postid" th:value="${post.id}">-->
+                                <button type="submit" class="btn btn-link" th:text="${post.seller.profileName}"
+                                        style="font-size: 18px; font-weight: bold; color: #333; text-decoration:none; color:inherit;"></button>
+                            </form>
+                        </div>
+                        <div>
+                            <div th:if="${post.modifyDate != null}">
+                                <span style="font-size: 14px; color: #777;"
+                                      th:text="${#temporals.format(post.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                            </div>
+                            <div th:unless="${post.modifyDate != null}">
+                                <span style="font-size: 14px; color: #777;"
+                                      th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-1 mb-5">
+                <div class="col">
+                    <div th:each="img, iterStat : ${post.resalePostImages}">
+                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                             style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                    </div>
+                </div>
+                <br>
+                <div class="pt-3 pb-5">
+                    <div th:text="${post.content}"></div>
+                </div>
+                <span th:text="'가격 : ' + ${post.price} + '원'"></span>
+                <div th:text="'조회수 : ' + ${post.view}"></div>
+                <br>
+                <div class="pb-2">
+<!--                    <div class="col-md-auto"-->
+<!--                         th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">-->
+<!--                        <form th:action="@{|/post/updatePost/${post.id}|}" method="get">-->
+<!--                            <input type="hidden" name="id" th:value="${post.id}" />-->
+<!--                            <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-auto"-->
+<!--                         th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">-->
+<!--                        <form th:action="@{|/post/deletePost/${post.id}|}" method="post"-->
+<!--                              onsubmit="return DeletePost();">-->
+<!--                            <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제-->
+<!--                            </button>-->
+<!--                        </form>-->
+<!--                    </div>-->
+
+                </div>
+            </div>
+            <hr>
+            <!-- 스타일  -->
+            <!-- 스타일  -->
+            <style>
+                hr {
+                    height: 4px;
+                    background-color: black;
+                }
+
+                .card {
+                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+               }
+
+                .image{
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                    }
+                .clickable-card {
+                        cursor: pointer;
+                        transition: box-shadow 0.3s; /* 0.3초 동안 변화하는 트랜지션 설정 */
+                    }
+
+                    .clickable-card:hover {
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 마우스 호버 시 그림자 효과 변경 */
+                    }
+            </style>
+        </div>
+    </div>
+    <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+    </script>
+</div>
+</html>

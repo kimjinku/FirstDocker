@@ -36,8 +36,13 @@
 
                 <div class="mb-3">
                     <label for="phoneNum" class="form-label">휴대폰 번호</label>
-                    <input id="phoneNum" type="text" th:field="*{phoneNum}" class="form-control text-danger"
-                           placeholder="구현 필요" required>
+                    <input id="phoneNum" type="text" th:field="*{phoneNum}" name="to" class="form-control text-danger"
+                           placeholder="'-'없이 번호만 입력해 주세요. 예시) 01012345678" required>
+                    <button type="button" class="btn btn-primary" onclick="sendAuthenticationCode()">인증번호 받기</button>
+                </div>
+                <div class="mb-3">
+                    <label for="authenticationCode">인증번호 :</label>
+                    <input type="text" id="authenticationCode" name="authenticationCode" required>
                 </div>
 
                 <div class="mb-3">
@@ -119,5 +124,28 @@
             resDiv.style.color = 'red';
         }
     }
+    function sendAuthenticationCode() {
+                var phoneNum = document.getElementById("phoneNum").value;
+
+                // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+                // Ajax 호출을 통해 서버에 이메일 전송 및 인증번호 요청
+                $.ajax({
+                    type: "POST",
+                    url: "/member/phoneCheck",
+                    data: {
+                        phoneNum : phoneNum,
+                        // CSRF 토큰 추가
+                        _csrf: csrfToken
+                    },
+                    success: function(response) {
+                        alert("인증번호가 문자로 전송되었습니다!");
+                    },
+                    error: function(error) {
+                        alert("인증번호 전송에 실패했습니다. 작성하신 내용이 올바른지 확인해주세요");
+                    }
+                });
+            }
 </script>
 </html>

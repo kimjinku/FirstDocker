@@ -1,5 +1,6 @@
 package com.korea.project2_team4.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,17 +23,23 @@ public class Profile {
     private Long id;
 
     @OneToOne
+//    @JoinColumn(name = "member_id") // 연관 관계의 주인을 명시
     private Member member;
 
 
     @OneToOne(mappedBy = "profileImage", cascade = CascadeType.REMOVE)
     private Image profileImage;
 
+    @Column(unique = true, nullable = false)
     private String profileName;
+
+
     private String content;
 
     private LocalDateTime modifyDate;
 
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.REMOVE )
+    private List<ResalePost> resalePostList;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE )
     private List<Pet> petList;
@@ -60,8 +67,11 @@ public class Profile {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.REMOVE )
     private List<Message> receivedMessages;
 
-    @OneToOne(mappedBy = "me", cascade = CascadeType.REMOVE)
-    private DmPage myDm;
+    @OneToMany(mappedBy = "me",cascade = CascadeType.REMOVE)
+    private List<DmPage> myDmpageList;
+
+    @OneToMany(mappedBy = "partner")
+    private List<DmPage> otherDmpageList;
 
 
     //    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE )

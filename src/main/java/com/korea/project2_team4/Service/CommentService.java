@@ -33,6 +33,17 @@ public class CommentService {
         this.commentRepository.save(comment);
 
     }
+    public void createCommentReply(Long commentId ,String content, Profile author){
+       Comment parentComment = commentRepository.findById(commentId).orElse(null);
+       Comment comment = new Comment();
+       comment.setParentComment(parentComment);
+       comment.setPost(parentComment.getPost());
+       comment.setCreateDate(LocalDateTime.now());
+       comment.setContent(content);
+       comment.setAuthor(author);
+
+       this.commentRepository.save(comment);
+    }
 
     //댓글 좋아요 기능
     public void Like(Comment comment, Member member) {

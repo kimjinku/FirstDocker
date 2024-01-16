@@ -11,7 +11,12 @@ import com.korea.project2_team4.Repository.MemberRepository;
 import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import lombok.Builder;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +58,7 @@ public class MemberService {
         member.setRealName(memberCreateForm.getRealName());
         member.setNickName(memberCreateForm.getNickName());
         member.setPhoneNum(memberCreateForm.getPhoneNum());
+        member.setSubscribed(false);
 
         memberRepository.save(member);
         member.setProfile(profileService.setDefaultProfile(member));
@@ -256,6 +262,45 @@ public class MemberService {
             return ((PrincipalDetails) authentication.getPrincipal()).getMember();
         }
         return null;
+    }
+    public Page<Member> searchMember(int page, String kw){
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return memberRepository.findByKeywordInRealNameOrUserNameOrNickName(kw,pageable);
+    }
+    //휴대폰번호 인증문자 보내기
+    public void phoneNumberCheck(String to, HttpSession session){
+
+        Random rand = new Random();
+        String numStr = "";
+        for(int i=0; i<4; i++) {
+            String ran = Integer.toString(rand.nextInt(10));
+            numStr += ran;
+        }
+        //인증번호를 추후 확인 하기 위해 세션에 expectedAuthenticationCode 를 저장
+        session.setAttribute("expectedAuthenticationCode",numStr);
+
+        DefaultMessageService messageService =  NurigoApp.INSTANCE.initialize("NCSBOX6VGDQKOFZ1", "Y79GYYHL6G3816HNTTTDFPS2JGT4GIXV", "https://api.coolsms.co.kr");
+        // Message 패키지가 중복될 경우 net.nurigo.sdk.message.model.Message로 치환하여 주세요
+        //API Key = NCSBOX6VGDQKOFZ1 , API Secret = Y79GYYHL6G3816HNTTTDFPS2JGT4GIXV
+        Message message = new Message();
+        message.setFrom("01023519538");
+        message.setTo(to);
+        message.setText("펫플래닛 회원가입 인증번호 : "+ numStr);
+        // message.setSubject("문자 제목 입력"); // LMS, MMS 전용 옵션, SMS에서 해당 파라미터 추가될 경우 자동으로 LMS로 변환됩니다!
+
+        try {
+            // send 메소드로 ArrayList<Message> 객체를 넣어도 동작합니다!
+            messageService.send(message);
+        } catch (NurigoMessageNotReceivedException exception) {
+            // 발송에 실패한 메시지 목록을 확인할 수 있습니다!
+            System.out.println(exception.getFailedMessageList());
+            System.out.println(exception.getMessage());
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+
     }
 
 

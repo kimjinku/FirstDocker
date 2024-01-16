@@ -1,9 +1,6 @@
 package com.korea.project2_team4.Service;
 
-import com.korea.project2_team4.Model.Entity.Image;
-import com.korea.project2_team4.Model.Entity.Pet;
-import com.korea.project2_team4.Model.Entity.Post;
-import com.korea.project2_team4.Model.Entity.Profile;
+import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Repository.ImageRepository;
 import lombok.Builder;
 import org.springframework.beans.factory.annotation.Value;
@@ -125,6 +122,52 @@ public class ImageService {
             createPostImage(fileName, saveName, filePath, post);
 
         }
+    }
+
+    public void uploadResalePostImage(List<MultipartFile> multipartFiles, ResalePost resalePost) throws IOException, NoSuchAlgorithmException {
+        for (MultipartFile multipartFile : multipartFiles) {
+            String fileName = multipartFile.getOriginalFilename();
+            assert fileName != null;
+
+            if (multipartFile.isEmpty()) {
+                continue;
+            }//multipartFile 이 비어 있다면 continue 문을 실행 하여 현재 반복을 중지 하고 다음 반복문 으로 넘어갈 것
+
+            String saveName = generateRandomFileName(fileName);
+
+            String savePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+
+            if (!new File(savePath).exists()) {
+                try {
+                    new File(savePath).mkdir();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            String filePath = savePath + "\\" + saveName;
+
+            File origFile = new File(filePath);
+            multipartFile.transferTo(origFile);
+
+            createResalePostImage(fileName, saveName, filePath, resalePost);
+
+        }
+    }
+
+    public void createResalePostImage(String fileName, String saveName, String filePath, ResalePost resalePost) {
+        Image image = new Image();
+
+        image.setFileName(fileName);
+
+        image.setSaveName(saveName);
+
+        image.setFilePath(filePath);
+
+        image.setResalePostImages(resalePost);
+
+        this.imageRepository.save(image);
+
     }
 
     public void saveImgsForPet(Pet pet, MultipartFile file) throws Exception {

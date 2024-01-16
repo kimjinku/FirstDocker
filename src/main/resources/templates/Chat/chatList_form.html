@@ -10,18 +10,89 @@
                         <h2 class="pt-2 mt-5 mb-5">채팅방 목록</h2>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <form th:action="@{/chat/createRoom}" method="post">
-                            <label for="roomName">채팅방 이름:</label>
-                            <input type="text" id="roomName" name="roomName" required>
-                            <button class="btn btn-primary" type="submit">채팅방 생성</button>
-                        </form>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-target="#createChatRoomModal" onclick="openCreateChatRoomModal()">채팅방 생성
+                        </button>
+                        <!--채팅방 생성모달창-->
+                        <div class="modal fade" id="createChatRoomModal" tabindex="-1" role="dialog"
+                             aria-labelledby="createChatRoomModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createChatRoomModalLabel">채팅방 생성</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                            <span aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form th:action="@{/chat/createRoom}" method="post">
+                                            <div>
+                                                <label for="createChatRoomName"></label>
+                                                <input class="form-control" name="roomName" id="createChatRoomName"
+                                                       placeholder="채팅방 이름 입력" required>
+                                            </div>
+                                            <div>
+                                                <label for="createChatRoomPassword">비밀 번호</label>
+                                                <input type="password" class="form-control" name="password"
+                                                       id="createChatRoomPassword" placeholder="비밀 번호 입력">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary btn-modal"
+                                                        onsubmit="return createChatRoom();">생성하기
+                                                </button>
+                                                <button type="button" class="btn btn-secondary btn-modal"
+                                                        data-bs-dismiss="modal">닫기
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <br>
+
+                                                    <!--채팅방 목록-->
                     <div>
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;" th:each="room : ${list}">
-                            <div class="card-body" th:onclick="@{|window.location='/chat/chatList/room?roomId=${room.id}'|}">
-                                <span th:text="${room.roomName}"></span>
-                                <span th:text="${room.adminName}"></span>
+                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 200px;"
+                             th:each="room : ${list}">
+                            <div class="card-body" th:attr="onclick='openEnterChatRoomModal(\'' + ${room.id} + '\', \'' + ${room.inChatRoom} + '\')'">
+                                <div class="mb-3" style="font-weight: bold;" th:text="${room.roomName}"></div>
+                                <div class="mb-3">방장 : <span th:text="${room.adminName}"></span></div>
+                                <div class="mb-3">참석 여부  : <span th:text="${room.inChatRoom}"></span></div>
+                                <div class="d-flex justify-content-end">인원 수 : <span th:text="${room.memberCount}"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--채팅방 비밀번호 모달창-->
+                    <div class="modal fade" id="enterChatRoomModal" tabindex="-1" role="dialog"
+                         aria-labelledby="enterChatRoomModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="enterChatRoomModalLabel">비밀 번호 입력</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:action="@{|/chat/chatRoom|}" method="post" id="enterChatRoomForm">
+                                        <input type="hidden" name="roomId" id="roomIdInput">
+                                        <input type="hidden" name="inChat" id="inChat">
+                                        <div>
+                                            <label for="enterChatRoomPassword"></label>
+                                            <input type="password" class="form-control" name="password" id="enterChatRoomPassword"
+                                                   placeholder="비밀 번호 입력">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary btn-modal">입장하기
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-modal"
+                                                    data-bs-dismiss="modal">닫기
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -45,6 +116,33 @@
         </style>
     </div>
     <script layout:fragment="script" type='text/javascript'>
+        function createChatRoom() {
+            return confirm("채팅방을 생성하시겠습니까?");
+        }
+        function openCreateChatRoomModal() {
+            $('#createChatRoomModal').modal('show');
+        }
+        function openEnterChatRoomModal(roomId, inChatRoom, memberCount, maxMemberCount) {
+            const maxAllowedMemberCount = 50;
+
+            $('#inChat').val(inChatRoom);
+            $('#roomIdInput').val(roomId);
+
+            if (inChatRoom === "true") {
+                if (memberCount >= maxMemberCount) {
+                    alert("방의 인원이 가득차 참여할 수 없습니다..");
+                    return;
+                }
+                var enterChatRoomForm = document.getElementById('enterChatRoomForm');
+                enterChatRoomForm.submit();
+            }
+            else {
+                $('#enterChatRoomModal').modal('show');
+            }
+        }
+        function enterChatRoom() {
+            return confirm("채팅방을 입장하시겠습니까?");
+        }
     </script>
 </div>
 </html>

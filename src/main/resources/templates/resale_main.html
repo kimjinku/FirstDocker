@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+    <head>
+        <style>
+            body, html {
+           height: 100%;
+           margin: 0;
+       }
+
+      body {
+       background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+         background-size: cover;
+         background-attachment: fixed;
+         color: #555;
+        font-family: sans-serif;
+      }
+        </style>
+        <meta charset="UTF-8">
+        <title>중고 거래</title>
+    </head>
+    <body>
+    <!-- Section-->
+    <section class="py-5">
+        <div class="container px-3 px-lg-5 mt-5">
+            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center">
+                <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
+                <div th:each="post : ${resalePostList}" class="col mb-5">
+                    <a th:href=@{|/resalePost/detail/${post.id}/0|} style="text-decoration: none; color:inherit; ">
+                        <div class="card h-100">
+                            <!--post image-->
+                            <!--                            <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">-->
+                            <!--                                <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">-->
+                            <!--                            </div>-->
+                            <div th:if="${not #lists.isEmpty(post.resalePostImages)}">
+                                <div th:each="img, iterStat : ${post.resalePostImages}" th:if="${iterStat.index lt 1}">
+                                    <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">
+                                </div>
+                            </div>
+                            <div th:unless="${post.resalePostImages != null and not #lists.isEmpty(post.resalePostImages)}">
+                                <!-- Use a default image if post.postImages is empty -->
+                                <img class="card-img-top" th:src="@{|/resources/no_img.jpg|}" alt="default image" style="width:100%; height:300px;">
+                            </div>
+
+                            <!-- post-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!--post title-->
+                                    <h5 class="fw-bolder" th:text="${post.title}"></h5>
+                                    <!--post content-->
+                                    <span th:text="'가격 : ' + ${post.price} + '원'"></span>
+                                    <div th:text="'조회수 : ' + ${post.view}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!-- ========================여기까지 each문으로 포스트 적용하면 됩니다=======================.-->
+            </div>
+        </div>
+    </section>
+    </body>
+</div>
+</html>

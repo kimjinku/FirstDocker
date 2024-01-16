@@ -1,31 +1,78 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
-<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <style>
+        .transparent-button {
+            background-color: rgba(0, 0, 0, 0); /* 빨간색 배경색, 투명도 0.5 (50%) */
+            border: none; /* 기본 테두리 제거 (선택적) */
+            color: white; /* 텍스트 색상 지정 (선택적) */
+            padding: 10px 20px; /* 내부 여백 지정 (선택적) */
+            cursor: pointer; /* 마우스 커서를 포인터로 변경 (선택적) */
+        }
+
+        /* method 2 -> use background-clip to support border-radius */
+.btn-gradient-2 {
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(to right, darkblue, darkorchid) border-box;
+  border-radius: 50em;
+  border: 2px solid transparent;
+}
+
+/* demo stuff */
+.parent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 3rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+
+.btn-gradient-2 {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7em;
+  color: darkblue;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+}
+
+    </style>
+
+</head>
+
 <div layout:fragment="content" class="row py-5 px-4">
     <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
 
         <!-- Profile widget -->
         <div class="bg-white shadow rounded overflow-hidden">
-            <div class="px-4 pt-0 pb-4 bg-secondary" >
+            <div class="px-4 pt-0 pb-4" style="background-image: linear-gradient(to top, #d9ded8 0%,  #ebc0fd 100%);">
                 <div class="media align-items-end profile-header">
                     <div class="profile mr-3">
                         <div class="avatar" style="width:30px, height:30px;">
 
                             <img th:src="@{|/files/${profile.profileImage.fileName}|}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
-                            <form th:action="@{|/profile/deleteProfileImage|}" method="post">
+                            <!--                            기본이미지로 변경하는 폼-->
+                            <form th:action="@{|/profile/deleteProfileImage|}" method="post" th:unless="${'no_img.jpg' == profile.profileImage.fileName}">
                                 <input type="hidden" name="profileid" th:value="${profile.id}">
-                                <button th:if="${siteUser == profile.member}" type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>
+                                <button th:if="${siteUser == profile.member}" type="submit" class="btn-gradient-2" style="text-decoration:none; color:white;">✕</button>
                             </form>
+                            <!--                            기본이미지로 변경하는 폼-->
                         </div>
                     </div>
 
                     <div class="media-body mb-5 text-white">
-                        <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">프로필 수정</a>
-                        <h4 class="mt-0 mb-0" th:text="${profile.profileName}"></h4>
-                        <p class="small mb-4" th:text="${profile.content}"> <i class="fa fa-map-marker mr-2"></i></p>
+                        <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn-gradient-2">✎</a>
+                        <h4 class="mt-0 mb-0" th:text="${profile.profileName}" style="color:black;"></h4>
+                        <p class="small mb-4" th:text="${profile.content}" style="color:black;"> <i class="fa fa-map-marker mr-2"></i></p>
 
 
                         <!-- Button trigger modal -->
-                        <button th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" type="button" class="btn btn-dark btn-sm btn-block text-muted" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <button th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" type="button" class="btn-gradient-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             펫추가
                         </button>
                         <!-- Modal -->
@@ -130,6 +177,9 @@
                             <form th:action="@{|/profile/unfollow|}" method="post">
                                 <input type="hidden" name="profileId" th:value="${profile.id}">
                                 <button type="submit" class="btn btn-primary">팔로우취소</button>
+                            </form>
+                            <form th:action="@{|/profile/dmTo/${profile.profileName}|}">
+                                <button type="submit" class="btn btn-info" >DM</button>
                             </form>
 
                         </div>
