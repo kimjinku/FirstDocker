@@ -89,7 +89,7 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
      var balloonHTML;
      if (message.author === myprofileNameReg) {
          // 보낸메시지
-         balloonHTML =  '<div class="msg right-msg">' +
+         balloonHTML =  '<div class="msg right-msg" id="scrollToAnchor">' +
                         '<div class="msg-bubble">' +
 
                          '<div class="msg-text" th:text="${message.content}">' +
@@ -100,7 +100,7 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
 
      } else {
          // 받은메시지
-        balloonHTML =  '<div class="msg left-msg">' +
+        balloonHTML =  '<div class="msg left-msg" id="scrollToAnchor">' +
                                 '<div class="msg-bubble">' +
 
                                  '<div class="msg-text" th:text="${message.content}">' +
@@ -112,6 +112,13 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
 
      // 생성된 HTML을 #savemessages에 추가
      $("#savemessages").append(balloonHTML);
+
+     // 메시지 추가 후에 스크롤하도록
+     var anchorElement = document.getElementById('scrollToAnchor');
+     if (anchorElement) {
+
+         anchorElement.scrollIntoView({ behavior: 'auto' });
+     }
 
 }
 

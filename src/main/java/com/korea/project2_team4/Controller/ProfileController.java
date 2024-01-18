@@ -178,6 +178,23 @@ public class ProfileController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/search")
+    public String profileSearch(@RequestParam(value = "name", defaultValue = "") String name, Model model) {
+
+        List<Profile> searchProfile = profileService.getAllProfileBykw(name);
+        System.out.println("test");
+        System.out.println(searchProfile.size());
+
+
+        model.addAttribute("profiles", searchProfile);
+        model.addAttribute("name", name);
+        return "Profile/search_profile";
+//        String encodedProfileName = URLEncoder.encode(profile.getProfileName(), "UTF-8");
+//        return "redirect:/profile/detail/" + encodedProfileName;
+    }
+
+
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓마이페이지↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
     @PreAuthorize("isAuthenticated()")

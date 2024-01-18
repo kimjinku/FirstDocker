@@ -117,4 +117,7 @@ public class ProfileService {
     }
 
 
+    public List<Profile> getAllProfileBykw(String kw) {
+        return this.profileRepository.findAllBykw(kw);
+    }
 }

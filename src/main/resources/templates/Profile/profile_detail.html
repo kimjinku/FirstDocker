@@ -49,6 +49,14 @@
 <div layout:fragment="content" class="row py-5 px-4">
     <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
 
+        <form th:action="@{|/profile/search|}" class="d-flex"  method="post">
+            <div class="input-group">
+                <input class="form-control me-2" type="text" name="name" placeholder="프로필검색" aria-label="Search"
+                       style="width: 50px;" th:value="${name}">
+                <button class="btn btn-outline-success" type="submit">🔍</button>
+            </div>
+        </form>
+
         <!-- Profile widget -->
         <div class="bg-white shadow rounded overflow-hidden">
             <div class="px-4 pt-0 pb-4" style="background-image: linear-gradient(to top, #d9ded8 0%,  #ebc0fd 100%);">
