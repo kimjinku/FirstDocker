@@ -24,6 +24,8 @@ public class ChatMessage {
     @ManyToOne
     private Member sender;
 
+    private String image;
+
     private LocalDateTime time;
 
     @ManyToOne
@@ -33,9 +35,10 @@ public class ChatMessage {
     private List<Image> chatImages = new ArrayList<>();
 
     @Builder
-    public ChatMessage (Long id, String message, Member sender, LocalDateTime time, MemberChatRoom chatRoom) {
+    public ChatMessage (Long id, String message, Member sender,  String image, LocalDateTime time, MemberChatRoom chatRoom) {
         this.id = id;
         this.message = message;
+        this.image = image;
         this.sender = sender;
         this.time = time;
         this.chatRoom = chatRoom;
