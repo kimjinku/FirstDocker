@@ -77,5 +77,18 @@ public class ResalePostService {
         }
         return resalePost.getWishProfiles().contains(profile);
     }
+    public Page<ResalePost> getMyWishedResalePosts(int page, Profile profile) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return resalePostRepository.findByWishProfiles(profile, pageable);
+    }
+    public Page<ResalePost> getMyResellingResalePosts(int page, Profile profile) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return resalePostRepository.findBySeller(profile, pageable);
+    }
+
 
 }

@@ -22,6 +22,19 @@
     <body>
     <!-- Section-->
     <section class="py-5" style="width: 100rem;">
+        <div class="d-flex justify-content-start">
+            <div class="container">
+                <div class="row row-cols-1">
+                    <h2>관심목록</h2>
+                    <div class="col" style="">
+                        <a type="button" class="btn btn-primary" th:href="@{|/resalePost/myMarket|}">내가 판매중인 상품</a>
+                        <a type="button" class="btn btn-primary" th:href="@{|/resalePost/myWishList|}">관심목록</a>
+                        <a type="button" class="btn btn-primary" th:href="@{|#|}">판매내역</a>
+                        <a type="button" class="btn btn-primary" th:href="@{|#|}">구매내역</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="d-flex justify-content-end">
             <!--            <form th:action="@{/post/search}" class="d-flex" role="search">-->
             <!--                <div class="input-group">-->
@@ -42,23 +55,23 @@
                     <li><a class="dropdown-item" th:href="@{|#|}">판매내역</a></li>
                     <li><a class="dropdown-item" th:href="@{|#|}">구매내역</a></li>
                     <li class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
+                    <li><a class="dropdown-item" href="#">내 마켓 보기</a></li>
                 </ul>
             </div>
         </div>
         <div class="container px-3 px-lg-5 mt-5">
             <!--            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-start">-->
-            <div class="d-flex justify-content-start">
-                <form th:action="@{/resalePost/search}" class="d-flex" role="search">
-                    <div class="input-group">
-                        <input class="form-control me-2" type="text" id="search_kw" name="kw"
-                               placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"
-                               style="width: 330px;" th:value="${kw}">
-                        <button class="btn btn-outline-success" type="submit">🔍</button>
-                    </div>
-                </form>
-                <a type="button" class="btn btn-primary" th:href="@{|/resalePost/main|}">검색어 초기화</a>
-            </div>
+<!--            <div class="d-flex justify-content-start">-->
+<!--                <form th:action="@{/resalePost/search}" class="d-flex" role="search">-->
+<!--                    <div class="input-group">-->
+<!--                        <input class="form-control me-2" type="text" id="search_kw" name="kw"-->
+<!--                               placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"-->
+<!--                               style="width: 330px;" th:value="${kw}">-->
+<!--                        <button class="btn btn-outline-success" type="submit">🔍</button>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--                <a type="button" class="btn btn-primary" th:href="@{|/resalePost/main|}">검색어 초기화</a>-->
+<!--            </div>-->
             <div class="row gx-3 gx-lg-5 row-cols-1 row-cols-md-4 row-cols-xl-4 justify-content-center">
                 <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
                 <div th:each="post : ${paging}" class="col mb-5">

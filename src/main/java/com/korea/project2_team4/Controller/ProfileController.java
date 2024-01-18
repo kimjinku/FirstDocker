@@ -306,6 +306,9 @@ public class ProfileController {
             }
             redirectAttributes.addFlashAttribute("isChecked", isChecked);
             String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
+            System.out.println(pet.getName());
+            System.out.println(pet.getLikes().size());
+
             return "redirect:/profile/petprofile/" + encodedPetName + "/1";
         } else {
             return "redirect:/member/login";

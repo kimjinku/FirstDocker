@@ -49,18 +49,19 @@ public class ResalePostController {
 
 
     @GetMapping("/main")
-    public String resalePost(Model model, @RequestParam(value = "page", defaultValue = "0") int page){
+    public String resalePost(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<ResalePost> resalePostList = resalePostService.resalePostList(page);
-        model.addAttribute("paging",resalePostList);
+        model.addAttribute("paging", resalePostList);
         return "resale_main";
     }
+
     @GetMapping("/search")
     public String searchResalePost(Model model,
                                    @RequestParam(value = "page", defaultValue = "0") int page,
-                                   @RequestParam(value = "kw", defaultValue = "") String kw){
+                                   @RequestParam(value = "kw", defaultValue = "") String kw) {
         Page<ResalePost> resalePostList = resalePostService.resalePostsForSearch(page, kw);
-        model.addAttribute("paging",resalePostList);
-        model.addAttribute("kw",kw);
+        model.addAttribute("paging", resalePostList);
+        model.addAttribute("kw", kw);
         return "resale_main";
     }
 
@@ -96,9 +97,10 @@ public class ResalePostController {
 
     @GetMapping("/createResalePost")
     public String createPost(Model model, ResalePostForm resalePostForm) {
-        model.addAttribute("resalePostForm",resalePostForm);
+        model.addAttribute("resalePostForm", resalePostForm);
         return "ResalePost/createResalePost_form";
     }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/createResalePost")
     public String createResalePost(Principal principal, ResalePostForm resalePostForm, BindingResult bindingResult
@@ -128,8 +130,9 @@ public class ResalePostController {
 //            encodedCategory = "";
 //        }
 
-        return "redirect:/resalePost/detail/"+ resalePost.getId() +"/0";
+        return "redirect:/resalePost/detail/" + resalePost.getId() + "/0";
     }
+
     @PostMapping("/deleteResalePost/{id}")
     public String deletePost(@PathVariable Long id) {
 
@@ -137,6 +140,7 @@ public class ResalePostController {
 
         return "redirect:/resalePost/main";
     }
+
     @PostMapping("/resalePostWish")
     public String resalePostWish(Principal principal, @RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         if (principal != null) {
@@ -158,6 +162,7 @@ public class ResalePostController {
             return "redirect:/member/login";
         }
     }
+
     @GetMapping("/updateResalePost/{id}")
     public String updatePost(Principal principal, Model model, @PathVariable("id") Long id) {
         if (principal != null) {
@@ -170,6 +175,7 @@ public class ResalePostController {
 
         return "ResalePost/resalePostUpdate_form";
     }
+
     @PostMapping(value = "/updateResalePost/{id}", consumes = {"multipart/form-data"})
     public String updatePost(@PathVariable("id") Long id, @ModelAttribute ResalePost updatePost,
                              @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles
@@ -194,6 +200,23 @@ public class ResalePostController {
         }
 
         return "redirect:/resalePost/detail/{id}/1";
+    }
+
+    @GetMapping("/myWishList")
+    public String wishList(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    Member member = memberService.getMember(principal.getName());
+    Profile profile = member.getProfile();
+    Page<ResalePost> postList = resalePostService.getMyWishedResalePosts(page,profile);
+    model.addAttribute("paging",postList);
+    return "ResalePost/myWishList";
+    }
+    @GetMapping("/myMarket")
+    public String myMarket(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Member member = memberService.getMember(principal.getName());
+        Profile profile = member.getProfile();
+        Page<ResalePost> postList = resalePostService.getMyResellingResalePosts(page,profile);
+        model.addAttribute("paging",postList);
+        return "ResalePost/myMarket";
     }
 }
 

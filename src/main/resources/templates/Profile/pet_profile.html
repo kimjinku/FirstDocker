@@ -126,16 +126,23 @@
                             </div>
                         </div>
                         <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end" style="display:inline;">
-                            <input type="hidden" id="heart-fill" th:value="${#lists.contains(pet.likes, loginedMember)}">
+                            <input type="hidden" id="heart-fill" th:value="${#lists.contains(pet.likes, loginedMember.profile)}">
+<!--                            <div th:text="${loginedMember.profile.profileName}">로그인멤버이름</div>-->
+<!--                            <div th:text="${pet.likes.size()}"></div>-->
+<!--                            <div th:text="${pet.likes.iterator().next().profileName}">하나갖고옴</div>-->
+                            <!--                          △ 현재로그인멤버가, pet.likes에포함되어있는지 여부. true, false로 반환함   -->
                             <form id="likeForm" th:action="@{|/profile/petLike|}" method="post" onsubmit="return toggleHeartIcon()">
                                 <input type="hidden" name="id" th:value="${pet.id}">
-                                <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()" style="font-size: 2rem; color:red; cursor:pointer;">
+                                <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"  style="font-size: 2rem; color:red; cursor:pointer;">
                                     <span class="badge rounded-pill" th:text="${pet.likes.size()}"></span>
                                 </i>
                             </form>
                         </div>
+
+
+
                         <div class="pb-5 col-md-12 text-end">
-                            <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()" style="font-size: 2rem; color:red; cursor:pointer;">
+                            <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart"  onclick="heartSubmit()" style="font-size: 2rem; color:red; cursor:pointer;">
                                 <span class="badge rounded-pill" th:text="${pet.likes.size()}"></span>
                             </i>
                         </div>
@@ -208,16 +215,20 @@
 </div>
 
 <script layout:fragment="script" type='text/javascript'>
+    toggleHeartIcon();
+
     function toggleHeartIcon() {
         console.log('aaa');
         var heartFill = document.getElementById('heart-fill');
         var isFilled = heartFill.value;
         console.log(isFilled);
 
-        if (isFilled == "" || isFilled === "false") {
-            heartIcon.classList.remove('bi-heart-fill');
-            heartIcon.classList.add('bi-heart');
+        if (isFilled === 'false') {
+            console.log('ㅇㅇ');
+            heartIcon.classList.remove('bi bi-heart');
+            heartIcon.classList.add('bi-heart-fill');
         } else {
+            console.log('zzzzzzzzzz');
             heartIcon.classList.remove('bi-heart');
             heartIcon.classList.add('bi-heart-fill');
         }
@@ -226,7 +237,7 @@
         document.getElementById('likeForm').submit();
     }
 
-    toggleHeartIcon();
+
 </script>
 </div>
 

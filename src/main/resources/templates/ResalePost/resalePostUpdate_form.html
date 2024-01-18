@@ -1,11 +1,12 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
     <input type="hidden" id="header-name" th:value="${_csrf.headerName}">
-    <input type="hidden" id="token-value"  th:value="${_csrf.token}">
+    <input type="hidden" id="token-value" th:value="${_csrf.token}">
     <div class="container">
         <div>
             <div>
-                <form th:action="@{|/resalePost/updateResalePost/${post.id}|}" id="updateForm" method="post" enctype="multipart/form-data">
+                <form th:action="@{|/resalePost/updateResalePost/${post.id}|}" id="updateForm" method="post"
+                      enctype="multipart/form-data">
                     <div class="d-flex justify-content-start">
                         <div class="pt-5">
                             <div class=" pt-2 mb-4">
@@ -25,12 +26,13 @@
                     </div>
                     <hr class="mt-1 mb-5">
                     <div class="mb-5">
-                        <label  for="imageFiles" >이미지 추가</label >
+                        <label for="imageFiles">이미지 추가</label>
                         <input type="file" id="imageFiles" name="imageFiles" multiple>
                     </div>
                     <div class="col">
                         <div th:each="img, iterStat : ${post.resalePostImages}">
-                            <img class="postImage image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="게시물 이미지"
+                            <img class="postImage image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}"
+                                 alt="게시물 이미지"
                                  style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
                             <a class="btn btn-danger" onclick="deleteImage(this);">X</a>
                         </div>
@@ -43,7 +45,8 @@
                     <div class="mb-3">
                         <h2>가격을 수정하세요~</h2>
                         <div class="input-group">
-                            <input type="text" class="form-control col-sm-6" id="price" name="price" oninput="validateInput(this)" placeholder="가격을 입력해 주세요(숫자만 입력 가능합니다)" required>
+                            <input type="text" th:value="${post.price}" class="form-control col-sm-6" id="price"
+                                   name="price" oninput="validateInput(this)">
                             <span class="input-group-text">원</span>
                         </div>
                     </div>
@@ -98,6 +101,19 @@
                     }
                   });
                 }
+
+            function validateInput(input) {
+        // 정규 표현식을 사용하여 숫자가 아닌 문자를 제거합니다.
+        input.value = input.value.replace(/[^0-9]/g, '');
+
+        // 숫자로만 구성된 경우에만 값을 유효하게 처리할 수 있습니다.
+        // 예를 들어, 여기서는 0 이상의 자연수인지 확인하고 있습니다.
+        var numericValue = parseInt(input.value, 10);
+        if (isNaN(numericValue) || numericValue < 0) {
+            alert("숫자만 입력 가능합니다.");
+            input.value = '';
+        }
+    }
     </script>
 </div>
 
