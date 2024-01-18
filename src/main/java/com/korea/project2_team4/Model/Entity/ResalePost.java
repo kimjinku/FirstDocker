@@ -46,5 +46,7 @@ public class ResalePost {
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
 
+    private boolean isSold;
+
 }
 

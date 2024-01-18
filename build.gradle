@@ -44,7 +44,7 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.9.0'
 //	// https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
 //	compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
 
 	// s3 upload
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
