@@ -43,24 +43,11 @@
 
 
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{|/adoption/main|}">추가 기능</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        중고거래
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{|/resalePost/main|}">팔아요</a></li>
-<!--                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>-->
-                        <li><hr class="dropdown-divider"></li>
-                        <li sec:authorize="isAuthenticated()"><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">리뷰공간</a>
-                </li>
-                <li class="nav-item">
+                </ul>
+            </div>
+            <div class="col-2 bg-transparent px-3">
+                <a th:href="@{|/|}" style="text-decoration:none; color: inherit;"><h1 class="text-center fw-bold figure-img text-dark">Pet Planet</h1></a>
+
 
                 <form th:action="@{/post/search}" class="d-flex" role="search">
                     <div class="input-group">
