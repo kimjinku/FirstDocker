@@ -1,0 +1,130 @@
+<nav th:fragment="test">
+<!--    <div class="wrap w-100">-->
+<!--        <div class="row align-items-center m-0 d-none d-md-flex">-->
+<!--            <div class="col-5 text-center py-3" style="background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);">-->
+<!--                <ul class="d-flex list-unstyled justify-content-center m-0" style="justify-content: space-between;">-->
+<!--                    <li class="nav-item dropdown" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                            커뮤니티-->
+<!--                        </a>-->
+<!--                        <ul class="dropdown-menu">-->
+<!--                            <li><a class="dropdown-item" th:href="@{/post/community/main(category='', sort='', TagName='')}">전체</a></li>-->
+<!--                            <li><hr class="dropdown-divider"></li>-->
+<!--                            <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>-->
+<!--                            <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>-->
+<!--                        </ul>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link" th:href="@{|/adoption/main|}">추가 기능</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item dropdown" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                            중고거래-->
+<!--                        </a>-->
+<!--                        <ul class="dropdown-menu">-->
+<!--                            <li><a class="dropdown-item" th:href="@{|/resalePost/main|}">팔아요</a></li>-->
+<!--                            &lt;!&ndash;                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>&ndash;&gt;-->
+<!--                            <li><hr class="dropdown-divider"></li>-->
+<!--                            <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="#">내 마켓 보기</a></li>-->
+<!--                        </ul>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link active" href="#">리뷰공간</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+
+<!--                        <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>-->
+
+<!--                    </li>-->
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+
+<!--                        <a class="nav-link active" sec:authorize="isAuthenticated()" href="/chat/chatRoomList">채팅기능(임시)</a>-->
+<!--                    </li>-->
+
+
+
+<!--                </ul>-->
+<!--            </div>-->
+<!--            <div class="col-2 bg-transparent px-3">-->
+<!--                <a th:href="@{|/|}" style="text-decoration:none; color: inherit;"><h1 class="text-center fw-bold figure-img text-dark">Pet Planet</h1></a>-->
+
+
+<!--                <form th:action="@{/post/search}" class="d-flex" role="search">-->
+<!--                    <div class="input-group">-->
+<!--                        <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder=".." aria-label="Search"-->
+<!--                               style="width: 200px;" th:value="${kw}">-->
+<!--                        <button class="btn btn-outline-success" type="submit">🔍</button>-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash;                <div class="recent-keyword">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                    <div class="recent-search">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        <div th:if="${recentSearchKeywords}">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                            <p th:each="keyword : ${recentSearchKeywords}" th:text="${keyword}"></p>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                </div>&ndash;&gt;-->
+<!--                </form>-->
+
+<!--            </div>-->
+<!--            <div class="col-5 text-center py-3" style="background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);">-->
+<!--                <ul class="d-flex list-unstyled justify-content-center m-0" style="justify-content: space-between;">-->
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findUserName|}">아이디 찾기</a>-->
+<!--                    </li>-->
+
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findPassword|}">비밀 번호 찾기</a>-->
+<!--                    </li>-->
+
+<!--                    <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">관리자</a>-->
+<!--                    </li>-->
+<!--                    <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"  class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">매니저</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>-->
+<!--                    </li>-->
+
+<!--                    <li class="nav-item" style="margin-right: 10px;">-->
+<!--                        <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/member/logout}">로그아웃</a>-->
+<!--                    </li>-->
+
+
+
+
+<!--                    <li class="nav-item" sec:authorize="isAnonymous()">-->
+<!--                        <a class="nav-link rounded" th:href="@{/member/signup}">회원가입</a>-->
+<!--                    </li>-->
+
+<!--                    <li sec:authorize="isAuthenticated()">-->
+<!--                        <div class="collapse navbar-collapse" id="navbarSupportedContent2">-->
+<!--                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
+<!--                                &lt;!&ndash;                                th:if="${#authentication.principal.username != 'admin'}"&ndash;&gt;-->
+<!--                                <li class="nav-item dropdown" th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}">-->
+<!--                                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.principal.username + ' 님'}">-->
+<!--                                    </a>-->
+<!--                                    <ul class="dropdown-menu">-->
+<!--                                        <a class="nav-link rounded" th:href="@{|/profile/my|}">내 프로필</a>-->
+<!--                                        <li><hr class="dropdown-divider"></li>-->
+<!--                                        &lt;!&ndash;each 루프돌려서 펫 드롭다운리스트 생성&ndash;&gt;-->
+<!--                                        <li><a class="dropdown-item" th:href="@{|/profile/myDmPages/${#authentication.principal.profile.profileName}|}" style="display:inline;">DM</a>-->
+<!--                                            <div id="alarm" style="display:inline;">🔔</div>-->
+<!--                                        </li>-->
+<!--                                        &lt;!&ndash;                                        <li><a class="dropdown-item" th:text="${#authentication.principal.profile.profileName}"></a></li>&ndash;&gt;-->
+<!--                                    </ul>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                        </div>-->
+<!--                    </li>-->
+
+<!--                    <li sec:authorize="isAuthenticated()">-->
+<!--                        <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>-->
+<!--                    </li>-->
+
+<!--                </ul>-->
+
+<!--            </div>-->
+
+<!--        </div>-->
+<!--    </div>-->
+</nav>
