@@ -79,7 +79,12 @@ public class ChatController {
 
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
-        System.out.println(Arrays.toString(chatDTO.getImage()));
+
+        if (chatDTO.getImage() != null) {
+            System.out.println(Arrays.toString(chatDTO.getImage().getData()));
+            System.out.println(chatDTO.getImage().getContentType());
+        }
+
         try {
 
             chatDTO.setSender(principal.getName());
