@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Service
 @Builder
-public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
+public class  PrincipalOauth2UserService extends DefaultOAuth2UserService {
     private PasswordEncoder passwordEncoder;
     private MemberService memberService;
 
