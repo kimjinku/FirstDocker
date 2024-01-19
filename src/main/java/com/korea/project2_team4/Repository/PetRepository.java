@@ -20,4 +20,7 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     @Query("SELECT DISTINCT p FROM Pet p JOIN p.likes likeProfile WHERE likeProfile.profileName LIKE %:name%")
     List<Pet> findAllByLikes(@Param("name") String name);
 
+    @Query("SELECT p FROM Pet p WHERE p.name LIKE %:kw%")
+    List<Pet> findAllBykw(@Param("kw")String kw);
+
 }
