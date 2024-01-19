@@ -2,6 +2,7 @@ package com.korea.project2_team4.Service;
 
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 //import com.korea.project2_team4.Model.Dto.ChatRoom;
+import com.korea.project2_team4.Model.Dto.ChatImageDto;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
 import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.Member;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class ChatService {
     private Map<String, ChatRoom> chatRoomMap;
     private final MemberService memberService;
+    private final S3Service s3Service;
     private final MemberRepository memberRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
@@ -128,11 +130,24 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
 
 
+        String img;
+
+        if (chatDTO.getImage() != null) {
+            ChatImageDto chatImage = chatDTO.getImage();
+            // 파일명 생성
+            String fileName =  s3Service.generateChatImageName(chatDTO.getRoomId(), chatDTO.getSender(),chatDTO.getTime(), chatImage.getContentType());
+            // s3에 이미지를 업로드하고 그 이미지 path 경로를 img에 저장
+            img = s3Service.uploadToS3(fileName, chatImage.getData(), chatImage.getContentType());
+        } else
+            img = null;
+
         ChatMessage chatMessage = ChatMessage.builder()
                 .message(chatDTO.getMessage())
                 .sender(sender)
                 .chatRoom(chatRoom)
                 .time(LocalDateTime.now())
+                // 그 경로를 image db에 저장
+                .image(img)
                 .build();
 
         chatMessageRepository.save(chatMessage);

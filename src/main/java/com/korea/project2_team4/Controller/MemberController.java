@@ -219,6 +219,7 @@ public class MemberController {
 //            memberCreateForm.setSnsImage(socialLogin.getImage());
         }
         model.addAttribute("socialLogin", socialLogin);
+
         return "Member/social_signup_form";
     }
 

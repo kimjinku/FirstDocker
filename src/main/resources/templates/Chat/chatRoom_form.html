@@ -30,7 +30,7 @@
                     <div class="row">
                         <div class="col-12">
                             <form id="sendMessageForm" class="d-flex">
-                                <input class="form-control" type="text" id="message" name="message" placeholder="메시지 입력하기" required>
+                                <input class="form-control" type="text" id="message" name="message" placeholder="메시지 입력하기">
                                 <button class="btn btn-primary" type="submit">전송</button>
                                 <button class="btn btn-primary" type="button" onclick="document.getElementById('imageUpload').click()">첨부</button>
                             </form>
@@ -98,20 +98,28 @@
             if (imageFile) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
+
                     const imageBytes = new Uint8Array(e.target.result);
+                    const imageContentType = imageFile.type;
 
                     stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
                         type: 'TALK',
                         roomId: chatRoomId,
                         sender: 'username',
                         message: message,
-                        image: imageBytes,
+                        image: {
+                            data : imageBytes,
+                            contentType : imageContentType
+                        },
                         time: new Date().toLocaleTimeString()
                     }));
                     // 입력 폼 초기화
                     messageInput.value = '';
                     imageInput.value = '';
                 }
+
+                reader.readAsArrayBuffer(imageFile);
+
             }
             else {
                 if (message !== '') {
@@ -136,10 +144,6 @@
             messageItem.textContent = sender + ': ' + message + ' (' + time + ')';
             messageItem.style.marginBottom = '10px';
             chatMessages.insertBefore(messageItem, chatMessages.firstChild);
-        }
-
-        function confirmDeleteChatRoom() {
-            return confirm("채팅방을 삭제하시겠습니까?");
         }
 
         function previewImage() {
