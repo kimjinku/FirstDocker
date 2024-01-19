@@ -109,6 +109,14 @@
                             </button>
                         </form>
                     </div>
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/soldOut/${post.id}|}" method="post" onsubmit="return soldPost();">
+                            <!--                            onsubmit="return DeletePost();"-->
+                            <button type="submit" class="btn btn-primary" style="margin-right: 2rem">판매완료
+                            </button>
+                        </form>
+                    </div>
 <!--                    <a type="button" class="btn btn-primary" th:href="@{|/resalePost/previousPage|}">이전 화면으로</a>-->
                 </div>
             </div>
@@ -142,6 +150,9 @@
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
         function DeletePost() {
             return confirm("게시글을 삭제하시겠습니까?");
+        }
+        function soldPost() {
+            return confirm("게시글을 판매 내역으로 옮기시겠습니까?");
         }
 
         //게시물 좋아요
