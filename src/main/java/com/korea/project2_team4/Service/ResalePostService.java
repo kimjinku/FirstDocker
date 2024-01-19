@@ -30,7 +30,7 @@ public class ResalePostService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
-        return resalePostRepository.findByIsSoldFalse(pageable);
+        return resalePostRepository.findBySoldItemFalse(pageable);
     }
     public Page<ResalePost> resalePostsForSearch(int page, String kw){
         List<Sort.Order> sorts = new ArrayList<>();

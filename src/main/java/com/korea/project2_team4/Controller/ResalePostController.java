@@ -222,7 +222,7 @@ public class ResalePostController {
     public String soldOut(@PathVariable Long id) {
 
         ResalePost resalePost = resalePostService.getResalePost(id);
-        resalePost.setSold(true);
+        resalePost.setSoldItem(true);
         resalePostService.save(resalePost);
         return "redirect:/resalePost/main";
     }
@@ -233,6 +233,10 @@ public class ResalePostController {
         Page<ResalePost> postList = resalePostService.soldOutResalePosts(page, profile);
         model.addAttribute("paging", postList);
         return "ResalePost/soldOut";
+    }
+    @GetMapping("/payment")
+    public String paymentPage(){
+        return "ResalePost/payment";
     }
 }
 
