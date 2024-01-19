@@ -10,9 +10,9 @@
             <!--메인 채팅창-->
             <div style="width: 65%; margin-right: 5%; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
                 <div style="margin-bottom: 20px; width: 100%; height: 85%;">
-                    <div
+                    <div id="chatMessages"
                          style="width: 100%; height: 100%; overflow-y: auto; border: 1px solid #ccc; border-radius: 10px; padding: 20px; ">
-                        <div id="chatMessages" class="mb-2" th:each="message : ${messages}" style="display: flex; flex-direction: row; width: 100%;">
+                        <div class="mb-2" th:each="message : ${messages}" style="display: flex; flex-direction: row; width: 100%;">
                             <div th:if="${!(message.sender.userName).equals(#authentication.name)}" style="width: 60px; height: 60px; background-color: black; border-radius: 50%;">
 <!--                                아직 유저 프로필 없으니 비활성화-->
 <!--                                <img th:src="${message.sender.image}" alt="">-->
@@ -74,7 +74,7 @@
         const id = location.pathname.split("/").pop();
 
         const chatRoomId = document.getElementById('chatRoomId').textContent;
-
+        const username = document.getElementById('username').textContent;
         // WebSocket 연결
         var socket = new SockJS('/ws-stomp');
         var stompClient = Stomp.over(socket);
@@ -158,7 +158,7 @@
         // 채팅 메시지를 목록에 추가
         function addMessageToChat(sender, message, image, time) {
             var messageItem = document.createElement('div');
-            if (sender.userName.equals(#authentication.name)) {
+            if (sender.userName != username) {
                 messageItem.style.display = 'flex';
                 messageItem.style.flexDirection = 'column';
                 messageItem.style.textAlign = 'right';
