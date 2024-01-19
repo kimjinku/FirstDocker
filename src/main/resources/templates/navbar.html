@@ -60,7 +60,7 @@
                             <li><a class="dropdown-item" th:href="@{|/resalePost/main|}">팔아요</a></li>
     <!--                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>-->
                             <li><hr class="dropdown-divider"></li>
-                            <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="#">내 마켓 보기</a></li>
+                            <li sec:authorize="isAuthenticated()"><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
                         </ul>
                     </li>
                     <li class="nav-item" style="margin-right: 10px;">
@@ -156,7 +156,6 @@
                     <li sec:authorize="isAuthenticated()">
                         <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>
                     </li>
-
                 </ul>
             </div>
         </div>
