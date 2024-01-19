@@ -151,16 +151,10 @@
 
             </div>
 
-            <div>Owner :
-                <a th:href="@{|/profile/detail/${pet.owner.profileName}|}" th:text="${pet.owner.profileName}"></a>
-
-            </div>
-
 
             <div class="py-4 px-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h5 class="mb-0">About Me!</h5>
-
                     <div th:if="${#authentication.principal.username == pet.owner.member.userName}"
                          sec:authorize="isAuthenticated()">
                         <form th:action="@{|/profile/createPetPhotos|}">
@@ -170,7 +164,9 @@
                     </div>
 
                 </div>
-
+                <div>Owner :
+                    <a th:href="@{|/profile/detail/${pet.owner.profileName}|}" th:text="${pet.owner.profileName}"></a>
+                </div>
                 <div class="py-4 px-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <!--                        <a th:href="@{|/profile/detail/${profile.profileName}/showall|}" class="btn btn-link text-muted">Show all</a>-->
