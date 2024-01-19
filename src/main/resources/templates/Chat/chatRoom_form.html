@@ -20,9 +20,12 @@
                 </div>
                 <div class="d-flex justify-content-center" style="margin-bottom: 30px;">
                     <div id="chatMessages" style="width: 500px; height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; display: flex; flex-direction: column-reverse;">
-                        <div class="mb-2" th:each="message : ${messages}"
-                             th:text="${message.sender.userName + ': ' + message.message
-                             + ' (' + #temporals.format(message.time, (message.time.hour >= 12 ? '오후 ' : '오전 ') + 'h:mm:ss') + ')'}"></div>
+
+                        <div class="mb-2" th:each="message : ${messages}">
+                            <img th:src="${message.image}" alt="">
+                            <span  class="text-primary" th:text="${message.sender.userName + ': ' + message.message
+                             + ' (' + #temporals.format(message.time, (message.time.hour >= 12 ? '오후 ' : '오전 ') + 'h:mm:ss') + ')'}"></span>
+                        </div>
 
                     </div>
                 </div>
@@ -80,7 +83,7 @@
             stompClient.subscribe('/sub/chat/chatRoom/id/' + chatRoomId, function (response) {
                 var chat = JSON.parse(response.body);
                 console.log(chat.message);
-                addMessageToChat(chat.sender, chat.message, chat.time);
+                addMessageToChat(chat.sender, chat.message, chat.image, chat.time);
             });
         });
 
@@ -98,7 +101,7 @@
             if (imageFile) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-
+                    var imagePreview = document.getElementById("imagePreview");
                     const imageBytes = new Uint8Array(e.target.result);
                     const imageContentType = imageFile.type;
 
@@ -108,7 +111,7 @@
                         sender: 'username',
                         message: message,
                         image: {
-                            data : imageBytes,
+                            data : Array.from(imageBytes),
                             contentType : imageContentType
                         },
                         time: new Date().toLocaleTimeString()
@@ -116,6 +119,12 @@
                     // 입력 폼 초기화
                     messageInput.value = '';
                     imageInput.value = '';
+
+                    // 자식 엘리먼트 모두 제거
+                    while (imagePreview.firstChild) {
+                        imagePreview.removeChild(imagePreview.firstChild);
+                    }
+
                 }
 
                 reader.readAsArrayBuffer(imageFile);
@@ -139,9 +148,16 @@
         });
 
         // 채팅 메시지를 목록에 추가
-        function addMessageToChat(sender, message, time) {
+        function addMessageToChat(sender, message, image, time) {
             var messageItem = document.createElement('div');
-            messageItem.textContent = sender + ': ' + message + ' (' + time + ')';
+            if (image) {
+                var imageElement = document.createElement('img');
+                imageElement.src = image;
+                messageItem.appendChild(imageElement);
+            }
+            var messageSpan = document.createElement('span');
+            messageSpan.textContent = sender + ': ' + message + ' (' + time + ')';
+            messageItem.appendChild(messageSpan);
             messageItem.style.marginBottom = '10px';
             chatMessages.insertBefore(messageItem, chatMessages.firstChild);
         }

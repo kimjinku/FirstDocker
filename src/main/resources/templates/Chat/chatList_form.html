@@ -64,7 +64,7 @@
                             <div class="card-body" th:attr="onclick='openEnterChatRoomModal(\'' + ${room.id} + '\', \'' + ${room.inChatRoom} + '\')'">
                                 <div class="mb-3" style="font-weight: bold;" th:text="${room.roomName}"></div>
                                 <div class="d-flex justify-content-end" th:if="${(room.adminName).equals(#authentication.name)}">
-                                    <form th:action="@{|/chat/deleteChatRoom/${chatRoomId}|}" method="post">
+                                    <form th:action="@{|/chat/deleteChatRoom/${room.id}|}" method="post">
                                         <button class="btn btn-danger" type="submit" onsubmit="return confirmDeleteChatRoom();">채팅방 삭제</button>
                                     </form>
                                 </div>
