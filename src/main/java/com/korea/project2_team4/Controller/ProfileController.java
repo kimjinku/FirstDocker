@@ -3,6 +3,7 @@ package com.korea.project2_team4.Controller;
 import com.korea.project2_team4.Model.Dto.ProfileDto;
 import com.korea.project2_team4.Model.Dto.SaveMessageDTO;
 import com.korea.project2_team4.Model.Entity.*;
+import com.korea.project2_team4.Model.Form.PetProfileForm;
 import com.korea.project2_team4.Model.Form.ProfileForm;
 import com.korea.project2_team4.Repository.DmPageRepository;
 import com.korea.project2_team4.Repository.MessageRepository;
@@ -46,8 +47,6 @@ public class ProfileController {
     private final PetService petService;
     private final ImageService imageService;
     private final FollowingMapService followingMapService;
-
-    private final MessageRepository messageRepository; //서비스로 추후수정. 테스트용임
     private TagService tagService;
     private TagMapService tagMapService;
     private final DmPageService dmPageService;
@@ -113,6 +112,21 @@ public class ProfileController {
 
     }
 
+//    @GetMapping("/showallPostsBy")
+//    public String showAllMyPosts(Model model, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam("profileid") Long profileid, Principal principal) {
+//        if (principal == null) {
+//            List<Post> myposts = postService.getPostsbyAuthor(profileService.getProfileById(profileid));
+//            model.addAttribute("searchResults", myposts);
+//            return "search_form";
+//        } else {
+//            Member sitemember = this.memberService.getMember(principal.getName());
+//            List<Post> myposts = postService.getPostsbyAuthor(sitemember.getProfile());
+//
+//            model.addAttribute("searchResults", myposts);
+//            return "search_form";
+//        }
+//    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/update")
     public String profileupdate(Model model, ProfileForm profileForm, Principal principal) {
@@ -138,14 +152,6 @@ public class ProfileController {
 
         profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
 
-//
-//        try {
-//            profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
-//        } catch () {
-//
-//        }
-
-
         String encodedProfileName = URLEncoder.encode(sitemember.getProfile().getProfileName(), "UTF-8");
         return "redirect:/profile/detail/" + encodedProfileName;
     }
@@ -162,21 +168,22 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/showallPostsBy")
-    public String showAllMyPosts(Model model, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam("profileid") Long profileid, Principal principal) {
-        if (principal == null) {
-            List<Post> myposts = postService.getPostsbyAuthor(profileService.getProfileById(profileid));
-            model.addAttribute("searchResults", myposts);
-            return "search_form";
-        } else {
-            Member sitemember = this.memberService.getMember(principal.getName());
-            List<Post> myposts = postService.getPostsbyAuthor(sitemember.getProfile());
 
-            model.addAttribute("searchResults", myposts);
-            return "search_form";
-//        return "community_main";
-        }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/search")
+    public String profileSearch(@RequestParam(value = "name", defaultValue = "") String name, Model model) {
+
+        List<Profile> searchProfile = profileService.getAllProfileBykw(name);
+        System.out.println("test");
+        System.out.println(searchProfile.size());
+
+
+        model.addAttribute("profiles", searchProfile);
+        model.addAttribute("name", name);
+        return "Profile/search_profile";
     }
+
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓마이페이지↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
@@ -216,146 +223,6 @@ public class ProfileController {
         memberService.save(sitemember);
 
         return "redirect:/profile/myPage";
-    }
-
-
-
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓펫 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/addpet")
-    public String addpet(@RequestParam("name") String name, @RequestParam("content") String content, Principal principal,
-                         MultipartFile imageFile) throws Exception, NoSuchAlgorithmException {
-        Member sitemember = this.memberService.getMember(principal.getName());
-        Pet pet = new Pet();
-
-
-        pet.setName(name);
-        pet.setContent(content);
-        pet.setOwner(sitemember.getProfile());
-        petService.savePet(pet);
-//
-//        if (imageFile != null && !imageFile.isEmpty() && pet !=null) { //이미지 첨부를 했을때
-//            imageService.saveImgsForPet(pet,imageFile); // 기존이미지잇으면 지우고 등록함.
-//        }
-
-        if (imageFile == null || imageFile.isEmpty()) {
-            if (pet.getPetImage() == null) {
-                imageService.saveDefaultImgsForPet(pet);
-            }
-        } else if (pet != null) {
-            imageService.saveImgsForPet(pet, imageFile);
-        }
-
-        profileService.setPetforprofile(sitemember.getProfile(), pet);
-        String encodedProfileName = URLEncoder.encode(sitemember.getProfile().getProfileName(), "UTF-8");
-        return "redirect:/profile/detail/" + encodedProfileName;
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/deletepet")
-    public String deletepet(@RequestParam("petid") Long petid, Principal principal)throws UnsupportedEncodingException {
-        Member sitemember = this.memberService.getMember(principal.getName());
-        Pet pet = petService.getpetById(petid);
-        petService.deletePet(pet);
-
-        String encodedProfileName = URLEncoder.encode(sitemember.getProfile().getProfileName(), "UTF-8");
-        return "redirect:/profile/detail/" + encodedProfileName;
-    }
-
-
-    @GetMapping("/petprofile/{petName}/{hit}")
-    public String petprofile(Principal principal,Model model, @PathVariable("petName")String petName) {
-        Pet pet = petService.getpetByname(petName);
-//        List<Post> ownerposts = postService.getPostsbyAuthor(pet.getOwner()); //???
-        if (principal !=null ) {
-            Member member = memberService.getMember(principal.getName());
-            model.addAttribute("loginedMember", member);
-        }
-        List<Post> postList = new ArrayList<>();
-
-        if (tagService.tagExists(petName)) {
-            Tag tag = tagService.getTagByTagName(petName);
-            List<TagMap> tagMapList = tagMapService.findTagMapsByTagId(tag.getId());
-            for (TagMap tagMap : tagMapList) {
-                if ( (tagMap.getTag().getName().equals(petName)) && (tagMap.getPost().getAuthor().equals(pet.getOwner()))) {
-                    Post post = tagMap.getPost();
-                    postList.add(post);
-                }
-            }
-        }
-        model.addAttribute("postList", postList);
-        model.addAttribute("pet", pet);
-        return "Profile/pet_profile";
-    }
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/petLike")
-    public String petLike(Principal principal, @RequestParam("id") Long id, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
-        if (principal != null) {
-            Pet pet = this.petService.getpetById(id);
-            Member member = this.memberService.getMember(principal.getName());
-            Profile profile = member.getProfile();
-
-            boolean isChecked = false;
-
-            if (petService.isLiked(pet, profile)) {
-                petService.unLike(pet, profile);
-            } else {
-                petService.Like(pet, profile);
-                isChecked = true;
-            }
-            redirectAttributes.addFlashAttribute("isChecked", isChecked);
-            String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
-            System.out.println(pet.getName());
-            System.out.println(pet.getLikes().size());
-
-            return "redirect:/profile/petprofile/" + encodedPetName + "/1";
-        } else {
-            return "redirect:/member/login";
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/updatepet")
-    public String profileupdate(@RequestParam(value = "petImage") MultipartFile newpetImage, @RequestParam("petid") Long petid,
-                                @RequestParam(value = "name") String name, @RequestParam(value = "content") String content,
-                                Principal principal) throws Exception {
-//        Member sitemember = this.memberService.getMember(principal.getName());
-        Pet pet = petService.getpetById(petid);
-
-
-        if (newpetImage != null && !newpetImage.isEmpty()) {
-            imageService.saveImgsForPet(pet, newpetImage); // 이미지처리따로.
-        }
-
-        petService.updatePet(pet, name, content);
-
-        String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
-        return "redirect:/profile/petprofile/" + encodedPetName + "/1";
-
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/createPetPhotos")
-    public String createpetphotos(@RequestParam("petid") Long petid, Principal principal, HttpSession session) {
-
-        Pet pet = petService.getpetById(petid);
-        String petName = pet.getName();
-
-        session.setAttribute("petName", petName);
-        return "redirect:/post/createPost";
-
-    }
-
-    @GetMapping("/petList")
-    public String petList(Principal principal,Model model) {
-        Member sitemember = this.memberService.getMember(principal.getName());
-        Profile me = sitemember.getProfile();
-        List<Pet> petList = petService.getMyLikePets(me);
-
-        model.addAttribute("petList", petList);
-        return "Profile/petList";
-
     }
 
 
@@ -453,27 +320,7 @@ public class ProfileController {
     }
 
 
-//    @PostMapping("/sendmessageTo/{profileName}")
-//    public String sendmessage(Principal principal, Model model, @PathVariable("profileName") String profileName, @RequestParam(value = "message") String message) {
-//        Member sitemember = this.memberService.getMember(principal.getName());
-//        Profile partner = profileService.getProfileByName(profileName);
-//        Message sendmessage = new Message();
-//        sendmessage.setAuthor(sitemember.getProfile());
-//        sendmessage.setReceiver(partner);
-//        sendmessage.setContent(message);
-//        sendmessage.setCreateDate(LocalDateTime.now());
-//        messageRepository.save(sendmessage);
-//
-//        String encodedValue = URLEncoder.encode(profileName, StandardCharsets.UTF_8);
-//        return "redirect:/profile/dmTo/" + encodedValue;
-//    }
-//
-//    @PostMapping("/sendmessage")
-//    public String sendmessage() {
-//        return "redirect:/Proflle/dmpage";
-//    }
-
-////////////////////////웹소켓 테스트. 선영추ㅡ가//////////////////////////////////////////
+////////////////////////웹소켓 알림 테스트. 선영추ㅡ가//////////////////////////////////////////
 
     private final SaveMessageRepository saveMessageRepository;
     private final DmPageRepository dmPageRepository;
@@ -521,11 +368,5 @@ public class ProfileController {
         // 저장된 SaveMessage 엔터티 반환
         return messageDTO; //화면 출력하는거 JSON으로전달해서 ?
     }
-
-    @GetMapping("/chatting")
-    public String chatting() {
-        return "Profile/sample_chatting";
-    }
-
 
 }

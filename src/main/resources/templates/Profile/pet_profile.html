@@ -42,6 +42,44 @@
   cursor: pointer;
 }
 
+
+.flexbox {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    min-width: 200px;
+    margin: auto;
+}
+
+.speechbubble {
+    background: url(https://poqueiraweb.com/link2/speechbubble5.svg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    font-size: 130%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.speechbubble p {
+    margin: 0 auto;
+    margin-bottom: 20px;
+    text-align: center;
+    width: 80%;
+}
+
+.speechbubble p:first-child {
+    padding-top: 20px;
+}
+
+.speechbubble-tail {
+    width: 100%;
+    background-image: url('https://poqueiraweb.com/link2/speechbubble5-tail.svg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    height: 50px;
+}
+
+
     </style>
 </head>
 
@@ -53,7 +91,7 @@
             <div class="px-4 pt-0 pb-4" style="background-image: linear-gradient(to top, #d9ded8 0%,  #ebc0fd 100%);">
                 <div class="media align-items-end profile-header">
                     <div class="profile mr-3">
-                        <div class="avatar" style="width:30px, height:30px;">
+                        <div class="avatar justify-content-between" style="width:30px, height:30px;">
 
                             <img th:src="@{|/files/${pet.petImage.fileName}|}" alt="pet"
                                  class="avatar-img rounded-circle" style="width:200px; height:200px;"/>
@@ -62,76 +100,41 @@
                             <!--                                <input type="hidden" name="profileid" th:value="${profile.id}">-->
                             <!--                                <button type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>-->
                             <!--                            </form>-->
-                        </div>
-                    </div>
+                            <div class="flexbox">
+                                <div class="speechbubble">
+                                    <a th:href="@{|/profile/detail/${pet.owner.profileName}|}" style="text-decoration:none; color:inherit;">
+                                        <p th:text="'Owner : ' + ${pet.owner.profileName}">
 
-                    <div class="media-body mb-5 text-white">
-                        <!--                        <a th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">프로필 수정</a>-->
-                        <div style="display:inline;">
-                            <h4 class="mt-0 mb-0" th:text="${pet.Name}"></h4>
-                            <p class="small mb-4" th:text="${pet.content}"><i class="fa fa-map-marker mr-2"></i></p>
-                        </div>
-                        <!-- Button trigger modal -->
-                        <!--                        <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">✎</a>-->
-
-                        <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal"
-                                th:if="${#authentication.principal.username == pet.owner.member.userName}"
-                                sec:authorize="isAuthenticated()" style="display:inline;">
-                            수정
-                        </button>
-                        <!-- Modal -->
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                             aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">modifyPet</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- 폼 시작 -->
-                                        <form th:action="@{/profile/updatepet}" method="post"
-                                              enctype="multipart/form-data" id="myForm">
-                                            <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
-                                                <input type="hidden" th:name="${_csrf.parameterName}"
-                                                       th:value="${_csrf.token}"/>
-                                                <input type="hidden" name="petid" th:value="${pet.id}">
-                                                <div class="mb-3">
-                                                    <input type="text" class="form-control" name="name"
-                                                           th:value="${pet.name}">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <textarea class="form-control" name="content" rows="3"
-                                                              th:text="${pet.content}"></textarea>
-                                                </div>
-
-                                                <div>
-                                                    <label for="petImage">이미지 업로드</label>
-                                                    <input type="file" id="petImage" name="petImage">
-                                                </div>
-
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-light">저장</button>
-                                            </div>
-
-                                        </form>
-
-                                        <!-- 폼 종료 -->
-                                    </div>
-
+                                        </p>
+                                    </a>
+                                </div>
+                                <div class="speechbubble-tail">
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+
+
+
+                    <div class="media-body mb-5 text-white">
+                        <!--                        <a th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">프로필 수정</a>-->
+<!--                        <a th:if="${#authentication.principal.username == pet.owner.member.userName}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn-gradient-2" style="text-decoration:none; color:inherit;">✎</a>-->
+                        <div style="display:inline;">
+                            <a th:if="${#authentication.principal.username == pet.owner.member.userName}" sec:authorize="isAuthenticated()" th:href="@{|/profile/petprofile/${pet.name}/1/update|}" class="btn-gradient-2" style="text-decoration:none; color:inherit;">✎</a>
+
+                            <h4 class="mt-0 mb-0" th:text="${pet.Name}"></h4>
+                            <p class="small mb-4" th:text="${pet.content}"><i class="fa fa-map-marker mr-2"></i></p>
+                        </div>
+
+
                         <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end" style="display:inline;">
                             <input type="hidden" id="heart-fill" th:value="${#lists.contains(pet.likes, loginedMember.profile)}">
 <!--                            <div th:text="${loginedMember.profile.profileName}">로그인멤버이름</div>-->
 <!--                            <div th:text="${pet.likes.size()}"></div>-->
 <!--                            <div th:text="${pet.likes.iterator().next().profileName}">하나갖고옴</div>-->
                             <!--                          △ 현재로그인멤버가, pet.likes에포함되어있는지 여부. true, false로 반환함   -->
-                            <form id="likeForm" th:action="@{|/profile/petLike|}" method="post" onsubmit="return toggleHeartIcon()">
+                            <form id="likeForm" th:action="@{|/profile/petprofile/petLike|}" method="post" onsubmit="return toggleHeartIcon()">
                                 <input type="hidden" name="id" th:value="${pet.id}">
                                 <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"  style="font-size: 2rem; color:red; cursor:pointer;">
                                     <span class="badge rounded-pill" th:text="${pet.likes.size()}"></span>
@@ -151,16 +154,10 @@
 
             </div>
 
-            <div>Owner :
-                <a th:href="@{|/profile/detail/${pet.owner.profileName}|}" th:text="${pet.owner.profileName}"></a>
-
-            </div>
-
 
             <div class="py-4 px-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h5 class="mb-0">About Me!</h5>
-
                     <div th:if="${#authentication.principal.username == pet.owner.member.userName}"
                          sec:authorize="isAuthenticated()">
                         <form th:action="@{|/profile/createPetPhotos|}">

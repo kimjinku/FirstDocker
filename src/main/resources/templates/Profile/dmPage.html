@@ -178,8 +178,8 @@
         </div>
 
         <div class="msger-chat" id="savemessages" >
-            <div th:each="message : ${dmPageMessages}">
-                <div th:class="${message.authorId == me.getId} ? 'msg right-msg' : 'msg left-msg'">
+            <div th:each="message, iterStat : ${dmPageMessages}">
+                <div th:class="${message.authorId == me.getId} ? 'msg right-msg' : 'msg left-msg'" th:id="${iterStat.last} ? 'scrollToAnchor' : ''">
                     <div class="msg-bubble">
 
                         <div class="msg-text" th:text="${message.content}">
@@ -187,7 +187,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
             <div class="msger-inputarea">
@@ -198,6 +197,8 @@
             </div>
     </div>
 <script>
+
+
     var socket = new SockJS('/ws-stomp');
     stompClient = Stomp.over(socket);
     var myprofileName = '[[${me.profileName}]]' ;
@@ -224,8 +225,21 @@
         stompClient.send("/pub/connect-status", {}, status.toString());
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+
+            var anchorElement = document.getElementById('scrollToAnchor');
+
+            if(anchorElement) {
+                anchorElement.scrollIntoView({behavior : 'auto'});
+            }
+
+        }
+
+    )
+
 
 </script>
+</div>
 </body>
 
 </html>

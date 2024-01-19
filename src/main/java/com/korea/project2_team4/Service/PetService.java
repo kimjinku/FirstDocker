@@ -80,4 +80,8 @@ public class PetService {
     public List<Pet> getMyLikePets(Profile me) {
         return this.petRepository.findAllByLikes(me.getProfileName());
     }
+
+    public List<Pet> getAllPetsBykw(String name) {
+        return this.petRepository.findAllBykw(name);
+    }
 }
