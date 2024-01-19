@@ -171,7 +171,7 @@ public class ChatService {
                 .map(MemberChatRoom::getMember)
                 .collect(Collectors.toList());
 
-        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderByTimeDesc(chatRoomId);
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderByTime(chatRoomId);
 
 
         Map<String, Object> chatData = new HashMap<>();
