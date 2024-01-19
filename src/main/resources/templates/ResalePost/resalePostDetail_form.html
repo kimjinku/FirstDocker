@@ -94,6 +94,7 @@
 <!--                                  th:text="${post.likeMembers.size()}"></span></i>-->
 <!--                    </div>-->
 <!--                    -->
+                    <a type="button" class="btn btn-primary" th:href="@{|/resalePost/payment|}">결제 페이지로</a>
                     <div class="col-md-auto"
                          th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                         <form th:action="@{|/resalePost/updateResalePost/${post.id}|}" method="get">
@@ -106,6 +107,34 @@
                         <form th:action="@{|/resalePost/deleteResalePost/${post.id}|}" method="post" onsubmit="return DeletePost();">
 <!--                            onsubmit="return DeletePost();"-->
                             <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제
+                            </button>
+                        </form>
+                    </div>
+<!--                    <button>결제(테스트)</button>-->
+<!--                    <script src ="https://cdn.iamport.krl/v1/iamport.js">-->
+<!--                        IMP.init("imp48502338")-->
+
+<!--const button = document.querySelector("button);-->
+
+<!--const onClickPay = async () =>{-->
+<!--IMP.request_pay({-->
+<!--pg: "kakaopay",-->
+<!--pay_method: "card",-->
+<!--amount: "1000",-->
+<!--name: "매운 라면",-->
+<!--merchant_uid: "ORD20231030-000001";-->
+<!--}-->
+<!--});-->
+<!--};-->
+<!--button.addEventListener("click",onClickPay);-->
+<!--                    </script>-->
+<!--                    <script src ="src/main/resources/main.js"></script>-->
+<!--&lt;!&ndash;                    src/main/resources/application.properties&ndash;&gt;-->
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/soldOut/${post.id}|}" method="post" onsubmit="return soldPost();">
+                            <!--                            onsubmit="return DeletePost();"-->
+                            <button type="submit" class="btn btn-primary" style="margin-right: 2rem">판매완료
                             </button>
                         </form>
                     </div>
@@ -142,6 +171,9 @@
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
         function DeletePost() {
             return confirm("게시글을 삭제하시겠습니까?");
+        }
+        function soldPost() {
+            return confirm("게시글을 판매 내역으로 옮기시겠습니까?");
         }
 
         //게시물 좋아요

@@ -218,5 +218,25 @@ public class ResalePostController {
         model.addAttribute("paging",postList);
         return "ResalePost/myMarket";
     }
+    @PostMapping("/soldOut/{id}")
+    public String soldOut(@PathVariable Long id) {
+
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        resalePost.setSoldItem(true);
+        resalePostService.save(resalePost);
+        return "redirect:/resalePost/main";
+    }
+    @GetMapping("/soldOutResalePosts")
+    public String soldOutResalePosts(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Member member = memberService.getMember(principal.getName());
+        Profile profile = member.getProfile();
+        Page<ResalePost> postList = resalePostService.soldOutResalePosts(page, profile);
+        model.addAttribute("paging", postList);
+        return "ResalePost/soldOut";
+    }
+    @GetMapping("/payment")
+    public String paymentPage(){
+        return "ResalePost/payment";
+    }
 }
 

@@ -58,7 +58,7 @@
                                                 </div>
                                             </div>
                                             <span id="voteCount" th:text="${'좋아요 : '+post.likeMembers.size()}"></span>
-                                            <p th:text="|${'댓글 : ' + #lists.size(post.comments)}|"></p>
+                                            <p th:text="${'댓글 : ' + #lists.size(post.comments.?[parentComment == null])}"></p>
                                         </div>
                                         <p style="margin-top: 10px; font-size: 17px; "
                                            th:if="${!post.getTagList().isEmpty()}">

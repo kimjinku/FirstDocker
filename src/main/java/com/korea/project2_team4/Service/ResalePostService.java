@@ -30,13 +30,13 @@ public class ResalePostService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
-        return resalePostRepository.findAll(pageable);
+        return resalePostRepository.findBySoldItemFalse(pageable);
     }
     public Page<ResalePost> resalePostsForSearch(int page, String kw){
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
-        return resalePostRepository.findByTitleOrContentContainingIgnoreCase(kw,pageable);
+        return resalePostRepository.findByTitleOrContentContainingAndNotSold(kw,pageable);
     }
 
     public ResalePost getResalePost(Long id) {
@@ -80,15 +80,23 @@ public class ResalePostService {
     public Page<ResalePost> getMyWishedResalePosts(int page, Profile profile) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return resalePostRepository.findByWishProfiles(profile, pageable);
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findByWishProfilesAndNotSold(profile, pageable);
     }
     public Page<ResalePost> getMyResellingResalePosts(int page, Profile profile) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return resalePostRepository.findBySeller(profile, pageable);
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findBySellerAndNotSold(profile, pageable);
     }
+    //판매 완료된 거래 게시글
+    public Page<ResalePost> soldOutResalePosts(int page, Profile profile) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findBySellerAndSold(profile, pageable);
+    }
+
 
 
 }

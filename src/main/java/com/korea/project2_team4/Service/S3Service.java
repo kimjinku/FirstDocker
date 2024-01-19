@@ -67,6 +67,7 @@ public class S3Service {
     public String generateChatImageName(String roomId, String sender, String time, String contentType) {
 
         String FileExtension = getFileExtension(contentType);
+        System.out.println(FileExtension);
         return "chatImg/"  + roomId + "/" + sender + time + "." + FileExtension;
     }
 
@@ -76,7 +77,7 @@ public class S3Service {
     public String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf("/");
         if (dotIndex >= 0) {
-            return fileName.substring(dotIndex);
+            return fileName.substring(dotIndex + 1);
         }
 
         throw new IllegalArgumentException("해당 파일의 확장자를 확인할 수 없습니다.");
