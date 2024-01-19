@@ -3,6 +3,7 @@ package com.korea.project2_team4.Service;
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 //import com.korea.project2_team4.Model.Dto.ChatRoom;
 import com.korea.project2_team4.Model.Dto.ChatImageDto;
+import com.korea.project2_team4.Model.Dto.ChatMessageResponseDto;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
 import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.Member;
@@ -122,7 +123,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void saveChatMessage(ChatDTO chatDTO, Principal principal) {
+    public ChatMessageResponseDto saveChatMessage(ChatDTO chatDTO, Principal principal) {
         Member sender = memberRepository.findByUserName(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
@@ -152,6 +153,13 @@ public class ChatService {
 
         chatMessageRepository.save(chatMessage);
 
+        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.builder()
+                .message(chatDTO.getMessage())
+                .sender(chatDTO.getSender())
+                .time(chatDTO.getTime())
+                .image(img)
+                .build();
+        return chatMessageResponseDto;
     }
 
     public Map<String, Object> showChatDate(Long chatRoomId) {
@@ -163,7 +171,7 @@ public class ChatService {
                 .map(MemberChatRoom::getMember)
                 .collect(Collectors.toList());
 
-        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderByTime(chatRoomId);
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderByTimeDesc(chatRoomId);
 
 
         Map<String, Object> chatData = new HashMap<>();

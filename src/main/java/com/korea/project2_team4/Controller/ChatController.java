@@ -1,7 +1,9 @@
 package com.korea.project2_team4.Controller;
 
 import com.korea.project2_team4.Model.Dto.ChatDTO;
+import com.korea.project2_team4.Model.Dto.ChatMessageResponseDto;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
+import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
 import com.korea.project2_team4.Service.ChatService;
 import com.korea.project2_team4.Service.MemberService;
@@ -80,17 +82,12 @@ public class ChatController {
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
 
-        if (chatDTO.getImage() != null) {
-            System.out.println(Arrays.toString(chatDTO.getImage().getData()));
-            System.out.println(chatDTO.getImage().getContentType());
-        }
-
         try {
 
             chatDTO.setSender(principal.getName());
 
-            chatService.saveChatMessage(chatDTO, principal);
-            template.convertAndSend("/sub/chat/chatRoom/id/" + chatDTO.getRoomId(), chatDTO);
+            ChatMessageResponseDto chatMessageResponseDto = chatService.saveChatMessage(chatDTO, principal);
+            template.convertAndSend("/sub/chat/chatRoom/id/" + chatDTO.getRoomId(), chatMessageResponseDto);
         } catch (Exception e) {
             e.printStackTrace();
         }
