@@ -494,6 +494,7 @@ public class MemberController {
                 kakaoTokenRequest,
                 String.class
         );
-        return "카카오 토큰 요청에 대한 응답 : " + response;
+//        return "카카오 토큰 요청에 대한 응답 : " + response; -> 헤더랑 바디 다 뜸. 헤더는 별로 쓸모없음. 바디만 받기
+        return "카카오 토큰 요청에 대한 응답 : " + response.getBody();
     }
 }
