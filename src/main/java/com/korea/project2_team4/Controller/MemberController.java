@@ -18,15 +18,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
 import java.sql.SQLException;
@@ -453,4 +455,44 @@ public class MemberController {
         return "redirect:/member/signup";
     }
 
+    ////////////////////////////선영카카오로그인테스트///////////////////////////////////////////
+
+//    @GetMapping("oauth/kakao/callback{code}")
+//    public String kakaologin(@PathVariable String code) {
+//        System.out.println("코드:");
+//        System.out.print(code);
+//        return "Member/kakaologin";
+//    }
+
+    @GetMapping("/oauth/kakao/callback")
+    public @ResponseBody String kakaocallback(String code) {
+        System.out.println("코드 : ");
+        System.out.println(code);
+
+
+        RestTemplate rt = new RestTemplate();
+        //HttpHeader오브젝트 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+
+        //HttpBody 오브젝트 생성
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type","authorization_code");
+        params.add("client_id","6c129972ef373b5f9b8f5dd02ecfc5c6");
+        params.add("redirect_uri","http://localhost:8888/member/oauth/kakao/callback");
+        params.add("code",code);
+
+        //header와body를 하나의 오브젝트에 담기 --> 밑에 exchange라는 메서드가, httpEntity라는 오브젝트를 인수로 받기때문
+        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
+                new HttpEntity<>(params,headers);
+
+        //http요청하기 post방식, response변수의 응답 반음.
+        ResponseEntity<String> response = rt.exchange(
+                "https://kauth.kakao.com/oauth/token", //post요청보낼 주소
+                HttpMethod.POST,
+                kakaoTokenRequest,
+                String.class
+        );
+        return "카카오 토큰 요청에 대한 응답 : " + response;
+    }
 }
