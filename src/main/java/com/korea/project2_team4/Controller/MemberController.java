@@ -1,13 +1,15 @@
 package com.korea.project2_team4.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.project2_team4.Config.OAuth2.OAuth2UserInfo;
-import com.korea.project2_team4.Model.Entity.Member;
-import com.korea.project2_team4.Model.Entity.Post;
-import com.korea.project2_team4.Model.Entity.Tag;
+import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
 import com.korea.project2_team4.Model.Form.MemberCreateForm;
 import com.korea.project2_team4.Model.Form.MemberResetForm;
+import com.korea.project2_team4.Model.Entity.KaKaoProfile;
 import com.korea.project2_team4.Service.MemberService;
+import com.korea.project2_team4.Service.PrincipalOauth2UserService;
 import com.korea.project2_team4.Service.ReportService;
 import com.korea.project2_team4.Service.TagService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -494,7 +496,53 @@ public class MemberController {
                 kakaoTokenRequest,
                 String.class
         );
+
+        //받은 응답 오브젝트로 담기. Json데이터를 자바 오브젝트에서 처리하기 위해서.
+        // 라이브러리 사용 -> Gson,Json Simple, ObjectMapper등등, 마지막거씀.
+        ObjectMapper objectMapper = new ObjectMapper();
+        OauthToken oauthToken = new OauthToken();
+
+        try { //parsing할때 오류 막기위해 try catch로 감싸야함.
+            oauthToken = objectMapper.readValue(response.getBody(), OauthToken.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+//
+//        System.out.println("카카오 액세스 토큰 : "+ oauthToken.getAccess_token());
+
+        RestTemplate rt2 = new RestTemplate();
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.add("Authorization","Bearer " + oauthToken.getAccess_token());
+        headers2.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest =
+                new HttpEntity<>(headers2);
+
+        ResponseEntity<String> response2 = rt2.exchange(
+                "https://kapi.kakao.com/v2/user/me", //post요청보낼 주소
+                HttpMethod.POST,
+                kakaoProfileRequest,
+                String.class
+        );
+        System.out.println(response2.getBody());
+
+
+        //받은 응답 오브젝트로 담기. Json데이터를 자바 오브젝트에서 처리하기 위해서.
+        // 라이브러리 사용 -> Gson,Json Simple, ObjectMapper등등, 마지막거씀.
+        ObjectMapper objectMapper2 = new ObjectMapper();
+        KaKaoProfile kaKaoProfile = new KaKaoProfile();
+
+        try { //parsing할때 오류 막기위해 try catch로 감싸야함.
+            kaKaoProfile = objectMapper.readValue(response2.getBody(), KaKaoProfile.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("카카오 아이디 : " + kaKaoProfile.getId());
+//        System.out.println("카카오 닉네임 : " + kakaoProfile.getProperties().getNickname());
+
 //        return "카카오 토큰 요청에 대한 응답 : " + response; -> 헤더랑 바디 다 뜸. 헤더는 별로 쓸모없음. 바디만 받기
-        return "카카오 토큰 요청에 대한 응답 : " + response.getBody();
+//        return "카카오 토큰 요청에 대한 응답 : " + response.getBody();
+        return response2.getBody();
     }
 }
