@@ -12,6 +12,8 @@ public class ResalePostForm {
 
     private String title;
 
+    private String name;
+
     private String content;
 
     private String price;
