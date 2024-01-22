@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Controller
@@ -110,10 +111,13 @@ public class ResalePostController {
 
         Member sitemember = this.memberService.getMember(principal.getName());
         resalePost.setTitle(resalePostForm.getTitle());
+        resalePost.setName(resalePostForm.getName());
         resalePost.setPrice(resalePostForm.getPrice());
         resalePost.setContent(resalePostForm.getContent());
         resalePost.setCategory(resalePostForm.getCategory());
         resalePost.setCreateDate(LocalDateTime.now());
+        String orderId = resalePostService.makeRandomCode(resalePost.getCreateDate());
+        resalePost.setOrderId(orderId);
         resalePost.setSeller(sitemember.getProfile());
         if (imageFiles != null && !imageFiles.isEmpty()) {
             imageService.uploadResalePostImage(imageFiles, resalePost);
@@ -184,12 +188,12 @@ public class ResalePostController {
         ResalePost existingPost = resalePostService.getResalePost(id);
 
         if (existingPost != null) {
+            existingPost.setName(updatePost.getName());
             existingPost.setTitle(updatePost.getTitle());
             existingPost.setContent(updatePost.getContent());
             existingPost.setModifyDate(LocalDateTime.now());
             existingPost.setCategory(updatePost.getCategory());
             existingPost.setPrice(updatePost.getPrice());
-
             if (imageFiles != null && !imageFiles.isEmpty()) {
                 imageService.uploadResalePostImage(imageFiles, existingPost);
             }

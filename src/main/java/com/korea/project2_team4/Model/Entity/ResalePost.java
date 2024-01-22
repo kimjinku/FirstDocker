@@ -48,5 +48,9 @@ public class ResalePost {
 
     private boolean soldItem;
 
+    private String name;
+
+    private String orderId;
+
 }
 

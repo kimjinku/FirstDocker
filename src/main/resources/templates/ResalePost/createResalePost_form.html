@@ -19,6 +19,10 @@
                 <small class="text-danger" id="title-error"></small>
             </div>
             <div class="mb-3">
+                <label for="title" class="form-label">상품명</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="등록하실 상품명을 입력해 주세요" required>
+            </div>
+            <div class="mb-3">
                 <label for="content" class="form-label">내용</label>
                 <textarea class="form-control" id="content" th:field="*{content}" rows="3" placeholder="내용을 입력해 주세요" required></textarea>
             </div>

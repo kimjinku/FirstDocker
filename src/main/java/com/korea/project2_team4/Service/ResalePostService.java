@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Builder
 @Service
@@ -96,7 +97,16 @@ public class ResalePostService {
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
         return resalePostRepository.findBySellerAndSold(profile, pageable);
     }
-
+    public String makeRandomCode(LocalDateTime now){
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        int day = now.getDayOfMonth();
+        int hour = now.getHour();
+        int minute = now.getMinute();
+        int second = now.getSecond();
+        String randomCode = UUID.randomUUID().toString();
+        return String.format("%04d%02d%02d%02d%02d%02d" + randomCode, year, month, day, hour, minute, second);
+    }
 
 
 }
