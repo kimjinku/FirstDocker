@@ -37,6 +37,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     //OAuth 로그인 생성자
     public PrincipalDetails(Member member, Map<String, Object> attributes) {
         this.member = member;
+        this.profile = member.getProfile();
         this.attributes = attributes;
         this.isBlocked = false;
         this.unblockDate = null;

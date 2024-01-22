@@ -1,6 +1,8 @@
 package com.korea.project2_team4.Service;
 
 import com.korea.project2_team4.Config.OAuth2.GoogleUserInfo;
+
+import com.korea.project2_team4.Config.OAuth2.KakaoUserInfo;
 import com.korea.project2_team4.Config.OAuth2.NaverUserInfo;
 import com.korea.project2_team4.Config.OAuth2.OAuth2UserInfo;
 import com.korea.project2_team4.Config.PrincipalDetails;
@@ -36,15 +38,13 @@ public class  PrincipalOauth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
 
-
-
         //"registraionId" 로 어떤 OAuth 로 로그인 했는지 확인 가능(google,naver등)
         System.out.println("getClientRegistration: " + userRequest.getClientRegistration());
         System.out.println("getAccessToken: " + userRequest.getAccessToken().getTokenValue());
         System.out.println("getAttributes: " + super.loadUser(userRequest).getAttributes());
         //구글 로그인 버튼 클릭 -> 구글 로그인창 -> 로그인 완료 -> code를 리턴(OAuth-Clien라이브러리가 받아줌) -> code를 통해서 AcssToken요청(access토큰 받음)
         // => "userRequest"가 감고 있는 정보
-        //회원 프로필을 받아야하는데 여기서 사용되는것이 "loadMember" 함수이다 -> 구글 로 부터 회원 프로필을 받을수 있다.
+        //회원 프로필을 받아야하는데 여기서 사용되는것이 "loadUser" 함수이다 -> 구글 로 부터 회원 프로필을 받을수 있다.
 
 
         /**
@@ -58,10 +58,9 @@ public class  PrincipalOauth2UserService extends DefaultOAuth2UserService {
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
             oAuth2UserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
         }
-//            else if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
-//                oAuth2UserInfo = new KakaoUserInfo((Map)oAuth2User.getAttributes().get("kakao_account"),
-//                        String.valueOf(oAuth2User.getAttributes().get("id")));
-//            }
+        else if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
+            oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
+        }
         else {
             System.out.println("지원하지 않은 로그인 서비스 입니다.");
         }
@@ -70,8 +69,8 @@ public class  PrincipalOauth2UserService extends DefaultOAuth2UserService {
         String providerId = oAuth2UserInfo.getProviderId();
         String username = provider + "_" + providerId;
 
-        Member member = memberService.getMember(username);
-        if(member != null){
+        Member member = memberService.getMember(username); // 이미가입된회원인지 조회
+        if(member != null){ //가입된 회원일시, 차단유무 확인
             if (member.isBlocked() && (member.getUnblockDate() == null || LocalDateTime.now().isBefore(member.getUnblockDate()))) {
                 String msg = member.getUnblockDate() + " 까지 차단된 아이디입니다";
                 // HttpSession을 가져옴
@@ -81,6 +80,8 @@ public class  PrincipalOauth2UserService extends DefaultOAuth2UserService {
                 throw new LockedException("User is blocked until " + member.getUnblockDate());
             }
         }
+
+
         //처음 서비스를 이용한 회원일 경우
         if (member == null) {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();

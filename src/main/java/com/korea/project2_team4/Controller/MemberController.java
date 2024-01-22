@@ -1,13 +1,20 @@
 package com.korea.project2_team4.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.project2_team4.Config.OAuth2.OAuth2UserInfo;
+import com.korea.project2_team4.Config.UserRole;
+import com.korea.project2_team4.KakaoLogin.KaKaoProfile;
+import com.korea.project2_team4.KakaoLogin.OauthToken;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.Post;
 import com.korea.project2_team4.Model.Entity.Tag;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
 import com.korea.project2_team4.Model.Form.MemberCreateForm;
 import com.korea.project2_team4.Model.Form.MemberResetForm;
+import com.korea.project2_team4.Repository.MemberRepository;
 import com.korea.project2_team4.Service.MemberService;
+import com.korea.project2_team4.Service.ProfileService;
 import com.korea.project2_team4.Service.ReportService;
 import com.korea.project2_team4.Service.TagService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +24,6 @@ import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,8 +37,8 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
-import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8888")
@@ -47,8 +53,8 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private HttpSession session;
-
-
+    private final MemberRepository memberRepository; //카카오로그인 테스트용. 추후 삭제 예정. 황선영추가
+    private final ProfileService profileService; //카카오로그인 테스트용. 추후 삭제 예정. 황선영추가
     @GetMapping("/signup")
     public String signup(MemberCreateForm memberCreateForm) {
 
@@ -71,7 +77,7 @@ public class MemberController {
         //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
         if (expectedAuthenticationCode.equals(authenticationCode)) {
             // 검증에 성공하면 세션에서 인증 코드 제거
-            sessionStatus.setComplete();
+//            sessionStatus.setComplete();
 
             if (bindingResult.hasErrors()) {
                 return "Member/signup_form";
@@ -232,21 +238,21 @@ public class MemberController {
                          String authenticationCode,
                          SessionStatus sessionStatus) {
 
-        HttpSession session = request.getSession();
+//        HttpSession session = request.getSession();
         OAuth2UserInfo socialLogin = (OAuth2UserInfo) session.getAttribute("SOCIAL_LOGIN");
 
-        // 세션에서 authenticationCode 속성 가져오기
-        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
-
-        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
-        if (expectedAuthenticationCode == null) {
-            return "redirect:/member/signup/social";
-        }
-
-        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
-        if (expectedAuthenticationCode.equals(authenticationCode)) {
-            // 검증에 성공하면 세션에서 인증 코드 제거
-            sessionStatus.setComplete();
+//        // 세션에서 authenticationCode 속성 가져오기
+//        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
+//
+//        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
+//        if (expectedAuthenticationCode == null) {
+//            return "redirect:/member/signup/social";
+//        }
+//
+//        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
+//        if (expectedAuthenticationCode.equals(authenticationCode)) {
+//            // 검증에 성공하면 세션에서 인증 코드 제거
+//            sessionStatus.setComplete();
 
             if (socialLogin != null) {
                 memberCreateForm.setNickName(socialLogin.getName());
@@ -299,8 +305,8 @@ public class MemberController {
             return "redirect:/";
         }
 
-        return "redirect:/member/signup/social";
-    }
+//        return "redirect:/member/signup/social";
+//    }
 
     @GetMapping("/member")
     public String saveDefaultAdmin() throws Exception {
@@ -465,35 +471,102 @@ public class MemberController {
 //        return "Member/kakaologin";
 //    }
 
-    @GetMapping("/oauth/kakao/callback")
-    public @ResponseBody String kakaocallback(String code) {
-        System.out.println("코드 : ");
-        System.out.println(code);
+//    @GetMapping("/oauth/kakao/callback")
+//    public @ResponseBody String kakaocallback(String code) {
+//        System.out.println("코드 : ");
+//        System.out.println(code);
+//
+//
+//        RestTemplate rt = new RestTemplate();
+//        //HttpHeader오브젝트 생성
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+//
+//        //HttpBody 오브젝트 생성
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//        params.add("grant_type","authorization_code");
+//        params.add("client_id","6c129972ef373b5f9b8f5dd02ecfc5c6");
+//        params.add("redirect_uri","http://localhost:8888/member/oauth/kakao/callback");
+//        params.add("code",code);
+//
+//        //header와body를 하나의 오브젝트에 담기 --> 밑에 exchange라는 메서드가, httpEntity라는 오브젝트를 인수로 받기때문
+//        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
+//                new HttpEntity<>(params,headers);
+//
+//        //http요청하기 post방식, response변수의 응답 반음.
+//        ResponseEntity<String> response = rt.exchange(
+//                "https://kauth.kakao.com/oauth/token", //post요청보낼 주소
+//                HttpMethod.POST,
+//                kakaoTokenRequest,
+//                String.class
+//        );
+////        return "카카오 토큰 요청에 대한 응답 : " + response;
+//        //받은 응답 오브젝트로 담기. Json데이터를 자바 오브젝트에서 처리하기 위해서.
+//        // 라이브러리 사용 -> Gson,Json Simple, ObjectMapper등등, 마지막거씀.
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        OauthToken oauthToken = new OauthToken();
+//
+//        try { //parsing할때 오류 막기위해 try catch로 감싸야함.
+//            oauthToken = objectMapper.readValue(response.getBody(), OauthToken.class);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+////
+//        System.out.println("카카오 액세스 토큰 : "+ oauthToken.getAccess_token());
+//
+//        RestTemplate rt2 = new RestTemplate();
+//        HttpHeaders headers2 = new HttpHeaders();
+//        headers2.add("Authorization","Bearer " + oauthToken.getAccess_token());
+//        headers2.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+//
+//        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest =
+//                new HttpEntity<>(headers2);
+//
+//        ResponseEntity<String> response2 = rt2.exchange(
+//                "https://kapi.kakao.com/v2/user/me", //post요청보낼 주소
+//                HttpMethod.POST,
+//                kakaoProfileRequest,
+//                String.class
+//        );
+//        System.out.println(response2.getBody());
+//
+//
+//        //받은 응답 오브젝트로 담기. Json데이터를 자바 오브젝트에서 처리하기 위해서.
+//        // 라이브러리 사용 -> Gson,Json Simple, ObjectMapper등등, 마지막거씀.
+//        ObjectMapper objectMapper2 = new ObjectMapper();
+//        KaKaoProfile kaKaoProfile = new KaKaoProfile();
+//
+//        try { //parsing할때 오류 막기위해 try catch로 감싸야함.
+//            kaKaoProfile = objectMapper.readValue(response2.getBody(), KaKaoProfile.class);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println("카카오 아이디 : " + kaKaoProfile.getId());
+//        System.out.println("카카오 닉네임 : " + kaKaoProfile.getProperties().nickname);
+//
+//        Member member = new Member();
+//        member.setUserName(kaKaoProfile.getProperties().nickname);
+//        member.setPassword(passwordEncoder.encode("1234"));
+//
+//        member.setEmail("kakao@kakao");
+//        member.setCreateDate(LocalDateTime.now());
+//        member.setRole(UserRole.USER.getValue());
+//
+//        member.setRealName(kaKaoProfile.getProperties().nickname);
+//        member.setNickName(kaKaoProfile.getProperties().nickname);
+//        member.setPhoneNum("000000");
+//        member.setSubscribed(false);
+//
+//        memberRepository.save(member);
+//        member.setProfile(profileService.setDefaultProfile(member));
+//
+//
+////        return "카카오 토큰 요청에 대한 응답 : " + response; -> 헤더랑 바디 다 뜸. 헤더는 별로 쓸모없음. 바디만 받기
+////        return "카카오 토큰 요청에 대한 응답 : " + response.getBody();
+////        return response2.getBody(); --> 화면에 사용자정보 확인할려고 해논거
+//
+//        return "redirect:/";
+//    }
 
-
-        RestTemplate rt = new RestTemplate();
-        //HttpHeader오브젝트 생성
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
-
-        //HttpBody 오브젝트 생성
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type","authorization_code");
-        params.add("client_id","6c129972ef373b5f9b8f5dd02ecfc5c6");
-        params.add("redirect_uri","http://localhost:8888/member/oauth/kakao/callback");
-        params.add("code",code);
-
-        //header와body를 하나의 오브젝트에 담기 --> 밑에 exchange라는 메서드가, httpEntity라는 오브젝트를 인수로 받기때문
-        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
-                new HttpEntity<>(params,headers);
-
-        //http요청하기 post방식, response변수의 응답 반음.
-        ResponseEntity<String> response = rt.exchange(
-                "https://kauth.kakao.com/oauth/token", //post요청보낼 주소
-                HttpMethod.POST,
-                kakaoTokenRequest,
-                String.class
-        );
-        return "카카오 토큰 요청에 대한 응답 : " + response;
-    }
 }
