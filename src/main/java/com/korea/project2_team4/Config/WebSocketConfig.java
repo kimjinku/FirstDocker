@@ -29,7 +29,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS(); // SockJS를 연결한다는 설정입니다.
     }
 
-
     // 간단한 설명
     // WebSocketConfig 는 엔드포인트를 설정하기 위해 만든 config 클래스입니다.
     // 여기서 엔드포인트는 통신의 도착지점을 말합니다.

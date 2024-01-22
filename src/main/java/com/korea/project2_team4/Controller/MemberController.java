@@ -1,13 +1,18 @@
 package com.korea.project2_team4.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.project2_team4.Config.OAuth2.OAuth2UserInfo;
+import com.korea.project2_team4.Config.UserRole;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.Post;
 import com.korea.project2_team4.Model.Entity.Tag;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
 import com.korea.project2_team4.Model.Form.MemberCreateForm;
 import com.korea.project2_team4.Model.Form.MemberResetForm;
+import com.korea.project2_team4.Repository.MemberRepository;
 import com.korea.project2_team4.Service.MemberService;
+import com.korea.project2_team4.Service.ProfileService;
 import com.korea.project2_team4.Service.ReportService;
 import com.korea.project2_team4.Service.TagService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,20 +22,21 @@ import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
-import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8888")
@@ -45,8 +51,8 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private HttpSession session;
-
-
+    private final MemberRepository memberRepository; //카카오로그인 테스트용. 추후 삭제 예정. 황선영추가
+    private final ProfileService profileService; //카카오로그인 테스트용. 추후 삭제 예정. 황선영추가
     @GetMapping("/signup")
     public String signup(MemberCreateForm memberCreateForm) {
 
@@ -69,7 +75,7 @@ public class MemberController {
         //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
         if (expectedAuthenticationCode.equals(authenticationCode)) {
             // 검증에 성공하면 세션에서 인증 코드 제거
-            sessionStatus.setComplete();
+//            sessionStatus.setComplete();
 
             if (bindingResult.hasErrors()) {
                 return "Member/signup_form";
@@ -230,21 +236,21 @@ public class MemberController {
                          String authenticationCode,
                          SessionStatus sessionStatus) {
 
-        HttpSession session = request.getSession();
+//        HttpSession session = request.getSession();
         OAuth2UserInfo socialLogin = (OAuth2UserInfo) session.getAttribute("SOCIAL_LOGIN");
 
-        // 세션에서 authenticationCode 속성 가져오기
-        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
-
-        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
-        if (expectedAuthenticationCode == null) {
-            return "redirect:/member/signup/social";
-        }
-
-        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
-        if (expectedAuthenticationCode.equals(authenticationCode)) {
-            // 검증에 성공하면 세션에서 인증 코드 제거
-            sessionStatus.setComplete();
+//        // 세션에서 authenticationCode 속성 가져오기
+//        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
+//
+//        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
+//        if (expectedAuthenticationCode == null) {
+//            return "redirect:/member/signup/social";
+//        }
+//
+//        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
+//        if (expectedAuthenticationCode.equals(authenticationCode)) {
+//            // 검증에 성공하면 세션에서 인증 코드 제거
+//            sessionStatus.setComplete();
 
             if (socialLogin != null) {
                 memberCreateForm.setNickName(socialLogin.getName());
@@ -297,8 +303,8 @@ public class MemberController {
             return "redirect:/";
         }
 
-        return "redirect:/member/signup/social";
-    }
+//        return "redirect:/member/signup/social";
+//    }
 
     @GetMapping("/member")
     public String saveDefaultAdmin() throws Exception {
@@ -453,5 +459,4 @@ public class MemberController {
         memberService.phoneNumberCheck(to, session);
         return "redirect:/member/signup";
     }
-
 }

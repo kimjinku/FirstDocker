@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Builder
@@ -95,7 +96,8 @@ public class ProfileService {
     public Profile setDefaultProfile(Member member) {
         Profile profile = new Profile();
         profile.setMember(member);
-        profile.setProfileName(member.getNickName());
+        String randomString = UUID.randomUUID().toString();
+        profile.setProfileName(member.getNickName()+randomString);
         profile.setContent(" ");
 
         this.profileRepository.save(profile);
