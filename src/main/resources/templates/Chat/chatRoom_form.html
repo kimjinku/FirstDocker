@@ -1,50 +1,58 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
-<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
-    <div class="container">
-        <div class="row">
+<div layout:fragment="content" style='height: 75%'>
+    <div style="width: 90%; height: 100%; margin: 0 auto; text-align: center;">
+        <div style="height: 10%;">
+            <span style="display: none" th:text="${chatRoomId}" id="chatRoomId" name="chatRoomId"></span>
+            <span style="display: none" th:text="${#authentication.name}" id="username" name="username"></span>
+            <h2 class="pt-2 mt-5 mb-2">채팅방: <span th:text="${chatRoomName}"></span></h2>
+        </div>
+        <div style="width: 100%; height: 90%; display: flex; ">
+            <!--메인 채팅창-->
+            <div style="width: 65%; margin-right: 5%; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+                <div style="margin-bottom: 20px; width: 100%; height: 85%;">
+                    <div id="chatMessages"
+                         style="width: 100%; height: 100%; overflow-y: auto; border: 1px solid #ccc; border-radius: 10px; padding: 20px; ">
+                        <div class="mb-2" th:each="message : ${messages}" style="display: flex; flex-direction: row; width: 100%;">
+                            <div th:if="${!(message.sender.userName).equals(#authentication.name)}" style="width: 60px; height: 60px; background-color: black; border-radius: 50%;">
+<!--                                아직 유저 프로필 없으니 비활성화-->
+<!--                                <img th:src="${message.sender.image}" alt="">-->
+                            </div>
 
-            <div class="col">
+                            <div th:if="${(message.sender.userName).equals(#authentication.name)}"
+                                 style="display: flex; flex-direction: column; text-align: right; margin-right: 10px; justify-content: flex-end; align-items: flex-end; width: 100%;">
+                                <img th:src="${message.image}" alt="" style="border-radius: 10px; max-width: 150px; max-height: 150px;">
+                                <div style="margin: 10px 0;">
+                                    <span th:text="${#temporals.format(message.time, (message.time.hour >= 12 ? '오후 ' : '오전 ') + 'h:mm:ss')}"></span>
+                                    <span style="background-color: yellow; border:none; border-radius: 10px; padding: 5px;" th:if="${message.message != ''}" th:text="${message.message}"></span>
+                                </div>
+                            </div>
 
-            </div>
-<!--            메인 채팅창-->
-            <div class="col">
-                <div class="d-flex justify-content-center">
-                    <h2 class="pt-2 mt-5 mb-5">채팅방: <span th:text="${chatRoomName}"></span>
-                        <span style="display: none" th:text="${chatRoomId}" id="chatRoomId" name="chatRoomId"></span></h2>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <!-- 채팅방 ID와 참여자 수 표시 -->
-                </div>
-                <div class="d-flex justify-content-center">
-                    <h2>채팅 메시지</h2>
-                </div>
-                <div class="d-flex justify-content-center" style="margin-bottom: 30px;">
-                    <div id="chatMessages" style="width: 500px; height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; display: flex; flex-direction: column-reverse;">
-
-                        <div class="mb-2" th:each="message : ${messages}">
-                            <img th:src="${message.image}" alt="">
-                            <span  class="text-primary" th:text="${message.sender.userName + ': ' + message.message
-                             + ' (' + #temporals.format(message.time, (message.time.hour >= 12 ? '오후 ' : '오전 ') + 'h:mm:ss') + ')'}"></span>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <form id="sendMessageForm" class="d-flex">
-                                <input class="form-control" type="text" id="message" name="message" placeholder="메시지 입력하기">
-                                <button class="btn btn-primary" type="submit">전송</button>
-                                <button class="btn btn-primary" type="button" onclick="document.getElementById('imageUpload').click()">첨부</button>
-                            </form>
-                            <input type="file" id="imageUpload" name="image" accept="image/*" onchange="previewImage()" style="display: none;">
-                            <div id="imagePreview"></div>
+                            <div th:if="${!(message.sender.userName).equals(#authentication.name)}" style="display: flex; flex-direction: column; text-align: left; margin-left: 10px;">
+                                <span th:text="${message.sender.userName}"></span>
+                                <img th:src="${message.image}" alt="" style="border-radius: 10px; max-width: 150px; max-height: 150px;">
+                                <div style="margin: 10px 0;">
+                                    <span style="background-color: white; border-radius: 10px; padding: 5px;" th:if="${message.message != ''}" th:text="${message.message}"></span>
+                                    <span th:text="${#temporals.format(message.time, (message.time.hour >= 12 ? '오후 ' : '오전 ') + 'h:mm:ss')}"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="row" style="margin: 0 10px">
+                    <div class="col-12">
+                        <form id="sendMessageForm" class="d-flex">
+                            <input class="form-control" type="text" id="message" name="message" placeholder="메시지 입력하기">
+                            <button class="btn btn-primary" type="submit">전송</button>
+                            <button class="btn btn-primary" type="button" onclick="document.getElementById('imageUpload').click()">첨부</button>
+                        </form>
+                        <input type="file" id="imageUpload" name="image" accept="image/*" onchange="previewImage()" style="display: none;">
+                        <div id="imagePreview"></div>
+                    </div>
+                </div>
+
             </div>
-<!--            참여자 목록-->
-            <div class="col">
+            <!--참여자 목록-->
+            <div style="width: 30%; background-color: rgba(255, 255, 255, 0.4);" >
                 <div class="d-flex flex-column mt-5">
                     <div class="d-flex justify-content-center mt-5">
                         <h2>참여자 목록</h2>
@@ -66,7 +74,7 @@
         const id = location.pathname.split("/").pop();
 
         const chatRoomId = document.getElementById('chatRoomId').textContent;
-
+        const username = document.getElementById('username').textContent;
         // WebSocket 연결
         var socket = new SockJS('/ws-stomp');
         var stompClient = Stomp.over(socket);
@@ -150,16 +158,92 @@
         // 채팅 메시지를 목록에 추가
         function addMessageToChat(sender, message, image, time) {
             var messageItem = document.createElement('div');
-            if (image) {
-                var imageElement = document.createElement('img');
-                imageElement.src = image;
-                messageItem.appendChild(imageElement);
+            if (sender.userName != username) {
+                messageItem.style.display = 'flex';
+                messageItem.style.flexDirection = 'column';
+                messageItem.style.textAlign = 'right';
+                messageItem.style.marginRight = '10px';
+                messageItem.style.justifyContent = 'flex-end';
+                messageItem.style.alignItems = 'flex-end';
+                messageItem.style.width = '100%';
+
+                if (image) {
+                    var imageElement = document.createElement('img');
+                    imageElement.src = image;
+                    imageElement.style.borderRadius = '10px';
+                    imageElement.style.maxWidth = '150px';
+                    imageElement.style.maxHeight = '150px';
+                    messageItem.appendChild(imageElement);
+                }
+
+                var messageDiv = document.createElement('div');
+                messageDiv.style.margin = '10px 0';
+
+                if (message === '') {
+                    messageDiv.innerHTML = '<span>' + time + '</span>';
+                }
+                else {
+                    messageDiv.innerHTML =  '<span>' + time + '</span>' +
+                    '<span style="background-color: yellow; border:none; border-radius: 10px; padding: 5px;">' + message + '</span>' ;
+                }
+                messageItem.appendChild(messageDiv);
+                chatMessages.appendChild(messageItem);
             }
-            var messageSpan = document.createElement('span');
-            messageSpan.textContent = sender + ': ' + message + ' (' + time + ')';
-            messageItem.appendChild(messageSpan);
-            messageItem.style.marginBottom = '10px';
-            chatMessages.insertBefore(messageItem, chatMessages.firstChild);
+            else {
+                var profileDiv = document.createElement('div');
+                profileDiv.style.width = '60px';
+                profileDiv.style.height = '60px';
+                profileDiv.style.backgroundColor = 'black';
+                profileDiv.style.borderRadius = '50%';
+
+                // 아직 유저 프로필이 없으니 비활성화
+                // var profileImage = document.createElement('img');
+                // profileImage.src = sender.image;
+                // profileDiv.appendChild(profileImage);
+
+                chatMessages.appendChild(profileDiv);
+
+                messageItem.style.display = 'flex';
+                messageItem.style.flexDirection = 'column';
+                messageItem.style.textAlign = 'left';
+                messageItem.style.marginLeft = '10px';
+
+                if (image) {
+                    var imageElement = document.createElement('img');
+                    imageElement.src = image;
+                    imageElement.style.borderRadius = '10px';
+                    imageElement.style.maxWidth = '150px';
+                    imageElement.style.maxHeight = '150px';
+                    messageItem.appendChild(imageElement);
+                }
+
+
+                var messageDiv = document.createElement('div');
+                messageDiv.style.margin = '10px 0';
+                if (message === '') {
+                    messageDiv.innerHTML = '<span>' + time + '</span>';
+                }
+                else {
+                    messageDiv.innerHTML = '<span style="background-color: white; border-radius: 10px; padding: 5px;">' + message + '</span>' +
+                            '<span>' + time + '</span>';
+                }
+
+                messageItem.appendChild(messageDiv);
+                chatMessages.appendChild(messageItem);
+
+            }
+
+<!--            var messageItem = document.createElement('div');-->
+<!--            if (image) {-->
+<!--                var imageElement = document.createElement('img');-->
+<!--                imageElement.src = image;-->
+<!--                messageItem.appendChild(imageElement);-->
+<!--            }-->
+<!--            var messageSpan = document.createElement('span');-->
+<!--            messageSpan.textContent = sender + ': ' + message + ' (' + time + ')';-->
+<!--            messageItem.appendChild(messageSpan);-->
+<!--            messageItem.style.marginBottom = '10px';-->
+<!--            chatMessages.appendChild(messageItem);-->
         }
 
         function previewImage() {

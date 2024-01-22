@@ -89,7 +89,6 @@ public class ChatService {
         return chatRoom;
     }
 
-
     public void enterChatRoom(Long roomId, String password, Principal principal) {
 
         Member member = memberRepository.findByUserName(principal.getName())
@@ -171,7 +170,7 @@ public class ChatService {
                 .map(MemberChatRoom::getMember)
                 .collect(Collectors.toList());
 
-        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderByTimeDesc(chatRoomId);
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderByTime(chatRoomId);
 
 
         Map<String, Object> chatData = new HashMap<>();

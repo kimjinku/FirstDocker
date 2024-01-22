@@ -2,32 +2,33 @@ package com.korea.project2_team4.Config.OAuth2;
 
 import java.util.Map;
 
-public class GoogleUserInfo implements OAuth2UserInfo {
+public class KakaoUserInfo implements OAuth2UserInfo {
     private Map<String, Object> attributes;
 
-    public GoogleUserInfo(Map<String, Object> attributes) {
+    public KakaoUserInfo(Map<String, Object> attributes) {
 
         this.attributes = attributes;
     }
 
     @Override
     public String getProviderId() {
-        return String.valueOf(attributes.get("sub"));
-    } //액세스토큰을 문자열로 전환해주는?
-
-    @Override
-    public String getProvider() {
-        return "GOOGLE";
+        return attributes.get("id").toString();
+//        return String.valueOf(attributes.get("sub"));
     }
 
     @Override
+    public String getProvider() {
+        return "kakao";
+    }
+
+    @Override //스프링시큐리티 OAuth에서 필수요청사항임. -> oauthuserinfo에 해놔서.
     public String getEmail() {
         return String.valueOf(attributes.get("email"));
     }
 
     @Override
     public String getName() {
-        return String.valueOf(attributes.get("name"));
+        return String.valueOf(attributes.get("nickname"));
     }
 
     @Override
@@ -35,4 +36,5 @@ public class GoogleUserInfo implements OAuth2UserInfo {
     {
         return String.valueOf(attributes.get("picture"));
     }
+
 }
