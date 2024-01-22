@@ -27,8 +27,8 @@ public class  Member {
     @Column(unique = true, columnDefinition = "TEXT")
     private String userName;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
-    private Set<ChatMessage> sendMessage = new HashSet<>();
+//    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
+//    private Set<ChatMessage> sendMessage = new HashSet<>();
 
     @OneToMany(mappedBy = "admin", cascade = CascadeType.REMOVE)
     private Set<ChatRoom> adminChatRooms = new HashSet<>();

@@ -89,7 +89,6 @@ public class ChatService {
         return chatRoom;
     }
 
-
     public void enterChatRoom(Long roomId, String password, Principal principal) {
 
         Member member = memberRepository.findByUserName(principal.getName())
