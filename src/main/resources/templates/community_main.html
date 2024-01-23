@@ -1,30 +1,46 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+    <style>
+        .btn-gradient-2 {
+            text-decoration:none;
+          position: relative;
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 1rem;
+          color: inherit;
+          background:transparent;
+<!--          background-image: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);-->
+<!--          background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);-->
+          padding: 0.2rem 0.5rem;
+          cursor: pointer;
+        }
 
+    </style>
     <div >
         <div class="container" style="margin-top:50px;">
             <div>
                 <div class="container">
                     <div class="row justify-content-between">
                         <div class="col" style="">
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='')}">전체</a>
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='강아지')}" >강아지</a>
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='고양이')}" >고양이</a>
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='기타')}" >기타</a>
+                            <a type="button" class="btn-gradient-2" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='')}">🚀전체</a>
+                            <a type="button" class="btn-gradient-2" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='강아지')}" >🐶강아지</a>
+                            <a type="button" class="btn-gradient-2" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='고양이')}" >🐱고양이</a>
+                            <a type="button" class="btn-gradient-2" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='기타')}" >👽기타</a>
                         </div>
 
                         <div class="col ">
-                            <a th:href="@{/post/community/main(TagName=${TagName}, sort='latest', category=${category})}" class="btn btn-primary">최신순</a>
-                            <a th:href="@{/post/community/main(TagName=${TagName}, sort='likeCount', category=${category})}" class="btn btn-primary">인기 많은순</a>
-                            <a th:href="@{/post/community/main(TagName=${TagName}, sort='commentCount', category=${category})}" class="btn btn-primary">댓글 많은순</a>
+                            <a th:href="@{/post/community/main(TagName=${TagName}, sort='latest', category=${category})}" class="btn-gradient-2">🕗최신순</a>
+                            <a th:href="@{/post/community/main(TagName=${TagName}, sort='likeCount', category=${category})}" class="btn-gradient-2">🔥‍인기 많은순</a>
+                            <a th:href="@{/post/community/main(TagName=${TagName}, sort='commentCount', category=${category})}" class="btn-gradient-2">💬댓글 많은순</a>
                         </div>
                     </div>
                 </div>
                 <div class="row row-cols-1 align-items-center">
                     <div class="col">
                         <div class="col" th:each="post, loop : ${paging}">
-                            <div class="card" style="width: 100%;">
+                            <div class="card" style="width: 100%; background:transparent;">
                                 <div class="d-flex">
                                     <div th:if="${not #lists.isEmpty(post.postImages)}">
                                         <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
@@ -57,8 +73,8 @@
                                                     <span th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
                                                 </div>
                                             </div>
-                                            <span id="voteCount" th:text="${'좋아요 : '+post.likeMembers.size()}"></span>
-                                            <p th:text="${'댓글 : ' + #lists.size(post.comments.?[parentComment == null])}"></p>
+                                            <span id="voteCount" th:text="${'❤️ '+post.likeMembers.size()}"></span>
+                                            <p th:text="${'💬 ' + #lists.size(post.comments.?[parentComment == null])}"></p>
                                         </div>
                                         <p style="margin-top: 10px; font-size: 17px; "
                                            th:if="${!post.getTagList().isEmpty()}">
