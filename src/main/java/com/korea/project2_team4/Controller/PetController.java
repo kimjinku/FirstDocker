@@ -92,19 +92,25 @@ public class PetController {
             }
             redirectAttributes.addFlashAttribute("isChecked", isChecked);
             String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
+            String encodedOwnerName = URLEncoder.encode(pet.getOwner().getProfileName(), "UTF-8");
             System.out.println(pet.getName());
             System.out.println(pet.getLikes().size());
 
-            return "redirect:/profile/petprofile/" + encodedPetName + "/1";
+            return "redirect:/profile/petprofile/" + encodedPetName + "/" + encodedOwnerName + "/1";
         } else {
             return "redirect:/member/login";
         }
     }
 
 
-    @GetMapping("/{petName}/{hit}")
-    public String petprofile(Principal principal, Model model, @PathVariable("petName")String petName) {
-        Pet pet = petService.getpetByname(petName);
+    @GetMapping("/{petName}/{ownerName}/{hit}")
+    public String petprofile(Principal principal, Model model, @PathVariable("petName")String petName, @PathVariable("ownerName")String ownerName) {
+        Profile owner = profileService.getProfileByName(ownerName);
+        Pet pet = petService.getpetBynameAndowner(petName,owner);
+//        Pet pet = petService.getpetByname(petName);
+
+
+
 //        List<Post> ownerposts = postService.getPostsbyAuthor(pet.getOwner()); //???
         if (principal !=null ) {
             Member member = memberService.getMember(principal.getName());

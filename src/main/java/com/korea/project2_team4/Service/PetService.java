@@ -84,4 +84,9 @@ public class PetService {
     public List<Pet> getAllPetsBykw(String name) {
         return this.petRepository.findAllBykw(name);
     }
+
+    public Pet getpetBynameAndowner(String petName, Profile owner) {
+
+        return this.petRepository.findByPetNameAndOwnerId(petName,owner.getId());
+    }
 }
