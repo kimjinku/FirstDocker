@@ -188,4 +188,22 @@ public class ChatService {
     public void deleteChatRoom(Long id) {
         chatRoomRepository.deleteById(id);
     }
+
+    public void leaveChatRoom(Long chatRoomId, Principal principal) {
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+
+        MemberChatRoom memberChatRoom = memberChatRoomRepository.findByChatroomAndMember(chatRoom, member)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+
+        memberChatRoomRepository.delete(memberChatRoom);
+
+        if (chatRoom.getMemberChatRooms().isEmpty()) {
+            chatRoomRepository.delete(chatRoom);
+        }
+
+    }
 }
