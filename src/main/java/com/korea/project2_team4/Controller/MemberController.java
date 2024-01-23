@@ -65,16 +65,16 @@ public class MemberController {
                          SessionStatus sessionStatus,
                          HttpSession session) {
 
-        // 세션에서 authenticationCode 속성 가져오기
-        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
-
-        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
-        if (expectedAuthenticationCode == null) {
-            return "redirect:/member/signup";
-        }
-        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
-        if (expectedAuthenticationCode.equals(authenticationCode)) {
-            // 검증에 성공하면 세션에서 인증 코드 제거
+//        // 세션에서 authenticationCode 속성 가져오기
+//        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
+//
+//        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
+//        if (expectedAuthenticationCode == null) {
+//            return "redirect:/member/signup";
+//        }
+//        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
+//        if (expectedAuthenticationCode.equals(authenticationCode)) {
+//            // 검증에 성공하면 세션에서 인증 코드 제거
 //            sessionStatus.setComplete();
 
             if (bindingResult.hasErrors()) {
@@ -101,8 +101,8 @@ public class MemberController {
             }
             return "redirect:/";
         }
-        return "redirect:member/signup";
-    }
+//        return "redirect:member/signup";
+//    }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/resetPassword")

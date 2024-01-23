@@ -110,6 +110,8 @@
                         <input type="hidden" id="buyer_email" th:value="${loginedMember.email}"/>
                         <input type="hidden" id="buyer_name" th:value="${loginedMember.realName}"/>
                         <input type="hidden" id="buyer_tel" th:value="${loginedMember.phoneNum}"/>
+                        <input type="hidden" id="buyer_address" th:value="${loginedMember.streetAddress+' '+loginedMember.detailAddress}"/>
+                        <input type="hidden" id="buyer_postcode" th:value="${loginedMember.postCode}"/>
                         <a type="button" class="btn btn-primary" onclick="requestPay()">카카오 결제</a>
                     </div>
                     <div class="col-md-auto"
@@ -232,6 +234,8 @@
         var buyerEmail = document.getElementById('buyer_email').value;
         var buyerName = document.getElementById('buyer_name').value;
         var buyerTel = document.getElementById('buyer_tel').value;
+        var buyerAddress = document.getElementById('buyer_address').value;
+        var buyerPostCode = parseInt(document.getElementById('buyer_postcode').value, 10);
         var postId = parseInt(document.getElementById('post_id').value, 10);
         function requestPay() {
             IMP.request_pay({
@@ -244,10 +248,9 @@
                 amount: productPrice,                         // 숫자 타입
                 buyer_email: buyerEmail,
                 buyer_name: buyerName,
-                buyer_tel: buyerTel
-<!--                ,-->
-<!--                buyer_addr: "서울특별시 강남구 신사동",-->
-<!--                buyer_postcode: "01181"-->
+                buyer_tel: buyerTel,
+                buyer_addr: buyerAddress,
+                buyer_postcode: buyerPostCode
             }
             , function (rsp) { // callback
             console.log("결제 응답 객체: ", rsp);
@@ -261,7 +264,16 @@
 <!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
                 }).done(function(data) {
                     if(rsp.paid_amount === data.response.amount){
-                        alert("결제 성공");
+                    alert("결제 성공");
+                        $.ajax({
+                   type: 'POST',
+                   url: '/resalePost/soldOut/' + postId,
+                   beforeSend : function(xhr)
+                   {
+                      xhr.setRequestHeader(header, token);
+                   },
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+                })
                     } else {
                         alert("결제 실패");
                     }
