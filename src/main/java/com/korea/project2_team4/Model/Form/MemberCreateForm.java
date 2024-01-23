@@ -38,4 +38,10 @@ public class MemberCreateForm {
 
     private String providerID;
 
+    private String postCode; //우편번호
+
+    private String streetAddress; //지번주소
+
+    private String detailAddress;  //상세주소
+
 }

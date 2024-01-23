@@ -74,4 +74,10 @@ public class  Member {
     private LocalDateTime unblockDate;
 
     private boolean isSubscribed;
+
+    String postCode; //우편번호
+
+    String streetAddress; //지번주소
+
+    String detailAddress;  //상세주소
 }

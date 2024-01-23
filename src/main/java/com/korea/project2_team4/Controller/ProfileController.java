@@ -215,11 +215,14 @@ public class ProfileController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/myPage/update")
-    public String memberUpdate(Principal principal, String nickName, String phoneNum, String email) {
+    public String memberUpdate(Principal principal, String nickName, String phoneNum, String email,String postCode, String streetAddress, String detailAddress) {
         Member sitemember = this.memberService.getMember(principal.getName());
         sitemember.setNickName(nickName);
         sitemember.setEmail(email);
         sitemember.setPhoneNum(phoneNum);
+        sitemember.setPostCode(postCode);
+        sitemember.setStreetAddress(streetAddress);
+        sitemember.setDetailAddress(detailAddress);
         memberService.save(sitemember);
 
         return "redirect:/profile/myPage";
