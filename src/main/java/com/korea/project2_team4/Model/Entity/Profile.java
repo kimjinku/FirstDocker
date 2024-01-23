@@ -41,6 +41,9 @@ public class Profile {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.REMOVE )
     private List<ResalePost> resalePostList;
 
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.REMOVE )
+    private List<ResalePost> resalePosts;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE )
     private List<Pet> petList;
 
