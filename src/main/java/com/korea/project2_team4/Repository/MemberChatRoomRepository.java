@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface MemberChatRoomRepository extends JpaRepository<MemberChatRoom, Long> {
 
     Optional<MemberChatRoom> findByChatroomAndMember(ChatRoom chatRoom, Member member);
+
+    Iterable<MemberChatRoom> findByMember(Member member);
 }

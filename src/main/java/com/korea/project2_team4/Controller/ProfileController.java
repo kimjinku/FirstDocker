@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.HtmlUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -68,7 +69,7 @@ public class ProfileController {
     }
 
     @GetMapping("/detail/{profileName}") // @AuthenticationPrincipal //
-    public String profileDetail(Model model, Principal principal, @PathVariable("profileName")String profileName) {
+    public String profileDetail(Model model, Principal principal, @PathVariable("profileName") String profileName) {
         Member siteUser = new Member();
 
         if (principal != null) {
@@ -90,7 +91,7 @@ public class ProfileController {
     }
 
     @GetMapping("/detail/{profileName}/showall")
-    public String detailShowall(Model model, Principal principal, @PathVariable("profileName")String profileName) {
+    public String detailShowall(Model model, Principal principal, @PathVariable("profileName") String profileName) {
         Member siteUser = new Member();
 
         if (principal != null) {
@@ -139,26 +140,38 @@ public class ProfileController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
-    public String profileupdate(@Valid ProfileForm profileForm, @RequestParam(value = "profileImage") MultipartFile newprofileImage,
-                                BindingResult bindingResult, Principal principal) throws Exception {
-//        if (bindingResult.hasErrors()) {
-//            return "Profile/profile_form";
-//        }
+    public String profileupdate(@Valid ProfileForm profileForm, BindingResult bindingResult,
+                                @RequestParam(value = "profileImage") MultipartFile newprofileImage,
+                                Principal principal) throws Exception {
+        if (bindingResult.hasErrors()) {
+            return "Profile/profile_form";
+        }
         Member sitemember = this.memberService.getMember(principal.getName());
 
         if (profileForm.getProfileImage() != null && !profileForm.getProfileImage().isEmpty()) {
             imageService.saveImgsForProfile(sitemember.getProfile(), newprofileImage); // 기존 이미지 먼저 지우게 된다.
         }
 
-        profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
+        try {
+            profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            bindingResult.rejectValue("profileName", "profileName.duplicate", "중복된 프로필 이름입니다.");
+            return "Profile/profile_form";
+        } catch (Exception e) {
+            e.printStackTrace();
+            bindingResult.reject("Failed to update profileName", e.getMessage());
+            return "Profile/profile_form";
+        }
 
         String encodedProfileName = URLEncoder.encode(sitemember.getProfile().getProfileName(), "UTF-8");
+
         return "redirect:/profile/detail/" + encodedProfileName;
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/deleteProfileImage")
-    public String deleteProfileImage(@RequestParam("profileid") Long profileid)throws Exception {// 일단안씀.
+    public String deleteProfileImage(@RequestParam("profileid") Long profileid) throws Exception {// 일단안씀.
         Profile profile = profileService.getProfileById(profileid);
         imageService.deleteProfileImage(profile); // 이미지 지우고
         imageService.saveDefaultImgsForProfile(profile); // 디폴트이미지 재설정
@@ -166,8 +179,6 @@ public class ProfileController {
         String encodedProfileName = URLEncoder.encode(profile.getProfileName(), "UTF-8");
         return "redirect:/profile/detail/" + encodedProfileName;
     }
-
-
 
 
     @PreAuthorize("isAuthenticated()")
@@ -215,7 +226,7 @@ public class ProfileController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/myPage/update")
-    public String memberUpdate(Principal principal, String nickName, String phoneNum, String email,String postCode, String streetAddress, String detailAddress) {
+    public String memberUpdate(Principal principal, String nickName, String phoneNum, String email, String postCode, String streetAddress, String detailAddress) {
         Member sitemember = this.memberService.getMember(principal.getName());
         sitemember.setNickName(nickName);
         sitemember.setEmail(email);
@@ -231,7 +242,7 @@ public class ProfileController {
 
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓팔로우 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     @PostMapping("/addfollow")
-    public String addfollow(Model model, Principal principal, @RequestParam(value = "profileId") Long profileId)throws UnsupportedEncodingException {
+    public String addfollow(Model model, Principal principal, @RequestParam(value = "profileId") Long profileId) throws UnsupportedEncodingException {
 //        플필아디 받고
 //                팔로잉맵에 추가 현재로그인 foller로 플필아디followee로
         Profile followee = profileService.getProfileById(profileId);
@@ -245,7 +256,7 @@ public class ProfileController {
     }
 
     @PostMapping("/unfollow")
-    public String unfollow(Model model, Principal principal, @RequestParam(value = "profileId") Long profileId)throws UnsupportedEncodingException {
+    public String unfollow(Model model, Principal principal, @RequestParam(value = "profileId") Long profileId) throws UnsupportedEncodingException {
 //        플필아디 받고
 //                팔로잉맵에 추가 현재로그인 foller로 플필아디followee로
         Profile followee = profileService.getProfileById(profileId);
@@ -280,31 +291,32 @@ public class ProfileController {
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 1:1 디엠 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
     private final SaveMessageDTOService saveMessageDTOService;
+
     @GetMapping("/dmTo/{profileName}")
-    public String dmPage(Principal principal, Model model,@PathVariable("profileName") String profileName) {
+    public String dmPage(Principal principal, Model model, @PathVariable("profileName") String profileName) {
 
         Member sitemember = this.memberService.getMember(principal.getName());
         Profile partner = profileService.getProfileByName(profileName);
         Profile me = sitemember.getProfile();
 
 
-        DmPage dmPage = dmPageService.getMyDmPage(me,partner); //없으면새로추가함..
+        DmPage dmPage = dmPageService.getMyDmPage(me, partner); //없으면새로추가함..
         List<SaveMessageDTO> dmPageMessages = saveMessageDTOService.getDmPageMessages(dmPage.getId());
 
         model.addAttribute("me", me);
         model.addAttribute("partner", partner);
-        model.addAttribute("dmPageMessages",dmPageMessages);
+        model.addAttribute("dmPageMessages", dmPageMessages);
         return "Profile/dmPage";
     }
 
     @GetMapping("/dmTo/{profileName}/delete")
-    public String deleteDmPage(Principal principal,@PathVariable("profileName") String profileName) throws UnsupportedEncodingException {
+    public String deleteDmPage(Principal principal, @PathVariable("profileName") String profileName) throws UnsupportedEncodingException {
         Member sitemember = this.memberService.getMember(principal.getName());
         Profile partner = profileService.getProfileByName(profileName);
         Profile me = sitemember.getProfile();
 
         List<DmPage> myDmList = dmPageService.getMyDmPageList(me);
-        DmPage dmPage = dmPageService.getMyDmPage(me,partner);
+        DmPage dmPage = dmPageService.getMyDmPage(me, partner);
         myDmList.remove(dmPage); //어케할지,.
 
         String encodedProfileName = URLEncoder.encode(me.getProfileName(), "UTF-8");
@@ -313,12 +325,12 @@ public class ProfileController {
 
 
     @GetMapping("/myDmPages/{profileName}")
-    public String myDmPages(Principal principal, Model model,@PathVariable("profileName") String profileName) {
+    public String myDmPages(Principal principal, Model model, @PathVariable("profileName") String profileName) {
         Member sitemember = this.memberService.getMember(principal.getName());
         Profile me = sitemember.getProfile();
         List<DmPage> myDmList = dmPageService.getMyDmPageList(me);
 
-        model.addAttribute("myDmList",myDmList);
+        model.addAttribute("myDmList", myDmList);
         return "Profile/myDmPages";
     }
 

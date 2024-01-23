@@ -58,7 +58,7 @@
 
                                                     <!--채팅방 목록-->
                     <div>
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 200px;"
+                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 250px;"
                              th:each="room : ${list}">
                             <div class="card-body" th:attr="onclick='openEnterChatRoomModal(\'' + ${room.id} + '\', \'' + ${room.inChatRoom} + '\')'">
                                 <div class="mb-3" style="font-weight: bold;" th:text="${room.roomName}"></div>
@@ -67,6 +67,7 @@
                                         <button class="btn btn-danger" type="submit">채팅방 삭제</button>
                                     </form>
                                 </div>
+                                <div class="mb-3">방 번호 : <span th:text="${room.id}"></span></div>
                                 <div class="mb-3">방장 : <span th:text="${room.adminName}"></span></div>
                                 <div class="mb-3">참석 여부  : <span th:text="${room.inChatRoom}"></span></div>
                                 <div class="d-flex justify-content-end">인원 수 : <span th:text="${room.memberCount}"></span> / <span th:text="${room.maxMember}"></span></div>
