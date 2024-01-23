@@ -1,8 +1,7 @@
 package com.korea.project2_team4.Config.OAuth2;
 
 import java.util.Map;
-
-public class KakaoUserInfo implements OAuth2UserInfo{
+public class KakaoUserInfo implements OAuth2UserInfo {
     private Map<String, Object> attributes;
 
     public KakaoUserInfo(Map<String, Object> attributes) {
@@ -11,15 +10,16 @@ public class KakaoUserInfo implements OAuth2UserInfo{
 
     @Override
     public String getProviderId() {
-        return String.valueOf(attributes.get("id"));
+        return attributes.get("id").toString();
     }
 
     @Override
     public String getProvider() {
-        return "KAKAO";
+
+        return "kakao";
     }
 
-    @Override
+    @Override //스프링시큐리티 OAuth에서 필수요청사항임. -> oauthuserinfo에 해놔서.
     public String getEmail() {
         return String.valueOf(attributes.get("email"));
     }
@@ -30,7 +30,8 @@ public class KakaoUserInfo implements OAuth2UserInfo{
     }
 
     @Override
-    public String getImage() {
-        return String.valueOf(attributes.get("profile_image"));
+    public String getImage()
+    {
+        return String.valueOf(attributes.get("picture"));
     }
 }

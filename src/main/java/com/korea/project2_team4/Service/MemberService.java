@@ -59,6 +59,11 @@ public class MemberService {
         member.setRealName(memberCreateForm.getRealName());
         member.setNickName(memberCreateForm.getNickName());
         member.setPhoneNum(memberCreateForm.getPhoneNum());
+
+        member.setPostCode(memberCreateForm.getPostCode());
+        member.setStreetAddress(memberCreateForm.getStreetAddress());
+        member.setDetailAddress(memberCreateForm.getDetailAddress());
+
         member.setSubscribed(false);
 
         memberRepository.save(member);

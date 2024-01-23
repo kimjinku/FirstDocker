@@ -28,6 +28,7 @@
 
 
             <div class="mb-3 profile-name">
+                <div th:if="${#fields.hasErrors('profileName')}" class="text-danger" th:errors="*{profileName}"></div>
                 <label for="profileName" class="form-label">이름</label>
                 <input type="text" class="form-control" id="profileName" th:field="*{profileName}" oninput="checkInput()">
             </div>

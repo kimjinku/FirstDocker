@@ -63,6 +63,30 @@ public class ChatService {
         return chatRooms;
     }
 
+    // 마이페이지에서 내가 참여한 채팅방 목록 조회
+    public List<ChatRoomListResponseDto> findMyChatRooms(Principal principal) {
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        List<ChatRoomListResponseDto> myChatRooms = new ArrayList<>();
+
+        memberChatRoomRepository.findByMember(member).forEach(memberChatRoom -> {
+            ChatRoom chatRoom = memberChatRoom.getChatroom();
+            myChatRooms.add(ChatRoomListResponseDto.builder()
+                    .id(chatRoom.getId())
+                    .roomName(chatRoom.getRoomName())
+                    .adminName(chatRoom.getAdmin().getUserName())
+                    .memberCount(chatRoom.getMemberChatRooms().size())
+                    .maxMember(chatRoom.getMaxMember())
+                    .inChatRoom(true)
+                    .build());
+        });
+
+        Collections.reverse(myChatRooms);
+
+        return myChatRooms;
+    }
+
 
     // 채팅방 만들 때 관리자와 방 번호, 이름 생성, 비빌번호 설정, 인원 수 설정
     public ChatRoom createChatRoom(String roomName, String password, int maxMember, Principal principal) {
@@ -185,7 +209,27 @@ public class ChatService {
         return chatRoomRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void deleteChatRoom(Long id) {
+        chatMessageRepository.deleteByChatRoomId(id);
         chatRoomRepository.deleteById(id);
+    }
+
+    public void leaveChatRoom(Long chatRoomId, Principal principal) {
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+
+        MemberChatRoom memberChatRoom = memberChatRoomRepository.findByChatroomAndMember(chatRoom, member)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+
+        memberChatRoomRepository.delete(memberChatRoom);
+
+        if (chatRoom.getMemberChatRooms().isEmpty()) {
+            chatRoomRepository.delete(chatRoom);
+        }
+
     }
 }

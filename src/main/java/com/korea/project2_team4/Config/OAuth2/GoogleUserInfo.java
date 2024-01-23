@@ -13,7 +13,7 @@ public class GoogleUserInfo implements OAuth2UserInfo {
     @Override
     public String getProviderId() {
         return String.valueOf(attributes.get("sub"));
-    }
+    } //액세스토큰을 문자열로 전환해주는?
 
     @Override
     public String getProvider() {

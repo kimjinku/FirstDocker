@@ -100,5 +100,19 @@ public class ChatController {
         return "redirect:/chat/chatRoomList";
     }
 
+    @PostMapping("/leaveChatRoom/{id}")
+    public String leaveChatRoom(@PathVariable Long id, Principal principal) {
+        chatService.leaveChatRoom(id, principal);
+
+        return "redirect:/chat/chatRoomList";
+    }
+
+    @GetMapping("/myChatRoom")
+    public String myChatRoom(Model model, Principal principal) {
+        List<ChatRoomListResponseDto> myChatRooms = chatService.findMyChatRooms(principal);
+        model.addAttribute("myChatRooms", myChatRooms);
+        return "Chat/myChatRoom_form";
+    }
+
 }
 

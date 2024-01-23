@@ -139,13 +139,14 @@
                                 <li class="nav-item dropdown" th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                                     <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.principal.username + ' 님'}">
                                     </a>
+
                                     <ul class="dropdown-menu">
                                         <a class="nav-link rounded" th:href="@{|/profile/my|}">내 프로필</a>
                                         <li><hr class="dropdown-divider"></li>
                                         <!--each 루프돌려서 펫 드롭다운리스트 생성-->
-                                        <li><a class="dropdown-item" th:href="@{|/profile/myDmPages/${#authentication.principal.profile.profileName}|}" style="display:inline;">DM</a>
-                                            <div id="alarm" style="display:inline;">🔔</div>
-                                        </li>
+<!--                                        <li><a class="dropdown-item" th:href="@{|/profile/myDmPages/${#authentication.principal.profile.profileName}|}" style="display:inline;">DM</a>-->
+<!--                                            <div id="alarm" style="display:inline;">🔔</div>-->
+<!--                                        </li>-->
 <!--                                        <li><a class="dropdown-item" th:text="${#authentication.principal.profile.profileName}"></a></li>-->
                                     </ul>
                                 </li>

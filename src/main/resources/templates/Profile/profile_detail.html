@@ -112,6 +112,7 @@
                                 <input type="hidden" name="profileid" th:value="${profile.id}">
                                 <button th:if="${siteUser == profile.member}" type="submit" class="btn-gradient-2" >기본이미지로 변경하기</button>
                             </form>
+<<<<<<< HEAD
 <!--<<<<<<< HEAD-->
 <!--&lt;!&ndash;                            기본이미지로 변경하는 폼&ndash;&gt;-->
 
@@ -130,6 +131,21 @@
 <!--=======-->
                             <!--                            기본이미지로 변경하는 폼-->
 <!--&gt;>>>>>> 1969634a76970d9e94d9681bae4fcf7258084e55-->
+=======
+<!--                            기본이미지로 변경하는 폼-->
+
+                            <div class="flexbox">
+                                <div class="speechbubble">
+                                    <a th:href="@{|/profile/petprofile/petList|}" style="text-decoration:none; color:inherit;">
+                                        <p>
+                                            following pets ⭢
+                                        </p>
+                                    </a>
+                                </div>
+                                <div class="speechbubble-tail">
+                                </div>
+                            </div>
+>>>>>>> 1259fb4f117d57573659630c6bd096458c0b1242
                         </div>
                     </div>
 
@@ -200,6 +216,7 @@
                                         <a th:onclick="goToPetProfile(this.getAttribute('data'))" th:data="${pet.name}" class="d-flex align-items-center" >
                                             <img th:if="${pet.petImage.fileName != null}" th:src="@{|/files/${pet.petImage.fileName}|}" alt="pet" class="avatar-img rounded-circle" style="width:100px; height:100px; object-fit: cover; cursor:pointer;" />
                                         </a>
+<<<<<<< HEAD
 <!--<<<<<<< HEAD-->
 <!--                                        <div style="display:flex; justify-content: space-between; align-items: center;">-->
 <!--                                            <div style="align-items:center;">-->
@@ -221,6 +238,19 @@
                                         <a th:href="@{/profile/petprofile/{petName}(petName=${pet.name})}" th:text="${pet.name}" style="margin:0;" ></a>
                                         <!--                                        <p class="small mb-4 " th:text="${pet.name}" style="margin:0;"><i class="fa fa-map-marker mr-2"></i></p>-->
 <!--&gt;>>>>>> 1969634a76970d9e94d9681bae4fcf7258084e55-->
+=======
+                                        <div style="display:flex; justify-content: space-between; align-items: center;">
+                                            <div style="align-items:center;">
+                                                <a th:href="@{|/profile/petprofile/${pet.name}/1|}" th:text="${pet.name}" style="text-decoration:none; color:inherit;" ></a>
+                                            </div>
+                                            <div>
+                                                <form class="text-end" th:action="@{|/profile/petprofile/deletepet|}" method="post" >
+                                                    <input type="hidden" name="petid" th:value="${pet.id}">
+                                                    <button th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" type="submit" class="btn-gradient-2" style="text-decoration:none; color:inherit; font-size:10px;">✕</button>
+                                                </form>
+                                            </div>
+                                        </div>
+>>>>>>> 1259fb4f117d57573659630c6bd096458c0b1242
                                     </div>
                                 </div>
                             </div>
@@ -295,6 +325,7 @@
                     </div>
                 </div>
 
+<<<<<<< HEAD
 <!--<<<<<<< HEAD-->
 <!--            </div>-->
 <!--        </div>&lt;!&ndash; End profile widget &ndash;&gt;-->
@@ -362,4 +393,18 @@
 </script>
 
 <!--&gt;>>>>>> 1969634a76970d9e94d9681bae4fcf7258084e55-->
+=======
+
+            </div>
+        </div><!-- End profile widget -->
+    <script>
+        function goToPetProfile(petname) {
+           var targetUrl = '/profile/petprofile/' + encodeURIComponent(petname) + '/1';
+            window.location.href = targetUrl;
+        }
+    </script>
+    </div>
+</div>
+
+>>>>>>> 1259fb4f117d57573659630c6bd096458c0b1242
 </html>

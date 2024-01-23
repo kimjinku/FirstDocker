@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Builder
 @Service
@@ -36,7 +37,7 @@ public class ResalePostService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
-        return resalePostRepository.findByTitleOrContentContainingAndNotSold(kw,pageable);
+        return resalePostRepository.findByTitleOrContentOrProductNameContainingAndNotSold(kw,pageable);
     }
 
     public ResalePost getResalePost(Long id) {
@@ -96,7 +97,23 @@ public class ResalePostService {
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
         return resalePostRepository.findBySellerAndSold(profile, pageable);
     }
-
+    //구매 완료된 거래 게시글
+    public Page<ResalePost> purchasedResalePosts(int page, Profile profile) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findByBuyerAndSold(profile, pageable);
+    }
+    public String makeRandomCode(LocalDateTime now){
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        int day = now.getDayOfMonth();
+        int hour = now.getHour();
+        int minute = now.getMinute();
+        int second = now.getSecond();
+        String randomCode = UUID.randomUUID().toString();
+        return String.format("%04d%02d%02d%02d%02d%02d" + randomCode, year, month, day, hour, minute, second);
+    }
 
 
 }

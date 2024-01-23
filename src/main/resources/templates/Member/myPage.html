@@ -11,8 +11,8 @@
                         <a type="button" class="btn btn-outline-warning" th:href="@{|/comment/myComments|}">내가 쓴 댓글</a>
                         <a type="button" class="btn btn-outline-warning" th:href="@{|/post/myLikedPosts|}">좋아요 누른 글</a>
                         <a type="button" class="btn btn-outline-warning" th:href="@{|/comment/myLikedComments|}">좋아요 누른 댓글</a>
+                        <a type="button" class="btn btn-outline-warning" th:href="@{|/chat/myChatRoom|}">내가 참여한 채팅방 목록</a>
                     </div>
-
                 </div>
             </div>
             <div class="row row-cols-1 align-items-center">
@@ -21,6 +21,7 @@
                         <p th:text="${'회원 닉네임 : '+ siteMember.getNickName()}"></p>
                         <p th:text="${'회원 전화 번호 : '+ siteMember.getPhoneNum()}"></p>
                         <p th:text="${'회원 이메일 : '+ siteMember.getEmail()}"></p>
+                        <p th:text="${'회원 주소지 : '+ siteMember.getStreetAddress()+' '+siteMember.getDetailAddress()}"></p>
                     </div>
                     <a type="button" class="btn btn-primary" th:href="@{|/profile/myPage/update|}">회원 정보 수정</a>
                     <a type="button" class="btn btn-primary" th:href="@{|/member/resetPassword|}">비밀 번호 변경</a>

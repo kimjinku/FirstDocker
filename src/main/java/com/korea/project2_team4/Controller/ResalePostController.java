@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Controller
@@ -110,10 +111,13 @@ public class ResalePostController {
 
         Member sitemember = this.memberService.getMember(principal.getName());
         resalePost.setTitle(resalePostForm.getTitle());
+        resalePost.setName(resalePostForm.getName());
         resalePost.setPrice(resalePostForm.getPrice());
         resalePost.setContent(resalePostForm.getContent());
         resalePost.setCategory(resalePostForm.getCategory());
         resalePost.setCreateDate(LocalDateTime.now());
+        String orderId = resalePostService.makeRandomCode(resalePost.getCreateDate());
+        resalePost.setOrderId(orderId);
         resalePost.setSeller(sitemember.getProfile());
         if (imageFiles != null && !imageFiles.isEmpty()) {
             imageService.uploadResalePostImage(imageFiles, resalePost);
@@ -184,12 +188,12 @@ public class ResalePostController {
         ResalePost existingPost = resalePostService.getResalePost(id);
 
         if (existingPost != null) {
+            existingPost.setName(updatePost.getName());
             existingPost.setTitle(updatePost.getTitle());
             existingPost.setContent(updatePost.getContent());
             existingPost.setModifyDate(LocalDateTime.now());
             existingPost.setCategory(updatePost.getCategory());
             existingPost.setPrice(updatePost.getPrice());
-
             if (imageFiles != null && !imageFiles.isEmpty()) {
                 imageService.uploadResalePostImage(imageFiles, existingPost);
             }
@@ -218,9 +222,17 @@ public class ResalePostController {
         model.addAttribute("paging",postList);
         return "ResalePost/myMarket";
     }
-    @PostMapping("/soldOut/{id}")
+    @PostMapping("/soldOut/{id}/{sellerId}")
+    public String soldOut(@PathVariable Long id, @PathVariable Long sellerId) {
+        Member member = memberService.getMemberById(sellerId);
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        resalePost.setSoldItem(true);
+        resalePost.setBuyer(member.getProfile());
+        resalePostService.save(resalePost);
+        return "redirect:/resalePost/main";
+    }
+    @PostMapping("/sold/{id}")
     public String soldOut(@PathVariable Long id) {
-
         ResalePost resalePost = resalePostService.getResalePost(id);
         resalePost.setSoldItem(true);
         resalePostService.save(resalePost);
@@ -234,6 +246,16 @@ public class ResalePostController {
         model.addAttribute("paging", postList);
         return "ResalePost/soldOut";
     }
+
+    @GetMapping("/purchaseHistory")
+    public String purchasedResalePosts(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Member member = memberService.getMember(principal.getName());
+        Profile profile = member.getProfile();
+        Page<ResalePost> postList = resalePostService.purchasedResalePosts(page, profile);
+        model.addAttribute("paging", postList);
+        return "ResalePost/purchaseHistory";
+    }
+
     @GetMapping("/payment")
     public String paymentPage(){
         return "ResalePost/payment";
