@@ -107,5 +107,12 @@ public class ChatController {
         return "redirect:/chat/chatRoomList";
     }
 
+    @GetMapping("/myChatRoom")
+    public String myChatRoom(Model model, Principal principal) {
+        List<ChatRoomListResponseDto> myChatRooms = chatService.findMyChatRooms(principal);
+        model.addAttribute("myChatRooms", myChatRooms);
+        return "Chat/myChatRoom_form";
+    }
+
 }
 

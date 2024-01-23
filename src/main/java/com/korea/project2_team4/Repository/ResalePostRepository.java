@@ -24,8 +24,8 @@ public interface ResalePostRepository extends JpaRepository<ResalePost, Long> {
 
     Page<ResalePost> findBySoldItemFalse(Pageable pageable);
 
-    @Query("SELECT r FROM ResalePost r WHERE (LOWER(r.title) LIKE LOWER(CONCAT('%', :kw, '%')) OR LOWER(r.content) LIKE LOWER(CONCAT('%', :kw, '%'))) AND r.soldItem = false")
-    Page<ResalePost> findByTitleOrContentContainingAndNotSold(@Param("kw") String kw, Pageable pageable);
+    @Query("SELECT r FROM ResalePost r WHERE (LOWER(r.title) LIKE LOWER(CONCAT('%', :kw, '%')) OR LOWER(r.content) LIKE LOWER(CONCAT('%', :kw, '%')) OR LOWER(r.name) LIKE LOWER(CONCAT('%', :kw, '%'))) AND r.soldItem = false")
+    Page<ResalePost> findByTitleOrContentOrProductNameContainingAndNotSold(@Param("kw") String kw, Pageable pageable);
 
     @Query("SELECT r FROM ResalePost r WHERE r.soldItem = false AND :profile MEMBER OF r.wishProfiles")
     Page<ResalePost> findByWishProfilesAndNotSold(@Param("profile") Profile profile, Pageable pageable);
@@ -35,4 +35,7 @@ public interface ResalePostRepository extends JpaRepository<ResalePost, Long> {
     //판매목록
     @Query("SELECT r FROM ResalePost r WHERE r.soldItem = true AND r.seller = :seller")
     Page<ResalePost> findBySellerAndSold(@Param("seller") Profile seller, Pageable pageable);
+
+    @Query("SELECT r FROM ResalePost r WHERE r.soldItem = true AND r.buyer = :buyer")
+    Page<ResalePost> findByBuyerAndSold(@Param("buyer") Profile buyer, Pageable pageable);
 }
