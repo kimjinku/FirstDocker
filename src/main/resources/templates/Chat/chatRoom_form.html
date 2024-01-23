@@ -64,8 +64,8 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <form th:action="@{|/chat/leaveChatRoom/${chatRoomId}|}" method="post">
-                        <button class="btn btn-primary" type="submit" onsubmit="return confirmLeaveChatRoom();">채팅방 나가기</button>
+                    <form th:action="@{|/chat/leaveChatRoom/${chatRoomId}|}" method="post" onsubmit="return confirmLeaveChatRoom();">
+                        <button class="btn btn-primary" type="submit">채팅방 나가기</button>
                     </form>
                 </div>
             </div>
