@@ -185,7 +185,9 @@ public class ChatService {
         return chatRoomRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void deleteChatRoom(Long id) {
+        chatMessageRepository.deleteByChatRoomId(id);
         chatRoomRepository.deleteById(id);
     }
 
