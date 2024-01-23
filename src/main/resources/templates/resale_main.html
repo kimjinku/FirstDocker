@@ -22,7 +22,7 @@
     <body>
     <!-- Section-->
     <section class="py-5" style="width: 100rem;">
-        <div class="d-flex justify-content-end">
+        <div sec:authorize="isAuthenticated()" class="d-flex justify-content-end">
             <!--            <form th:action="@{/post/search}" class="d-flex" role="search">-->
             <!--                <div class="input-group">-->
             <!--                    <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"-->
@@ -40,7 +40,7 @@
                 <ul class="dropdown-menu" aria-labelledby="resaleDropdown">
                     <li><a class="dropdown-item" th:href="@{|/resalePost/myWishList|}">관심목록</a></li>
                     <li><a class="dropdown-item" th:href="@{|/resalePost/soldOutResalePosts|}">판매내역</a></li>
-                    <li><a class="dropdown-item" th:href="@{|#|}">구매내역</a></li>
+                    <li><a class="dropdown-item" th:href="@{|/resalePost/purchaseHistory|}">구매내역</a></li>
                     <li class="dropdown-divider"></li>
                     <li><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
                 </ul>
@@ -52,7 +52,7 @@
                 <form th:action="@{/resalePost/search}" class="d-flex" role="search">
                     <div class="input-group">
                         <input class="form-control me-2" type="text" id="search_kw" name="kw"
-                               placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"
+                               placeholder="거래 글의 제목, 내용, 상품명을 검색하세요" aria-label="Search"
                                style="width: 330px;" th:value="${kw}">
                         <button class="btn btn-outline-success" type="submit">🔍</button>
                     </div>
