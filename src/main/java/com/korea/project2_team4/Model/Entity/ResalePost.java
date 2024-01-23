@@ -24,6 +24,9 @@ public class ResalePost {
     @ManyToOne
     private Profile seller;
 
+    @ManyToOne
+    private Profile buyer;
+
     private String title;
 
     private String content;

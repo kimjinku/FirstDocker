@@ -44,19 +44,19 @@
 <!--                    <label for="authenticationCode">인증번호 :</label>-->
 <!--                    <input type="text" id="authenticationCode" name="authenticationCode" required>-->
 <!--                </div>-->
-
+                <label class="form-label">회원 주소(필수 입력사항 아님)</label>
                 <div class="form-group">
-                    <input class="form-control" style="width: 40%; display: inline;" placeholder="우편번호" name="postCode" th:field="*{postCode}" id="postCode" type="text" readonly="readonly" >
+                    <input class="form-control" style="width: 40%; display: inline;" placeholder="우편번호(필수 입력사항 아님)" name="postCode" th:field="*{postCode}" id="postCode" type="text" readonly="readonly" >
                     <button type="button" class="btn btn-primary" onclick="execPostcode()">우편번호 찾기</button>
                 </div>
                 <div class="form-group">
-                    <input class="form-control" style="top: 5px;" placeholder="주소" name="streetAddress" th:field="*{streetAddress}" id="streetAddress" type="text" readonly="readonly" />
+                    <input class="form-control" style="top: 5px;" placeholder="주소(필수 입력사항 아님)" name="streetAddress" th:field="*{streetAddress}" id="streetAddress" type="text" readonly="readonly" />
                 </div>
                 <div class="form-group">
-                    <input class="form-control" placeholder="상세주소" name="detailAddress" th:field="*{detailAddress}" id="detailAddress" type="text"  />
+                    <input class="form-control" placeholder="상세주소를 입력해주세요(필수 입력사항 아님)" name="detailAddress" th:field="*{detailAddress}" id="detailAddress" type="text"  />
                 </div>
                 <div class="form-group">
-                    <input class="form-control" type="text" id="extraAddress" placeholder="참고항목" readonly="readonly">
+                    <input class="form-control" type="text" id="extraAddress" placeholder="참고항목(필수 입력사항 아님)" readonly="readonly">
                 </div>
 
 

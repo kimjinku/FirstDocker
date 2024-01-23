@@ -112,6 +112,7 @@
                         <input type="hidden" id="buyer_tel" th:value="${loginedMember.phoneNum}"/>
                         <input type="hidden" id="buyer_address" th:value="${loginedMember.streetAddress+' '+loginedMember.detailAddress}"/>
                         <input type="hidden" id="buyer_postcode" th:value="${loginedMember.postCode}"/>
+                        <input type="hidden" id="buyer_id" th:value="${loginedMember.id}"/>
                         <a type="button" class="btn btn-primary" onclick="requestPay()">카카오 결제</a>
                     </div>
                     <div class="col-md-auto"
@@ -131,29 +132,9 @@
                             </button>
                         </form>
                     </div>
-                    <!--                    <button>결제(테스트)</button>-->
-                    <!--                    <script src ="https://cdn.iamport.krl/v1/iamport.js">-->
-                    <!--                        IMP.init("imp48502338")-->
-
-                    <!--const button = document.querySelector("button);-->
-
-                    <!--const onClickPay = async () =>{-->
-                    <!--IMP.request_pay({-->
-                    <!--pg: "kakaopay",-->
-                    <!--pay_method: "card",-->
-                    <!--amount: "1000",-->
-                    <!--name: "매운 라면",-->
-                    <!--merchant_uid: "ORD20231030-000001";-->
-                    <!--}-->
-                    <!--});-->
-                    <!--};-->
-                    <!--button.addEventListener("click",onClickPay);-->
-                    <!--                    </script>-->
-                    <!--                    <script src ="src/main/resources/main.js"></script>-->
-                    <!--&lt;!&ndash;                    src/main/resources/application.properties&ndash;&gt;-->
                     <div class="col-md-auto"
                          th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-                        <form th:action="@{|/resalePost/soldOut/${post.id}|}" method="post"
+                        <form th:action="@{|/resalePost/sold/${post.id}|}" method="post"
                               onsubmit="return soldPost();">
                             <!--                            onsubmit="return DeletePost();"-->
                             <button type="submit" class="btn btn-primary" style="margin-right: 2rem">판매완료
@@ -237,6 +218,7 @@
         var buyerAddress = document.getElementById('buyer_address').value;
         var buyerPostCode = parseInt(document.getElementById('buyer_postcode').value, 10);
         var postId = parseInt(document.getElementById('post_id').value, 10);
+        var buyerId = parseInt(document.getElementById('buyer_id').value, 10);
         function requestPay() {
             IMP.request_pay({
                 pg: "kakaopay.TC0ONETIME",
@@ -267,7 +249,7 @@
                     alert("결제 성공");
                         $.ajax({
                    type: 'POST',
-                   url: '/resalePost/soldOut/' + postId,
+                   url: '/resalePost/soldOut/' + postId + '/' + buyerId,
                    beforeSend : function(xhr)
                    {
                       xhr.setRequestHeader(header, token);

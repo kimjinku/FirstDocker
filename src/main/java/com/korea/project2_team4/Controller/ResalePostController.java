@@ -222,9 +222,17 @@ public class ResalePostController {
         model.addAttribute("paging",postList);
         return "ResalePost/myMarket";
     }
-    @PostMapping("/soldOut/{id}")
+    @PostMapping("/soldOut/{id}/{sellerId}")
+    public String soldOut(@PathVariable Long id, @PathVariable Long sellerId) {
+        Member member = memberService.getMemberById(sellerId);
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        resalePost.setSoldItem(true);
+        resalePost.setBuyer(member.getProfile());
+        resalePostService.save(resalePost);
+        return "redirect:/resalePost/main";
+    }
+    @PostMapping("/sold/{id}")
     public String soldOut(@PathVariable Long id) {
-
         ResalePost resalePost = resalePostService.getResalePost(id);
         resalePost.setSoldItem(true);
         resalePostService.save(resalePost);
@@ -238,6 +246,16 @@ public class ResalePostController {
         model.addAttribute("paging", postList);
         return "ResalePost/soldOut";
     }
+
+    @GetMapping("/purchaseHistory")
+    public String purchasedResalePosts(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Member member = memberService.getMember(principal.getName());
+        Profile profile = member.getProfile();
+        Page<ResalePost> postList = resalePostService.purchasedResalePosts(page, profile);
+        model.addAttribute("paging", postList);
+        return "ResalePost/purchaseHistory";
+    }
+
     @GetMapping("/payment")
     public String paymentPage(){
         return "ResalePost/payment";

@@ -37,7 +37,7 @@ public class ResalePostService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
-        return resalePostRepository.findByTitleOrContentContainingAndNotSold(kw,pageable);
+        return resalePostRepository.findByTitleOrContentOrProductNameContainingAndNotSold(kw,pageable);
     }
 
     public ResalePost getResalePost(Long id) {
@@ -96,6 +96,13 @@ public class ResalePostService {
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
         return resalePostRepository.findBySellerAndSold(profile, pageable);
+    }
+    //구매 완료된 거래 게시글
+    public Page<ResalePost> purchasedResalePosts(int page, Profile profile) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findByBuyerAndSold(profile, pageable);
     }
     public String makeRandomCode(LocalDateTime now){
         int year = now.getYear();
