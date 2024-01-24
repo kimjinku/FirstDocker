@@ -161,18 +161,15 @@
                         <div class="border-bottom pt-2 mb-4">
                             <h2 th:text="${post.title}"></h2>
                         </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="sticker" style="margin-left:30px;">
-                        <a class="text"  th:text="${post.author.profileName}" th:href="@{|/profile/detail/${post.author.profileName}|}" style="text-decoration:none; color:inherit;"></a>
-                    </div>
-                </div>
-                <p style="margin-top: 10px; font-size: 17px; "
-                   th:if="${!post.getTagList().isEmpty()}">
+                        <p style="margin-top: 10px; font-size: 17px; "
+                           th:if="${!post.getTagList().isEmpty()}">
                                             <span th:each="tag, loop : ${post.getTagList()}"
                                                   th:text="' '+ @{|#${tag.name}|}"></span>
-                </p>
+                        </p>
+                    </div>
+                </div>
+
+
                 <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">
                     <input type="hidden" id="heart-fill"
                            th:value="${#lists.contains(post.likeMembers, loginedMember)}">
@@ -210,6 +207,11 @@
                     <div th:unless="${post.modifyDate != null}">
                                 <span style="font-size: 14px; color: #777;"
                                       th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                    </div>
+                </div>
+                <div>
+                    <div class="sticker" style="margin-left:30px;">
+                        <a class="text"  th:text="${post.author.profileName}" th:href="@{|/profile/detail/${post.author.profileName}|}" style="text-decoration:none; color:inherit;"></a>
                     </div>
                 </div>
                 <br>
