@@ -59,6 +59,7 @@
             var submitButton = document.getElementById('submitButton');
 
             if (profileNameValue.trim() === '' ) {
+                console.log('empty');
                 submitButton.disabled = true;
             } else {
                 submitButton.disabled = false;
