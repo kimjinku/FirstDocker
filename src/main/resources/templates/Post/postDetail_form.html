@@ -1,81 +1,157 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
     <style>
-        /* Sticker */
-        .sticker {
-          position: relative;
-          width: 160px;
-          height: 70px;
-          float: left;
-          font-size: 1.5em;
-          font-weight: bold;
-          margin: 30px 10px 10px -90px;
-          background-color: #fcf59b;
-          border-radius: 0px 10px 250px / 0 200px 55px 250px;
-          -webkit-box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
-          -moz-box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
-          box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
-          //-ms-transform: rotateZ(-4deg);
-          //-webkit-transform: rotateZ(-4deg);
-          //transform: rotateZ(-4deg);
-        }
 
-        /* Text on the sticker*/
-        .text {
-          text-align: center;
-          display: block;
-          padding: 20px 20px 20px 0;
-          font-size: 70%;
-          font-weight:lighter;
+        <!-- 스타일  -->
+           *,
+           *:before,
+           *:after {
+             margin: 0;
+           padding: 0;
+           box-sizing: inherit;
+           }
+
+           .msger {
+             display: flex;
+             flex-flow: column wrap;
+             justify-content: space-between;
+             max-width: 867px;
+             margin: 25px 10px;
+             height: calc(100% - 50px);
+             border: var(--border);
+             border-radius: 5px;
+             background: var(--msger-bg);
+             box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+           }
+           .imessage {
+             background-color: #fff;
+             border: 1px solid #e5e5ea;
+             border-radius: 0.25rem;
+             display: flex;
+             flex-direction: column;
+             font-family: "SanFrancisco";
+             font-size: 1.25rem;
+             margin: 0 auto 1rem;
+             max-width: 600px;
+             padding: 0.5rem 1.5rem;
+           }
+
+           .msger-chat {
+             flex: 1;
+             overflow-y: auto;
+             padding: 10px;
+           }
+           .msger-chat::-webkit-scrollbar {
+             width: 6px;
+           }
+           .msger-chat::-webkit-scrollbar-track {
+             background: #ddd;
+           }
+           .msger-chat::-webkit-scrollbar-thumb {
+             background: #bdbdbd;
+           }
+
+           <!-- 스타일  -->
+
+
+
+               hr {
+                   height: 4px;
+                   background-color: black;
+               }
+
+               .card {
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+
+               .image{
+                       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                   }
+               .clickable-card {
+                       cursor: pointer;
+                       transition: box-shadow 0.3s; /* 0.3초 동안 변화하는 트랜지션 설정 */
+                   }
+
+                   .clickable-card:hover {
+                       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 마우스 호버 시 그림자 효과 변경 */
+                   }
+
+
+       /* Sticker */
+       .sticker {
+         position: relative;
+         width: 160px;
+         height: 70px;
+         float: left;
+         font-size: 1.5em;
+         font-weight: bold;
+         margin: 30px 10px 10px -90px;
+         background-color: #fcf59b;
+         border-radius: 0px 10px 250px / 0 200px 55px 250px;
+         -webkit-box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
+         -moz-box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
+         box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
+         //-ms-transform: rotateZ(-4deg);
+         //-webkit-transform: rotateZ(-4deg);
+         //transform: rotateZ(-4deg);
+       }
+
+       /* Text on the sticker*/
+       .text {
+         text-align: center;
+         display: block;
+         padding: 20px 20px 20px 0;
+         font-size: 70%;
+         font-weight:lighter;
 <!--          font-family: 'Shadows Into Light', cursive;-->
-        }
+       }
 
-        /* Shadow under sticker */
-        .sticker::before {
-          content: '';
-          display: block;
-          position: absolute;
-          z-index: -1;
-          width: 90%;
-          height: 20px;
-          -webkit-box-shadow: 3px 17px 6px rgba(0,0,0,.3);
-          -moz-box-shadow: 3px 17px 6px rgba(0,0,0,.3);
-          box-shadow: 3px 17px 6px rgba(0,0,0,.3);
-          bottom: 15px;
-          right: 5px;
-          -ms-transform: skew(-10deg,2deg);
-          -webkit-transform: skew(-10deg,2deg);
-          transform: skew(-10deg,2deg);
-        }
+       /* Shadow under sticker */
+       .sticker::before {
+         content: '';
+         display: block;
+         position: absolute;
+         z-index: -1;
+         width: 90%;
+         height: 20px;
+         -webkit-box-shadow: 3px 17px 6px rgba(0,0,0,.3);
+         -moz-box-shadow: 3px 17px 6px rgba(0,0,0,.3);
+         box-shadow: 3px 17px 6px rgba(0,0,0,.3);
+         bottom: 15px;
+         right: 5px;
+         -ms-transform: skew(-10deg,2deg);
+         -webkit-transform: skew(-10deg,2deg);
+         transform: skew(-10deg,2deg);
+       }
 
-        /* Curl */
-        .sticker::after {
-          content: '';
-          display: block;
-          position: absolute;
-          width: 0;
-          height: 0;
-          right: 8px;
-          bottom: 1px;
-          border-top: 10px solid rgb(156, 166, 61);
-          border-right: 10px solid transparent;
-          -webkit-transform: skew(-55deg,10deg);
-          transform: skew(-55deg,10deg);
-        }
-         .btn-gradient-2 {
-            text-decoration:none;
-          position: relative;
-          display: inline-flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 1rem;
-          color: inherit;
-          background:transparent;
+       /* Curl */
+       .sticker::after {
+         content: '';
+         display: block;
+         position: absolute;
+         width: 0;
+         height: 0;
+         right: 8px;
+         bottom: 1px;
+         border-top: 10px solid rgb(156, 166, 61);
+         border-right: 10px solid transparent;
+         -webkit-transform: skew(-55deg,10deg);
+         transform: skew(-55deg,10deg);
+       }
+        .btn-gradient-2 {
+           text-decoration:none;
+         position: relative;
+         display: inline-flex;
+         justify-content: center;
+         align-items: center;
+         font-size: 1rem;
+         color: inherit;
+         background:transparent;
 <!--          background-image: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);-->
 <!--          background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);-->
-          padding: 0.2rem 0.5rem;
-          cursor: pointer;
-        }
+         padding: 0.2rem 0.5rem;
+         cursor: pointer;
+       }
     </style>
     <div class="container">
         <div>
@@ -188,25 +264,6 @@
                                           th:object="${postForm}"
                                           onsubmit="return UpdatePost();">
                                         <input type="hidden" name="postId" th:value="${post.id}"/>
-                                        <!--                                        <div class="font-400 ">-->
-                                        <!--                                            <label for="postTitle" class="form-label fw-bold">제목</label>-->
-                                        <!--                                            <input type="text" id="postTitle" name="title" class="form-control"-->
-                                        <!--                                                   th:value="${post.title}"/>-->
-                                        <!--                                        </div>-->
-                                        <!--                                        <br>-->
-                                        <!--                                        <div class="font-400 ">-->
-                                        <!--                                            <label for="postContent" class="form-label fw-bold">내용</label>-->
-                                        <!--                                            <textarea name="content" class="form-control" id="postContent"-->
-                                        <!--                                                      th:text="${post.content}" style="height: 300px"></textarea>-->
-                                        <!--                                        </div>-->
-                                        <!--                                        <br>-->
-                                        <!--                                        <div>-->
-                                        <!--                                            <label class="form=label">이미지 수정 및 삭제</label>-->
-                                        <!--                                            <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">-->
-                                        <!--                                                <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"-->
-                                        <!--                                                     style="width: 5rem; height: 5rem; border-radius: 1rem; max-width: 100%; max-height: 100%">-->
-                                        <!--                                            </div>-->
-                                        <!--                                        </div>-->
                                         <div>
                                             <label class="form-label">태그 선택</label>
                                             <div th:each="tag : ${getPostTags}">
@@ -498,11 +555,19 @@
                                     <div class="imessage" >
                                         <div class="msg-info">
                                             <div class="msg-text" th:text="${comment.content}">
-                                                Hi, welcome to SimpleChat! Go ahead and send me a message. 😄
+
                                             </div>
                                             <!--                                                <a th:href="" class="msg-info-name" th:text="${comment.author.profileName}"></a>-->
                                             <div class="msg-info-name" th:text="${comment.author.profileName}"></div>
                                             <div class="msg-info-time" th:text="${#temporals.format(comment.createDate, 'yyyy/MM/dd/ HH:mm')}"></div>
+                                            <div th:if="${comment.author.id == loginedMember.id}">
+                                                <a href="" style="text-decoration:none; color:inherit;">✏️</a>
+                                                <a href="" style="text-decoration:none; color:inherit;">❌</a>
+
+                                            </div>
+                                            <div sec:authorize="isAuthenticated()" >
+                                                <a href="" style="text-decoration:none; color:inherit;">🚨</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -511,82 +576,6 @@
                     </div>
                 </div>
             </div>
-
-            <style>
-            <!-- 스타일  -->
-            *,
-            *:before,
-            *:after {
-              margin: 0;
-            padding: 0;
-            box-sizing: inherit;
-            }
-
-            .msger {
-              display: flex;
-              flex-flow: column wrap;
-              justify-content: space-between;
-              max-width: 867px;
-              margin: 25px 10px;
-              height: calc(100% - 50px);
-              border: var(--border);
-              border-radius: 5px;
-              background: var(--msger-bg);
-              box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
-            }
-            .imessage {
-              background-color: #fff;
-              border: 1px solid #e5e5ea;
-              border-radius: 0.25rem;
-              display: flex;
-              flex-direction: column;
-              font-family: "SanFrancisco";
-              font-size: 1.25rem;
-              margin: 0 auto 1rem;
-              max-width: 600px;
-              padding: 0.5rem 1.5rem;
-            }
-
-            .msger-chat {
-              flex: 1;
-              overflow-y: auto;
-              padding: 10px;
-            }
-            .msger-chat::-webkit-scrollbar {
-              width: 6px;
-            }
-            .msger-chat::-webkit-scrollbar-track {
-              background: #ddd;
-            }
-            .msger-chat::-webkit-scrollbar-thumb {
-              background: #bdbdbd;
-            }
-
-            <!-- 스타일  -->
-
-
-
-                hr {
-                    height: 4px;
-                    background-color: black;
-                }
-
-                .card {
-                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-               }
-
-                .image{
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-                    }
-                .clickable-card {
-                        cursor: pointer;
-                        transition: box-shadow 0.3s; /* 0.3초 동안 변화하는 트랜지션 설정 */
-                    }
-
-                    .clickable-card:hover {
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 마우스 호버 시 그림자 효과 변경 */
-                    }
-            </style>
         </div>
     </div>
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
