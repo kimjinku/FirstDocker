@@ -363,9 +363,9 @@
                 </div>
 
 
-                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
+                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post"  onsubmit="return WriteComment();">
                     <textarea name="content" class="form-control" id="content" rows="3" style="background:transparent;"
-                              placeholder="답변을 작성해 주세요"></textarea>
+                              placeholder="답변을 작성해 주세요."></textarea>
                     <br>
                     <div class="d-flex justify-content-end">
                         <input class="btn-gradient-2" type="submit" value="✔댓글달기" style="border:0px;">
@@ -374,8 +374,9 @@
                 <hr>
                 <div th:each="comment : ${post.comments}" th:if="${comment.parentComment == null}" style="display:flex;">
                     <div class="card mb-4" style="width:40%; display:flex; background:transparent;">
-                        <div class="card-body">
-
+                        <div class="card-body" th:id="${(anchorId != null ) ? (anchorId == comment.id ? 'scrollToAnchor' : '') : ''}">
+<!--                        <div class="card-body">-->
+<!--                            <a th:id="|${anchorId}|"></a>-->
                             <div style="font-size: 14px; color: #777;" th:text="${comment.content}"></div>
                             <div>
                                 <div th:if="${comment.modifyDate != null}">
@@ -421,11 +422,12 @@
                                 </div>
 
                             </div>
+                            <div th:text="'댓글 : ' + ${comment.replies.size()}"></div>
                         </div>
                         <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
                             <form th:action="@{|/comment/reply/${comment.id}|}" method="post">
-                                <input type="text" id="commentReply" name="commentReply" onclick="checkInput()" oninput="checkInput()">
-                                <button type="submit" id="submitButton" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
+                                <input type="text" th:id="'commentReply' + ${comment.id}" name="commentReply" th:onclick="'checkInput(\'' + ${comment.id} + '\')'" th:oninput="'checkInput(\'' + ${comment.id} + '\')'">
+                                <button type="submit" th:id="'submitButton' + ${comment.id}" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
                             </form>
 
                         </div>
@@ -581,6 +583,22 @@
         </div>
     </div>
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+       //댓글 달때,  앵커기능
+
+        document.addEventListener('DOMContentLoaded', function() {
+                console.log('aaa');
+                var anchorElement = document.getElementById('scrollToAnchor');
+
+                if(anchorElement) {
+                    console.log('anchorelementexist');
+                    anchorElement.scrollIntoView({behavior : 'auto'});
+                }
+
+            }
+
+        )
+
+
         function DeletePost() {
             return confirm("게시글을 삭제하시겠습니까?");
         }
@@ -646,13 +664,16 @@
         }
 
 <!--        //대댓글 입력칸 확인-->
-        function checkInput() {
-            var replyValue = document.getElementById('commentReply').value;
-            var submitButton = document.getElementById('submitButton');
+        function checkInput(commentid) {
+            console.log('인풋칸확인함수'+ commentid);
+            var replyValue = document.getElementById('commentReply'+commentid).value;
+            var submitButton = document.getElementById('submitButton'+commentid);
 
             if (replyValue.trim() === '' ) {
+            console.log('인풋칸입력값empty');
                 submitButton.disabled = true;
             } else {
+            console.log('인풋칸입력값occupied');
                 submitButton.disabled = false;
                 submitButton.style.cursor = 'pointer';
             }
@@ -685,7 +706,6 @@
             }
 
         }
-
 
     </script>
 </div>

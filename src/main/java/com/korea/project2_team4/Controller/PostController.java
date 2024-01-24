@@ -303,7 +303,7 @@ public class PostController {
     }
 
     @GetMapping("/detail/{id}/{hit}")
-    public String postDetail(Principal principal, Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit, PostForm postForm) {
+    public String postDetail(Principal principal,HttpSession session, Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit, PostForm postForm) {
         List<Tag> getPostTags = tagService.getTagListByPost(postService.getPost(id));
         List<Tag> allTags = tagService.getAllTags();
 
@@ -336,6 +336,16 @@ public class PostController {
                 return "Post/postDetail_form"; // 리다이렉트할 뷰 경로
             }
         }
+
+        // 세션에서 anchorId를 가져옴
+        if (session!=null) {
+//            String anchorId = (String) session.getAttribute("anchorId");
+            model.addAttribute("anchorId", session.getAttribute("anchorId"));
+            System.out.println(session.getAttribute("anchorId"));
+            // 사용이 끝난 데이터는 세션에서 제거할 수도 있음
+            session.removeAttribute("anchorId");
+        }
+
         model.addAttribute("parentComments", parentComments);
         model.addAttribute("getPostTags", getPostTags);
         model.addAttribute("allTags", allTags);
