@@ -14,6 +14,9 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     @Query("SELECT p FROM Pet p WHERE p.name LIKE %:name%")
     Pet findByPetName(@Param("name")String name);
 
+    @Query("SELECT p FROM Pet p WHERE p.name = :name AND p.owner.id = :ownerId")
+    Pet findByPetNameAndOwnerId(@Param("name") String name, @Param("ownerId") Long ownerId);
+
 //    @Query("SELECT p FROM Pet p WHERE p.likes.profileName LIKE %:name%")
 //    List<Pet> findAllByLikes(@Param("name")String name);
 
