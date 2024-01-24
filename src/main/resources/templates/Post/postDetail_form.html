@@ -424,8 +424,8 @@
                         </div>
                         <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
                             <form th:action="@{|/comment/reply/${comment.id}|}" method="post">
-                                <input type="text" id="commentreply" name="commentreply" >
-                                <button type="submit" class="btn-gradient-2" data-bs-toggle="modal" style="background:transparent; border:0px;">💬</button>
+                                <input type="text" id="commentReply" name="commentReply" onclick="checkInput()" oninput="checkInput()">
+                                <button type="submit" id="submitButton" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
                             </form>
 
                         </div>
@@ -555,19 +555,22 @@
                                     <div class="imessage" >
                                         <div class="msg-info">
                                             <div class="msg-text" th:text="${comment.content}">
-
                                             </div>
+<!--                                            <div class="msg-text">-->
+<!--                                                <input type="text" style="background:transparent; border:0px;" th:id="'updateReply'+${comment.id}" name="updateReply" th:value="${comment.content}"  th:onclick="'checkInputReply(\'' + ${comment.id} + '\')'" th:oninput="'checkInputReply(\'' + ${comment.id} + '\')'" disabled/>-->
+<!--                                            </div>-->
                                             <!--                                                <a th:href="" class="msg-info-name" th:text="${comment.author.profileName}"></a>-->
                                             <div class="msg-info-name" th:text="${comment.author.profileName}"></div>
                                             <div class="msg-info-time" th:text="${#temporals.format(comment.createDate, 'yyyy/MM/dd/ HH:mm')}"></div>
-                                            <div th:if="${comment.author.id == loginedMember.id}">
-                                                <a href="" style="text-decoration:none; color:inherit;">✏️</a>
-                                                <a href="" style="text-decoration:none; color:inherit;">❌</a>
+                                            <div th:if="${comment.author?.id == loginedMember?.id}">
+                                                <form th:action="@{|/comment/reply/${comment.id}/update|}" method="post">
+                                                    <input type="text" th:id="'updateReply'+${comment.id}" name="updateReply" th:value="${comment.content}" style="display:none;" th:onclick="'checkInputReply(\'' + ${comment.id} + '\')'" th:oninput="'checkInputReply(\'' + ${comment.id} + '\')'"/>
+                                                    <button type="button" th:id="'updateReplyButton'+${comment.id}" class="btn-gradient-2" style="border:0px; cursor:default;" th:onclick="'visableInput(\'' + ${comment.id} + '\')'">✏️</button>
+                                                </form>
 
+                                                <a th:href="@{|/comment/reply/${comment.id}/delete|}" style="text-decoration:none; color:inherit;">❌</a>
                                             </div>
-                                            <div sec:authorize="isAuthenticated()" >
-                                                <a href="" style="text-decoration:none; color:inherit;">🚨</a>
-                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -642,6 +645,52 @@
         function reportCommentModal() {
             $('#reportCommentModal').modal('show');
         }
+
+<!--        //대댓글 입력칸 확인-->
+        function checkInput() {
+            var replyValue = document.getElementById('commentReply').value;
+            var submitButton = document.getElementById('submitButton');
+
+            if (replyValue.trim() === '' ) {
+                submitButton.disabled = true;
+            } else {
+                submitButton.disabled = false;
+                submitButton.style.cursor = 'pointer';
+            }
+
+        }
+
+
+<!--대댓글 업데이트 입력칸표시 및 내용확인-->
+        function visableInput(replyid) {
+            console.log('visableinputprocess');
+            console.log(replyid);
+            var inputBar = document.getElementById('updateReply'+replyid);
+            inputBar.style.display = 'inline';
+        }
+
+        function checkInputReply(replyid) {
+            console.log('replyupdateinputCheck');
+            console.log(replyid);
+            var replyValue = document.getElementById('updateReply'+replyid).value;
+            var submitButton = document.getElementById('updateReplyButton'+replyid);
+
+            if (replyValue.trim() === '' ) {
+                    console.log('empty');
+                submitButton.disabled = true;
+                submitButton.style.cursor = 'default';
+            } else {
+                submitButton.disabled = false;
+                submitButton.style.cursor = 'pointer';
+                submitButton.type = 'submit';
+            }
+
+        }
+
+
+
+
+
     </script>
 </div>
 </html>
