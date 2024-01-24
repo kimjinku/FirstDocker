@@ -45,6 +45,12 @@ public class CommentService {
        this.commentRepository.save(comment);
     }
 
+    public void updateCommentReply(Long replyId ,String newcontent){
+        Comment replycommet = commentRepository.findById(replyId).get();
+        replycommet.setContent(newcontent);
+        this.commentRepository.save(replycommet);
+    }
+
     //댓글 좋아요 기능
     public void Like(Comment comment, Member member) {
         comment.getLikeMembers().add(member);

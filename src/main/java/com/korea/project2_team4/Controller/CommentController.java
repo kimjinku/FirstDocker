@@ -202,12 +202,31 @@ public class CommentController {
     //대댓글 생성 메서드
     @PostMapping("reply/{id}")
     public String addReply(@PathVariable("id") Long commentId,
-                           @RequestParam(value = "commentreply", required = false) String commentreply, Principal principal) {
+                           @RequestParam(value = "commentReply", required = false) String commentreply, Principal principal) {
         Comment comment = commentService.getComment(commentId);
         Member member = this.memberService.getMember(principal.getName());
         commentService.createCommentReply(commentId,commentreply, member.getProfile());
 
         return "redirect:/post/detail/" + comment.getPost().getId() + "/1";
+    }
+
+    @PostMapping("reply/{id}/update")
+    public String updateReply(@PathVariable("id") Long replyId,
+                           @RequestParam(value = "updateReply", required = false) String updateReply, Principal principal) {
+        Comment parentComment = commentService.getComment(replyId).getParentComment();
+        commentService.updateCommentReply(replyId,updateReply);
+        return "redirect:/post/detail/" + parentComment.getPost().getId() + "/1";
+    }
+
+    //대댓글삭제
+    @GetMapping("reply/{id}/delete")
+    public String deleteReply(@PathVariable("id")Long replyId ) {
+        Comment parentComment = commentService.getComment(replyId).getParentComment();
+
+
+//        Comment comment = commentService.getComment(replyId);
+        commentService.deleteById(replyId);
+        return "redirect:/post/detail/" + parentComment.getPost().getId() + "/1";
     }
 
 
