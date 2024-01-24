@@ -58,6 +58,7 @@ public class DataLoader implements CommandLineRunner {
                 resalePost.setName("강아지 사료");
                 resalePost.setContent("테스트 데이터 내용 입니다.");
                 resalePost.setPrice("10000");
+                resalePost.setCategory("강아지");
                 resalePost.setCreateDate(LocalDateTime.now());
                 String orderId = resalePostService.makeRandomCode(resalePost.getCreateDate());
                 resalePost.setOrderId(orderId);
