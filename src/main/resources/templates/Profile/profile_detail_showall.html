@@ -139,7 +139,7 @@
 
 
                                     <div style="width:100%; height:10%;">
-                                        <a th:href="@{/profile/petprofile(petid=${pet.id})}" th:text="${pet.name}" style="margin:0;" ></a>
+                                        <a th:href="@{|/profile/petprofile(petid=${pet.id})/${pet.owner.profileName}|}" th:text="${pet.name}" style="margin:0;" ></a>
                                         <!--                                        <p class="small mb-4 " th:text="${pet.name}" style="margin:0;"><i class="fa fa-map-marker mr-2"></i></p>-->
                                     </div>
                                     <form th:action="@{|/profile/deletepet|}" method="post">

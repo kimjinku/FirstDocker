@@ -459,4 +459,5 @@ public class MemberController {
         memberService.phoneNumberCheck(to, session);
         return "redirect:/member/signup";
     }
+
 }
