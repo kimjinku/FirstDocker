@@ -24,4 +24,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findByKeywordInRealNameOrUserNameOrNickName(@Param("kw") String kw, Pageable pageable);
 
     boolean existsByUserName(String userName);
+    boolean existsByEmail(String email);
+    boolean existsByNickName(String nickName);
 }
