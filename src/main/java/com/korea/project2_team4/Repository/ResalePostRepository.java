@@ -38,4 +38,7 @@ public interface ResalePostRepository extends JpaRepository<ResalePost, Long> {
 
     @Query("SELECT r FROM ResalePost r WHERE r.soldItem = true AND r.buyer = :buyer")
     Page<ResalePost> findByBuyerAndSold(@Param("buyer") Profile buyer, Pageable pageable);
+
+    @Query("SELECT r FROM ResalePost r WHERE r.category IS NOT NULL AND r.category = :category AND r.soldItem = false")
+    Page<ResalePost> findByCategoryAndNotSold(@Param("category") String category, Pageable pageable);
 }
