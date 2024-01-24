@@ -22,7 +22,7 @@ import java.util.Optional;
 public class CommentService {
     private CommentRepository commentRepository;
 
-    public void create(Post post, String content, Profile author) {
+    public Comment create(Post post, String content, Profile author) {
         Comment comment = new Comment();
 
         comment.setContent(content);
@@ -30,7 +30,7 @@ public class CommentService {
         comment.setPost(post);
         comment.setAuthor(author);
 
-        this.commentRepository.save(comment);
+       return this.commentRepository.save(comment);
 
     }
     public void createCommentReply(Long commentId ,String content, Profile author){

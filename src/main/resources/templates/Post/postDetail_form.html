@@ -194,7 +194,7 @@
 <!--                <hr class="mt-1 mb-5">-->
                 <div class="col">
                     <div th:each="img, iterStat : ${post.postImages}">
-                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="포스트 이미지"
                              style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
                     </div>
                 </div>
@@ -363,6 +363,7 @@
                 </div>
 
 
+
                 <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
                     <textarea name="content" class="form-control" id="content" rows="3" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px"
                               placeholder="답변을 작성해 주세요"></textarea>
@@ -373,9 +374,11 @@
                 </form>
                 <hr>
                 <div th:each="comment : ${post.comments}" th:if="${comment.parentComment == null}" style="display:flex;">
-                    <div class="card mb-4" style="width:40%; display:flex; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
-                        <div class="card-body">
 
+                    <div class="card mb-4" style="width:40%; display:flex; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px;">
+                        <div class="card-body" th:id="${(anchorId != null ) ? (anchorId == comment.id ? 'scrollToAnchor' : '') : ''}">
+<!--                        <div class="card-body">-->
+<!--                            <a th:id="|${anchorId}|"></a>-->
                             <div style="font-size: 14px; color: #777;" th:text="${comment.content}"></div>
                             <div>
                                 <div th:if="${comment.modifyDate != null}">
@@ -421,12 +424,12 @@
                                 </div>
 
                             </div>
+                            <div th:text="'댓글 : ' + ${comment.replies.size()}"></div>
                         </div>
                         <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
                             <form th:action="@{|/comment/reply/${comment.id}|}" method="post">
-                                <input type="text" id="commentReply" name="commentReply" onclick="checkInput()" oninput="checkInput()">
-                                <button type="submit" id="submitButton" class="btn-gradient-2"
-                                        style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
+                                <input type="text" th:id="'commentReply' + ${comment.id}" name="commentReply" th:onclick="'checkInput(\'' + ${comment.id} + '\')'" th:oninput="'checkInput(\'' + ${comment.id} + '\')'">
+                                <button type="submit" th:id="'submitButton' + ${comment.id}" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
                             </form>
                         </div>
 
@@ -581,6 +584,22 @@
         </div>
     </div>
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+       //댓글 달때,  앵커기능
+
+        document.addEventListener('DOMContentLoaded', function() {
+                console.log('aaa');
+                var anchorElement = document.getElementById('scrollToAnchor');
+
+                if(anchorElement) {
+                    console.log('anchorelementexist');
+                    anchorElement.scrollIntoView({behavior : 'auto'});
+                }
+
+            }
+
+        )
+
+
         function DeletePost() {
             return confirm("게시글을 삭제하시겠습니까?");
         }
@@ -646,13 +665,16 @@
         }
 
 <!--        //대댓글 입력칸 확인-->
-        function checkInput() {
-            var replyValue = document.getElementById('commentReply').value;
-            var submitButton = document.getElementById('submitButton');
+        function checkInput(commentid) {
+            console.log('인풋칸확인함수'+ commentid);
+            var replyValue = document.getElementById('commentReply'+commentid).value;
+            var submitButton = document.getElementById('submitButton'+commentid);
 
             if (replyValue.trim() === '' ) {
+            console.log('인풋칸입력값empty');
                 submitButton.disabled = true;
             } else {
+            console.log('인풋칸입력값occupied');
                 submitButton.disabled = false;
                 submitButton.style.cursor = 'pointer';
             }
@@ -685,7 +707,6 @@
             }
 
         }
-
 
     </script>
 </div>
