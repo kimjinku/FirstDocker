@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .loginPage("/member/login")
                         .defaultSuccessUrl("/")
                         .failureHandler((request, response, exception) -> {
-                            response.sendRedirect("/member/login");
+                            response.sendRedirect("/member/login?error=true");
                         }))
                 .oauth2Login((oauth2Login) -> oauth2Login
                         .loginPage("/member/login")
