@@ -1,23 +1,21 @@
 package com.korea.project2_team4.Config.OAuth2;
 
 import java.util.Map;
-
 public class KakaoUserInfo implements OAuth2UserInfo {
     private Map<String, Object> attributes;
 
     public KakaoUserInfo(Map<String, Object> attributes) {
-
         this.attributes = attributes;
     }
 
     @Override
     public String getProviderId() {
         return attributes.get("id").toString();
-//        return String.valueOf(attributes.get("sub"));
     }
 
     @Override
     public String getProvider() {
+
         return "kakao";
     }
 
@@ -36,5 +34,4 @@ public class KakaoUserInfo implements OAuth2UserInfo {
     {
         return String.valueOf(attributes.get("picture"));
     }
-
 }

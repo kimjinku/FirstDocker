@@ -50,7 +50,7 @@
                         </ul>
                     </li>
                     <li class="nav-item" style="margin-right: 10px;">
-                        <a class="nav-link" th:href="@{|/adoption/main|}">추가 기능</a>
+                        <a class="nav-link" th:href="@{|/adoption/main|}">리뷰공간</a>
                     </li>
                     <li class="nav-item dropdown" style="margin-right: 10px;">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -63,9 +63,7 @@
                             <li sec:authorize="isAuthenticated()"><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item" style="margin-right: 10px;">
-                        <a class="nav-link active" href="#">리뷰공간</a>
-                    </li>
+
                     <li class="nav-item" style="margin-right: 10px;">
 
                         <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>
@@ -81,7 +79,7 @@
                 </ul>
             </div>
             <div class="col-2 bg-transparent px-3">
-                <a th:href="@{|/|}" style="text-decoration:none; color: inherit;"><h1 class="text-center fw-bold figure-img text-dark">Pet Planet</h1></a>
+                <a th:href="@{|/|}" style="text-decoration:none; color: inherit;"><h1 class="text-center fw-bold figure-img text-dark">Pet Planet🪐</h1></a>
 
                 <form th:action="@{/post/search}" class="d-flex" role="search">
                     <div style="width:35%">
@@ -142,12 +140,11 @@
 
                                     <ul class="dropdown-menu">
                                         <a class="nav-link rounded" th:href="@{|/profile/my|}">내 프로필</a>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <!--each 루프돌려서 펫 드롭다운리스트 생성-->
+
                                         <li><a class="dropdown-item" th:href="@{|/profile/myDmPages/${#authentication.principal.profile.profileName}|}" style="display:inline;">DM</a>
                                             <div id="alarm" style="display:inline;">🔔</div>
                                         </li>
-<!--                                        <li><a class="dropdown-item" th:text="${#authentication.principal.profile.profileName}"></a></li>-->
+
                                     </ul>
                                 </li>
                             </ul>

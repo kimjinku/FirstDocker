@@ -112,6 +112,7 @@
                                 <input type="hidden" name="profileid" th:value="${profile.id}">
                                 <button th:if="${siteUser == profile.member}" type="submit" class="btn-gradient-2" >기본이미지로 변경하기</button>
                             </form>
+
 <!--                            기본이미지로 변경하는 폼-->
 
                             <div class="flexbox">
@@ -125,12 +126,13 @@
                                 <div class="speechbubble-tail">
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
                     <div class="media-body mb-5 ">
                         <span>
-                            <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn-gradient-2" style="text-decoration:none; color:inherit;">✎</a>
+                            <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn-gradient-2" style="text-decoration:none; color:inherit;">✏️</a>
                         <h4 class="mt-0 mb-0" th:text="${profile.profileName}" style="color:black;"></h4>
                         </span>
 
@@ -195,6 +197,7 @@
                                         <a th:onclick="goToPetProfile(this.getAttribute('data'))" th:data="${pet.name} +' '+ ${pet.owner.profileName}" class="d-flex align-items-center" >
                                             <img th:if="${pet.petImage.fileName != null}" th:src="@{|/files/${pet.petImage.fileName}|}" alt="pet" class="avatar-img rounded-circle" style="width:100px; height:100px; object-fit: cover; cursor:pointer;" />
                                         </a>
+
                                         <div style="display:flex; justify-content: space-between; align-items: center;">
                                             <div style="align-items:center;">
                                                 <a th:href="@{|/profile/petprofile/${pet.name}/${pet.owner.profileName}/1|}" th:text="${pet.name}" style="text-decoration:none; color:inherit;" ></a>
@@ -281,6 +284,7 @@
                 </div>
 
 
+
             </div>
         </div><!-- End profile widget -->
     <script>
@@ -295,5 +299,6 @@
     </script>
     </div>
 </div>
+
 
 </html>
