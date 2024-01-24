@@ -101,7 +101,7 @@ public class MemberController {
             }
             return "redirect:/";
         }
-//        return "redirect:member/signup";
+//        return "redirect:/member/signup";
 //    }
 
     @PreAuthorize("isAuthenticated()")
