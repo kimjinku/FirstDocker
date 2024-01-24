@@ -460,5 +460,34 @@ public class MemberController {
         memberService.phoneNumberCheck(to, session);
         return "redirect:/member/signup";
     }
+    @GetMapping("/checkDuplicateUsername/{username}")
+    @ResponseBody
+    public boolean checkDuplicateUsername(@PathVariable String username) {
+        return !memberService.existsByUserName(username);
+    }
+    @GetMapping("/checkDuplicateEmail/{email}")
+    @ResponseBody
+    public boolean checkDuplicateEmail(@PathVariable String email) {
+        return !memberService.existsByEmail(email);
+    }
+    @GetMapping("/checkDuplicateNickName/{nickName}")
+    @ResponseBody
+    public boolean checkDuplicateNickName(@PathVariable String nickName) {
+        return !memberService.existsByNickName(nickName);
+    }
+    @GetMapping("/checkDuplicate/{field}/{value}")
+    @ResponseBody
+    public boolean checkDuplicate(@PathVariable String field, @PathVariable String value) {
+        switch (field) {
+            case "username":
+                return !memberService.existsByUserName(value);
+            case "email":
+                return !memberService.existsByEmail(value);
+            case "nickName":
+                return !memberService.existsByNickName(value);
+            default:
+                return false;
+        }
+    }
 
 }

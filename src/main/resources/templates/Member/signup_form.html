@@ -1,13 +1,18 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<!--    html이 만들어질 때 발행되는 토큰값과 이름을 가져온다-->
 <div layout:fragment="content" class="row py-5 px-4">
-    <div class="col-xl-4 col-md-6 col-sm-10 mx-auto" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
-        <form th:action="@{|/member/signup|}" th:object="${memberCreateForm}" method="post">
+
+    <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+        <form th:action="@{|/member/signup|}" th:object="${memberCreateForm}" method="post" onsubmit="return validateRegistration()" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
             <div>
                 <div class="mb-3">
                     <label for="username" class="form-label">아이디</label>
                     <input id="username" type="text" th:field="*{userName}" class="form-control"
                            placeholder="4~15자 이내로 입력해 주세요" required oninput="validateUsername()">
+                    <input type="button" class="btn btn-primary" onclick="checkDuplicateUsername()" value="아이디 중복 확인" required>
                     <div id="username_result" style="height: 1rem">
 
                     </div>
@@ -32,6 +37,8 @@
                     <label for="email" class="form-label">이메일</label>
                     <input id="email" type="email" th:field="*{email}" class="form-control"
                            placeholder="예시)rasgulla@gmail.com" required>
+                    <input type="button" class="btn btn-primary" onclick="checkDuplicateEmail()" value="이메일 중복 확인" required>
+                    <div id="email_result" style="height: 1rem">
                 </div>
 
                 <div class="mb-3">
@@ -71,6 +78,8 @@
                     <label for="nickName" class="form-label">닉네임</label>
                     <input id="nickName" type="text" th:field="*{nickName}" class="form-control"
                            placeholder="예시)동에번쩍서에번쩍" required>
+                    <input type="button" class="btn btn-primary" onclick="checkDuplicateNickName()" value="닉네임 중복 확인" required>
+                    <div id="nickName_result" style="height: 1rem">
                 </div>
 
                 <div>
@@ -152,13 +161,18 @@
     </script>
 </div>
 <script layout:fragment="script" type='text/javascript'>
+
+        var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+
+
     function validateUsername() {
             var username = document.getElementById('username').value;
             var usernameResult = document.getElementById('username_result');
 
             // 아이디의 길이가 4에서 15자 사이인지 확인
             if (username.length >= 4 && username.length <= 15) {
-                usernameResult.innerHTML = '유효한 아이디입니다.';
+                usernameResult.innerHTML = '유효한 아이디입니다. 아이디 중복 확인 해주세요';
                 usernameResult.style.color = 'green';
             } else {
                 usernameResult.innerHTML = '아이디는 4~15자 이내로 입력해 주세요.';
@@ -166,7 +180,6 @@
             }
         }
     function validatePassword() {
-<!--        debugger;-->
         var newPassword = document.getElementById('password').value;
         var confirmPassword = document.getElementById('re_password').value;
         var resDiv = document.getElementById('password_result');
@@ -212,5 +225,138 @@
                     }
                 });
             }
+
+    function checkDuplicateUsername() {
+        var username = document.getElementById('username').value;
+        var usernameResult = document.getElementById('username_result');
+
+        // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+        // AJAX를 통해 중복 여부 확인
+        $.ajax({
+            type: "GET",
+            url: "/member/checkDuplicateUsername/"+username, // 실제 서버의 엔드포인트로 변경해야 함
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+            headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+            success: function(response) {
+                if (response) {
+                    usernameResult.innerHTML = '사용 가능한 아이디입니다.';
+                    usernameResult.style.color = 'green';
+                } else {
+                    usernameResult.innerHTML = '이미 사용 중인 아이디입니다.';
+                    usernameResult.style.color = 'red';
+                }
+            },
+            error: function(error) {
+                console.error("Error checking duplicate username: " + error);
+            }
+        });
+    }
+<!-- ------------------------------------------------------------------------------------------------------------------------- -->
+function checkDuplicateEmail() {
+        var email = document.getElementById('email').value;
+        var emailResult = document.getElementById('email_result');
+
+        // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+        // AJAX를 통해 중복 여부 확인
+        $.ajax({
+            type: "GET",
+            url: "/member/checkDuplicateEmail/"+email, // 실제 서버의 엔드포인트로 변경해야 함
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+            headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+            success: function(response) {
+                if (response) {
+                    emailResult.innerHTML = '사용 가능한 이메일입니다.';
+                    emailResult.style.color = 'green';
+                } else {
+                    emailResult.innerHTML = '이미 사용 중인 이메일입니다.';
+                    emailResult.style.color = 'red';
+                }
+            },
+            error: function(error) {
+                console.error("Error checking duplicate email: " + error);
+            }
+        });
+    }
+<!-- ------------------------------------------------------------------------------------------------------------------------- -->
+function checkDuplicateNickName() {
+        var nickName = document.getElementById('nickName').value;
+        var nickNameResult = document.getElementById('nickName_result');
+
+        // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+        // AJAX를 통해 중복 여부 확인
+        $.ajax({
+            type: "GET",
+            url: "/member/checkDuplicateNickName/"+nickName, // 실제 서버의 엔드포인트로 변경해야 함
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+            headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+            success: function(response) {
+                if (response) {
+                    nickNameResult.innerHTML = '사용 가능한 닉네임입니다.';
+                    nickNameResult.style.color = 'green';
+                } else {
+                    nickNameResult.innerHTML = '이미 사용 중인 닉네임입니다.';
+                    nickNameResult.style.color = 'red';
+                }
+            },
+            error: function(error) {
+                console.error("Error checking duplicate nickName: " + error);
+            }
+        });
+    }
+<!-- ------------------------------------------------------------------------------------------------------------------------- -->
+
+
+
+    function validateRegistration() {
+    var username = document.getElementById('username').value;
+    var email = document.getElementById('email').value;
+    var nickName = document.getElementById('nickName').value;
+
+    // 아이디 중복검사
+    if (!checkDuplicate('username', username)) {
+        alert('이미 사용 중인 아이디입니다.');
+        return false;
+    }
+
+    // 이메일 중복검사
+    if (!checkDuplicate('email', email)) {
+        alert('이미 사용 중인 이메일입니다.');
+        return false;
+    }
+
+    // 닉네임 중복검사
+    if (!checkDuplicate('nickName', nickName)) {
+        alert('이미 사용 중인 닉네임입니다.');
+        return false;
+    }
+
+    return true;
+}
+
+function checkDuplicate(field, value) {
+    var result = false;
+
+    // AJAX를 통해 중복 여부 확인
+    $.ajax({
+        type: "GET",
+        url: "/member/checkDuplicate/" + field + "/" + value,
+        headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+        async: false, // 동기적으로 실행되도록 설정
+        success: function(response) {
+            result = response;
+        },
+        error: function(error) {
+            console.error("Error checking duplicate " + field + ": " + error);
+        }
+    });
+
+    return result;
+}
 </script>
 </html>
