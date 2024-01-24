@@ -50,7 +50,13 @@ public class ResalePostController {
 
 
     @GetMapping("/main")
-    public String resalePost(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String resalePost(Model model, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(name = "category", required = false) String category) {
+        if(category != null){
+            Page<ResalePost> resalePosts = resalePostService.getPostsByCategory(page,category);
+            model.addAttribute("paging",resalePosts);
+            model.addAttribute("category",category);
+            return "resale_main";
+        }
         Page<ResalePost> resalePostList = resalePostService.resalePostList(page);
         model.addAttribute("paging", resalePostList);
         return "resale_main";

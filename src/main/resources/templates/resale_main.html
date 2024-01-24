@@ -22,6 +22,13 @@
     <body>
     <!-- Section-->
     <section class="py-5" style="width: 100rem;">
+<!--        class="d-flex justify-content-start"-->
+        <div class="col" style="">
+            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main}">🚀전체</a>
+            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='강아지')}" >🐶강아지</a>
+            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='고양이')}" >🐱고양이</a>
+            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='기타')}" >👽기타</a>
+        </div>
         <div sec:authorize="isAuthenticated()" class="d-flex justify-content-end">
             <!--            <form th:action="@{/post/search}" class="d-flex" role="search">-->
             <!--                <div class="input-group">-->
@@ -104,7 +111,7 @@
                 <ul class="pagination justify-content-center">
                     <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{|?page=${paging.number-1}|}">
+                           th:href="@{|/resalePost/main?category=${category}&page=${paging.number-1}|}">
                             <span>이전</span>
                         </a>
                     </li>
@@ -112,10 +119,10 @@
                         th:if="${page >= paging.number-5 and page <= paging.number+5}"
                         th:classappend="${page == paging.number+1} ? 'active'"
                         class="page-item">
-                        <a th:text="${page}" class="page-link" th:href="@{|?page=${page-1}|}"></a>
+                        <a th:text="${page}" class="page-link" th:href="@{|/resalePost/main?category=${category}&page=${page-1}|}"></a>
                     </li>
                     <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-                        <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+                        <a class="page-link" th:href="@{|/resalePost/main?category=${category}&page=${paging.number+1}|}">
                             <span>다음</span>
                         </a>
                     </li>

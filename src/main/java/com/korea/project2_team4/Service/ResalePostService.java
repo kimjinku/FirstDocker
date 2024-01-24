@@ -114,6 +114,12 @@ public class ResalePostService {
         String randomCode = UUID.randomUUID().toString();
         return String.format("%04d%02d%02d%02d%02d%02d" + randomCode, year, month, day, hour, minute, second);
     }
+    public Page<ResalePost> getPostsByCategory(int page, String category){
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findByCategoryAndNotSold(category,pageable);
+    }
 
 
 }
