@@ -155,7 +155,7 @@
     </style>
     <div class="container">
         <div>
-            <div>
+            <div style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
                 <div class="d-flex justify-content-start">
                     <div class="pt-5">
                         <div class="border-bottom pt-2 mb-4">
@@ -194,7 +194,7 @@
 <!--                <hr class="mt-1 mb-5">-->
                 <div class="col">
                     <div th:each="img, iterStat : ${post.postImages}">
-                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="포스트 이미지"
                              style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
                     </div>
                 </div>
@@ -363,9 +363,10 @@
                 </div>
 
 
-                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post"  onsubmit="return WriteComment();">
-                    <textarea name="content" class="form-control" id="content" rows="3" style="background:transparent;"
-                              placeholder="답변을 작성해 주세요."></textarea>
+
+                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
+                    <textarea name="content" class="form-control" id="content" rows="3" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px"
+                              placeholder="답변을 작성해 주세요"></textarea>
                     <br>
                     <div class="d-flex justify-content-end">
                         <input class="btn-gradient-2" type="submit" value="✔댓글달기" style="border:0px;">
@@ -373,7 +374,8 @@
                 </form>
                 <hr>
                 <div th:each="comment : ${post.comments}" th:if="${comment.parentComment == null}" style="display:flex;">
-                    <div class="card mb-4" style="width:40%; display:flex; background:transparent;">
+
+                    <div class="card mb-4" style="width:40%; display:flex; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px;">
                         <div class="card-body" th:id="${(anchorId != null ) ? (anchorId == comment.id ? 'scrollToAnchor' : '') : ''}">
 <!--                        <div class="card-body">-->
 <!--                            <a th:id="|${anchorId}|"></a>-->
@@ -429,7 +431,6 @@
                                 <input type="text" th:id="'commentReply' + ${comment.id}" name="commentReply" th:onclick="'checkInput(\'' + ${comment.id} + '\')'" th:oninput="'checkInput(\'' + ${comment.id} + '\')'">
                                 <button type="submit" th:id="'submitButton' + ${comment.id}" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
                             </form>
-
                         </div>
 
 
@@ -550,10 +551,10 @@
                         </div>
 
                     </div>
-                    <div class="reply" th:if="${comment.replies != null and comment.replies.size() > 0}">
+                    <div class="reply" th:if="${comment.replies != null and comment.replies.size() > 0}" style="margin-left: 100px">
                         <div class="msger">
                             <div class="msger-chat" style="max-height:300px; width:600px; overflow-y: auto;">
-                                <div class="msg left-msg" th:each="comment : ${comment.replies}" >
+                                <div class="msg left-msg" th:each="comment : ${comment.replies}">
                                     <div class="imessage" >
                                         <div class="msg-info">
                                             <div class="msg-text" th:text="${comment.content}">

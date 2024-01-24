@@ -308,6 +308,15 @@ public class MemberService {
         }
 
     }
+    public boolean existsByUserName(String userName){
+        return memberRepository.existsByUserName(userName);
+    }
+    public boolean existsByEmail(String email){
+        return memberRepository.existsByEmail(email);
+    }
+    public boolean existsByNickName(String nickName){
+        return memberRepository.existsByNickName(nickName);
+    }
 
 
 }

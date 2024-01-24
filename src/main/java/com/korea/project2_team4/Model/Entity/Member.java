@@ -48,7 +48,7 @@ public class  Member {
     private String realName;
 
     // 사용자 닉네임
-    @Column(length = 50)
+    @Column(unique = true, length = 50)
     private String nickName;
 
     // 사용자 핸드폰 번호
