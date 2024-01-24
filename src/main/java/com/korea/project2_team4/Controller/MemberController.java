@@ -160,8 +160,9 @@ public class MemberController {
     @PostMapping("/login")
     public String login(String username, String password) {
 
-        return "redirect:/";
 
+
+        return "redirect:/";
     }
 
     @GetMapping("/managePage")
