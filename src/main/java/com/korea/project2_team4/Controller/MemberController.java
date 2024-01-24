@@ -459,5 +459,9 @@ public class MemberController {
         memberService.phoneNumberCheck(to, session);
         return "redirect:/member/signup";
     }
+    @GetMapping("/checkDuplicateUsername/{username}")
+    public boolean checkDuplicateUsername(@PathVariable String username) {
+        return !memberService.existsByUserName(username);
+    }
 
 }

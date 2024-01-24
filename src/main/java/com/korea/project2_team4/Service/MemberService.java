@@ -308,6 +308,9 @@ public class MemberService {
         }
 
     }
+    public boolean existsByUserName(String userName){
+        return memberRepository.existsByUserName(userName);
+    }
 
 
 }

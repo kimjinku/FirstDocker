@@ -23,4 +23,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.realName LIKE %:kw% OR m.userName LIKE %:kw% OR m.nickName LIKE %:kw%")
     Page<Member> findByKeywordInRealNameOrUserNameOrNickName(@Param("kw") String kw, Pageable pageable);
 
+    boolean existsByUserName(String userName);
 }

@@ -1,5 +1,8 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<!--    html이 만들어질 때 발행되는 토큰값과 이름을 가져온다-->
 <div layout:fragment="content" class="row py-5 px-4">
     <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
         <form th:action="@{|/member/signup|}" th:object="${memberCreateForm}" method="post">
@@ -8,6 +11,7 @@
                     <label for="username" class="form-label">아이디</label>
                     <input id="username" type="text" th:field="*{userName}" class="form-control"
                            placeholder="4~15자 이내로 입력해 주세요" required oninput="validateUsername()">
+                    <button type="button" class="btn btn-primary" onclick="checkDuplicateUsername()">아이디 중복 확인</button>
                     <div id="username_result" style="height: 1rem">
 
                     </div>
@@ -152,21 +156,26 @@
     </script>
 </div>
 <script layout:fragment="script" type='text/javascript'>
-    function validateUsername() {
-            var username = document.getElementById('username').value;
-            var usernameResult = document.getElementById('username_result');
 
-            // 아이디의 길이가 4에서 15자 사이인지 확인
-            if (username.length >= 4 && username.length <= 15) {
-                usernameResult.innerHTML = '유효한 아이디입니다.';
-                usernameResult.style.color = 'green';
-            } else {
-                usernameResult.innerHTML = '아이디는 4~15자 이내로 입력해 주세요.';
-                usernameResult.style.color = 'red';
-            }
-        }
+        var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+		// CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+<!--    function validateUsername() {-->
+<!--            var username = document.getElementById('username').value;-->
+<!--            var usernameResult = document.getElementById('username_result');-->
+
+<!--            // 아이디의 길이가 4에서 15자 사이인지 확인-->
+<!--            if (username.length >= 4 && username.length <= 15) {-->
+<!--                usernameResult.innerHTML = '유효한 아이디입니다.';-->
+<!--                usernameResult.style.color = 'green';-->
+<!--            } else {-->
+<!--                usernameResult.innerHTML = '아이디는 4~15자 이내로 입력해 주세요.';-->
+<!--                usernameResult.style.color = 'red';-->
+<!--            }-->
+<!--        }-->
     function validatePassword() {
-<!--        debugger;-->
         var newPassword = document.getElementById('password').value;
         var confirmPassword = document.getElementById('re_password').value;
         var resDiv = document.getElementById('password_result');
@@ -212,5 +221,30 @@
                     }
                 });
             }
+
+    function checkDuplicateUsername() {
+        var username = document.getElementById('username').value;
+        var usernameResult = document.getElementById('username_result');
+
+        // AJAX를 통해 중복 여부 확인
+        $.ajax({
+            type: "GET",
+            url: "/member/checkDuplicateUsername/"+username, // 실제 서버의 엔드포인트로 변경해야 함
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+            data: {_csrf: csrfToken},
+            success: function(response) {
+                if (response) {
+                    usernameResult.innerHTML = '사용 가능한 아이디입니다.';
+                    usernameResult.style.color = 'green';
+                } else {
+                    usernameResult.innerHTML = '이미 사용 중인 아이디입니다.';
+                    usernameResult.style.color = 'red';
+                }
+            },
+            error: function(error) {
+                console.error("Error checking duplicate username: " + error);
+            }
+        });
+    }
 </script>
 </html>
