@@ -4,8 +4,9 @@
 <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <!--    html이 만들어질 때 발행되는 토큰값과 이름을 가져온다-->
 <div layout:fragment="content" class="row py-5 px-4">
+
     <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
-        <form th:action="@{|/member/signup|}" th:object="${memberCreateForm}" method="post" onsubmit="return validateRegistration()">
+        <form th:action="@{|/member/signup|}" th:object="${memberCreateForm}" method="post" onsubmit="return validateRegistration()" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
             <div>
                 <div class="mb-3">
                     <label for="username" class="form-label">아이디</label>
