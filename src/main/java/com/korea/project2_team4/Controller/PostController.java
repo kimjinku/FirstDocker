@@ -306,6 +306,16 @@ public class PostController {
     public String postDetail(Principal principal, Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit, PostForm postForm) {
         List<Tag> getPostTags = tagService.getTagListByPost(postService.getPost(id));
         List<Tag> allTags = tagService.getAllTags();
+
+        List<Comment> commentList = postService.getPost(id).getComments();
+        List<Comment> parentComments = new ArrayList<>();
+        for (Comment c : commentList) {
+            if (c.getParentComment() == null) {
+                parentComments.add(c);
+            }
+        }
+
+
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
@@ -326,7 +336,7 @@ public class PostController {
                 return "Post/postDetail_form"; // 리다이렉트할 뷰 경로
             }
         }
-
+        model.addAttribute("parentComments", parentComments);
         model.addAttribute("getPostTags", getPostTags);
         model.addAttribute("allTags", allTags);
         model.addAttribute("postForm", postForm);
