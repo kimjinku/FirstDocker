@@ -1,10 +1,22 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <div layout:fragment="content" style='height: 75%'>
-    <div style="width: 90%; height: 100%; margin: 0 auto; text-align: center;">
-        <div style="height: 10%;">
-            <span style="display: none" th:text="${chatRoomId}" id="chatRoomId" name="chatRoomId"></span>
-            <span style="display: none" th:text="${#authentication.name}" id="username" name="username"></span>
-            <h2 class="pt-2 mt-5 mb-2">채팅방: <span th:text="${chatRoomName}"></span></h2>
+    <div id="resizableDiv" style="width: 70%; height: 100%; margin: 0 auto; text-align: center;">
+        <span style="display: none" th:text="${chatRoomId}" id="chatRoomId" name="chatRoomId"></span>
+        <span style="display: none" th:text="${#authentication.name}" id="username" name="username"></span>
+        <div style="display: flex ; height: 10%; width: 100%; justify-content: space-between; align-items: center">
+            <div>
+                <a href="/chat/chatRoomList">
+                    <button class="btn shadow" style="background-color: rgba(255, 255, 255, 0.4); border-radius: 20px;"
+                            type="submit">뒤로가기</button>
+                </a>
+            </div>
+            <h2>채팅방: <span th:text="${chatRoomName}"></span></h2>
+            <div>
+                <form th:action="@{|/chat/leaveChatRoom/${chatRoomId}|}" method="post" onsubmit="return confirmLeaveChatRoom();">
+                    <button class="btn shadow" style="background-color: rgba(255, 255, 255, 0.4); border-radius: 20px;"
+                            type="submit">채팅방 나가기</button>
+                </form>
+            </div>
         </div>
         <div style="width: 100%; height: 90%; display: flex; ">
             <!--메인 채팅창-->
@@ -46,33 +58,48 @@
                             <button class="btn btn-primary" type="button" onclick="document.getElementById('imageUpload').click()">첨부</button>
                         </form>
                         <input type="file" id="imageUpload" name="image" accept="image/*" onchange="previewImage()" style="display: none;">
-                        <div id="imagePreview"></div>
                     </div>
                 </div>
             </div>
             <!--참여자 목록-->
-            <div style="width: 30%; background-color: rgba(255, 255, 255, 0.4);">
-                <div class="d-flex flex-column mt-5">
-                    <div class="d-flex justify-content-center mt-5">
-                        <h2>참여자 목록</h2>
-                    </div>
+            <div style="width: 30%; height: 100%; background-color: rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 20px">
+                <div style="height: 70%;">
+                    <h2>참여자 목록</h2>
                     <div class="d-flex justify-content-center mt-5" style="overflow-y: auto; height: 80%;">
                         <ul>
                             <li th:each="member : ${members}" th:text="${member.userName}"></li>
                         </ul>
                     </div>
                 </div>
-                <div class="d-flex justify-content-center align-items-end mt-3">
-                    <form th:action="@{|/chat/leaveChatRoom/${chatRoomId}|}" method="post" onsubmit="return confirmLeaveChatRoom();">
-                        <button class="btn shadow" style="background-color: rgba(255, 255, 255, 0.4); border-radius: 20px;"
-                                type="submit">채팅방 나가기</button>
-                    </form>
+                <div style="width: 100%; height: 30%; border-top: 1px solid #ccc">
+                    <h2>첨부 이미지</h2>
+                    <div id="imagePreview" style="width: 100%; height: 80%;"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+
+        // window 크기가 변경될 때 호출되는 함수
+        function adjustDivWidth() {
+            const resizableDiv = document.getElementById("resizableDiv");
+            const windowWidth = window.innerWidth; // 현재 window의 너비
+
+            if (windowWidth <= 1000) {
+                resizableDiv.style.width = `90%`;
+            }
+            else {
+                resizableDiv.style.width = `70%`;
+            }
+
+        }
+
+        // 초기 로딩 시 실행
+        adjustDivWidth();
+
+        // window 크기 변경 시 실행
+        window.addEventListener("resize", adjustDivWidth);
 
         // roomId 파라미터 가져오기
         const url = new URL(location.href).searchParams;
@@ -164,6 +191,12 @@
         function addMessageToChat(sender, message, image, time) {
                 console.log("Sender's username: " + sender);
                 console.log("Current user's username: " + username);
+
+            var messageBox = document.createElement('div');
+            messageBox.style.display = 'flex';
+            messageBox.style.flexDirection = 'row';
+            messageBox.style.width = '100%';
+
             var messageItem = document.createElement('div');
             if (sender === username) {
                 messageItem.style.display = 'flex';
@@ -194,7 +227,8 @@
                     '<span style="background-color: yellow; border:none; border-radius: 10px; padding: 5px;">' + message + '</span>' ;
                 }
                 messageItem.appendChild(messageDiv);
-                chatMessages.appendChild(messageItem);
+                messageBox.appendChild(messageItem);
+                chatMessages.appendChild(messageBox);
             }
             else {
                 var profileDiv = document.createElement('div');
@@ -208,7 +242,7 @@
                 // profileImage.src = sender.image;
                 // profileDiv.appendChild(profileImage);
 
-                chatMessages.appendChild(profileDiv);
+                messageBox.appendChild(profileDiv);
 
                 messageItem = document.createElement('div');
 
@@ -254,7 +288,8 @@
                 }
 
                 messageItem.appendChild(messageDiv);
-                chatMessages.appendChild(messageItem);
+                messageBox.appendChild(messageItem);
+                chatMessages.appendChild(messageBox);
 
             }
 
@@ -288,7 +323,7 @@
                     reader.onload = function(e) {
                         var img = document.createElement('img');
                         img.src = e.target.result;
-                        img.style.maxWidth = '100%';
+                        img.style.maxHeight = '100%';
                         preview.appendChild(img);
                     };
 
