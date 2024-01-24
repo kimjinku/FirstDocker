@@ -358,7 +358,7 @@
                 <button th:onclick="@{|window.location='/post/community/main?category=${post.category}&amp;sort=&amp;TagName='|}"
                         style="background:transparent; border:0px;" th:text="'🠔 뒤로가기' + ' : ' + ${post.category} "> </button>
                 <div class="pt-5">
-                    <p th:text="'댓글 ' + ${#lists.size(post.comments)} + '개'"
+                    <p th:text="'댓글 ' + ${parentComments.size()} + '개'"
                        style="background:transparent; padding: 10px; display: inline-block; border-radius: 1rem;"></p>
                 </div>
 
@@ -570,7 +570,6 @@
 
                                                 <a th:href="@{|/comment/reply/${comment.id}/delete|}" style="text-decoration:none; color:inherit;">❌</a>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -686,9 +685,6 @@
             }
 
         }
-
-
-
 
 
     </script>
