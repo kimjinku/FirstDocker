@@ -94,17 +94,11 @@
                         <div class="avatar justify-content-between" style="width:30px, height:30px;">
 
                             <img th:src="@{|/files/${pet.petImage.fileName}|}" alt="pet"
-                                 class="avatar-img rounded-circle" style="width:200px; height:200px;"/>
-                            <!--                            펫프로필 업데이트?사진지우기? 어디서해야할지 아직 생각중-->
-                            <!--                            <form th:action="@{|/profile/deleteProfileImage|}" method="post">-->
-                            <!--                                <input type="hidden" name="profileid" th:value="${profile.id}">-->
-                            <!--                                <button type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>-->
-                            <!--                            </form>-->
+                                 class="avatar-img rounded-circle" style="width:300px; height:300px; margin-top :20px;"/>
                             <div class="flexbox">
                                 <div class="speechbubble">
                                     <a th:href="@{|/profile/detail/${pet.owner.profileName}|}" style="text-decoration:none; color:inherit;">
                                         <p th:text="'Owner : ' + ${pet.owner.profileName}">
-
                                         </p>
                                     </a>
                                 </div>
@@ -113,9 +107,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
 
                     <div class="media-body mb-5 text-white">
                         <!--                        <a th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">프로필 수정</a>-->
