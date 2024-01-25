@@ -93,8 +93,6 @@ public class PetController {
             redirectAttributes.addFlashAttribute("isChecked", isChecked);
             String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
             String encodedOwnerName = URLEncoder.encode(pet.getOwner().getProfileName(), "UTF-8");
-            System.out.println(pet.getName());
-            System.out.println(pet.getLikes().size());
 
             return "redirect:/profile/petprofile/" + encodedPetName + "/" + encodedOwnerName + "/1";
         } else {
@@ -181,7 +179,9 @@ public class PetController {
         petService.updatePet(pet, petProfileForm.getName(), petProfileForm.getContent());
 
         String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
-        return "redirect:/profile/petprofile/" + encodedPetName + "/1";
+        String encodedOwnerName = URLEncoder.encode(pet.getOwner().getProfileName(), "UTF-8");
+
+        return "redirect:/profile/petprofile/" + encodedPetName + "/" + encodedOwnerName + "/1";
     }
 
     @PreAuthorize("isAuthenticated()")
