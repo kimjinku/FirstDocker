@@ -53,9 +53,9 @@
 
                                     <div class="card-body">
                                         <h5 class="card-title">
-                                            <a th:href=@{|/post/detail/${post.id}/0|} th:text="${#strings.length(post.title) &gt; 100 ? #strings.substring(post.content, 0, 20) + ' . . . ' : post.title}" style="font-weight:bold; text-decoration: none; color:inherit;"></a>
+                                            <a th:href=@{|/post/detail/${post.id}/0|} th:text="${#strings.length(post.title) &gt; 20 ? #strings.substring(post.title, 0, 20) + ' . . . ' : post.title}" style="font-weight:bold; text-decoration: none; color:inherit;"></a>
                                         </h5>
-                                        <p class="card-text text-muted" th:text="${#strings.length(post.content) &gt; 100 ? #strings.substring(post.content, 0, 300) + ' . . . ' : post.content}" style="width:400px;"></p>
+                                        <p class="card-text text-muted" th:text="${#strings.length(post.content) &gt; 300 ? #strings.substring(post.content, 0, 300) + ' . . . ' : post.content}" style="width:400px;"></p>
 <!--                                        <span th:text="${#strings.length(post.content) &gt; 100 ? #strings.substring(post.content, 0, 30) + ' . . . ' : post.content}"></span>-->
                                         <div>
                                             <div style="margin-top: 10px; font-size: 17px; display:inline;" th:if="${!post.getTagList().isEmpty()}">

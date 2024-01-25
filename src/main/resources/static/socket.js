@@ -85,40 +85,40 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
     console.log(typeof message.author);
     console.log(typeof myprofileName);
 
-     // author가 myprofileNameReg와 일치하는지 확인하여 조건에 따라 id가 Me 또는 You인 balloon을 동적으로 생성
-     var balloonHTML;
-     if (message.author === myprofileNameReg) {
-         // 보낸메시지
-         balloonHTML =  '<div class="msg right-msg" id="scrollToAnchor">' +
-                        '<div class="msg-bubble">' +
+    // author가 myprofileNameReg와 일치하는지 확인하여 조건에 따라 id가 Me 또는 You인 balloon을 동적으로 생성
+         var balloonHTML;
+         if (message.author === myprofileNameReg) {
+             // 보낸메시지
+             balloonHTML =  '<div class="msg right-msg" id="scrollToAnchor">' +
+                            '<div class="msg-bubble">' +
 
-                         '<div class="msg-text" th:text="${message.content}">' +
-                             message.content +
-                         '</div>' +
-                       '</div>'
-                       '</div>';
+                             '<div class="msg-text" th:text="${message.content}">' +
+                                 message.content +
+                             '</div>' +
+                           '</div>'
+                           '</div>';
 
-     } else {
-         // 받은메시지
-        balloonHTML =  '<div class="msg left-msg" id="scrollToAnchor">' +
-                                '<div class="msg-bubble">' +
+         } else {
+             // 받은메시지
+            balloonHTML =  '<div class="msg left-msg" id="scrollToAnchor">' +
+                                    '<div class="msg-bubble">' +
 
-                                 '<div class="msg-text" th:text="${message.content}">' +
-                                     message.content +
-                                 '</div>' +
-                               '</div>'
-                               '</div>';
-     }
+                                     '<div class="msg-text" th:text="${message.content}">' +
+                                         message.content +
+                                     '</div>' +
+                                   '</div>'
+                                   '</div>';
+         }
 
-     // 생성된 HTML을 #savemessages에 추가
-     $("#savemessages").append(balloonHTML);
+         // 생성된 HTML을 #savemessages에 추가
+         $("#savemessages").append(balloonHTML);
 
-     // 메시지 추가 후에 스크롤하도록
-     var anchorElement = document.getElementById('scrollToAnchor');
-     if (anchorElement) {
+         // 메시지 추가 후에 스크롤하도록
+         var anchorElement = document.getElementById('scrollToAnchor');
+         if (anchorElement) {
 
-         anchorElement.scrollIntoView({ behavior: 'auto' });
-     }
+             anchorElement.scrollIntoView({ behavior: 'auto' });
+         }
 
 }
 

@@ -48,6 +48,10 @@
           reader.onload = function(event) {
             var img = document.createElement("img");
             img.setAttribute("src", event.target.result);
+            // 이미지의 최대 너비와 높이 설정
+            img.style.maxWidth = "100px";
+            img.style.maxHeight = "100px";
+
             document.querySelector("div#image_container").appendChild(img);
           };
 
