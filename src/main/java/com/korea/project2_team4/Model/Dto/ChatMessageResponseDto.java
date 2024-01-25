@@ -20,4 +20,5 @@ public class ChatMessageResponseDto {
     private String message; // 메시지
     private String image; // 이미지
     private String time; // 채팅발송 시간
+
 }

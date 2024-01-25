@@ -1,5 +1,7 @@
-package com.korea.project2_team4.Model.Entity;
+package com.korea.project2_team4.Model.Dto;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -7,6 +9,8 @@ public class SendMessage {
     private String content;
     private String receiver;
     private String createDate;
+    @JsonProperty("dmImage")
+    private DmImageDto dmImageDto;
 
 
 
@@ -42,5 +46,9 @@ public class SendMessage {
 
     public void setCreateDate(String createDate) {
         this.createDate = createDate;
+    }
+
+    public DmImageDto getDmImageDto() {
+        return dmImageDto;
     }
 }
