@@ -114,7 +114,11 @@
                         <input type="hidden" id="buyer_postcode" th:value="${loginedMember.postCode}"/>
                         <input type="hidden" id="buyer_id" th:value="${loginedMember.id}"/>
                         <a type="button" class="btn btn-primary" onclick="requestPay()">카카오 결제</a>
+                        <div>
+                            <a th:href="@{|/profile/dmTo/${post.seller.profileName}|}" style="text-decoration:none; color:inherit;">✉DM문의</a>
+                        </div>
                     </div>
+
                     <div class="col-md-auto"
                          th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                         <form th:action="@{|/resalePost/updateResalePost/${post.id}|}" method="get">

@@ -24,6 +24,7 @@ public class Comment {
     @ManyToOne
     private Profile author;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private LocalDateTime createDate;
