@@ -3,6 +3,7 @@ package com.korea.project2_team4.Controller;
 import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Repository.CommentRepository;
 import com.korea.project2_team4.Service.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,16 +31,21 @@ public class CommentController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
-    public String createComment(Model model, @PathVariable("id") Long id,
+    public String createComment(HttpSession session, Model model, @PathVariable("id") Long id,
                                 @RequestParam(value = "content") String content, Principal principal) {
         Post post = this.postService.getPost(id);
         Member member = this.memberService.getMember(principal.getName());
-        commentService.create(post, content, member.getProfile());
+        Comment comment = commentService.create(post, content, member.getProfile());
+        System.out.println("sendAnchor");
+        System.out.println(comment.getId());
 
-
+        session.setAttribute("anchorId",comment.getId());
+        System.out.println(session.getAttribute("anchorId"));
 
         return "redirect:/post/detail/" + id + "/1";
+//        return "Post/postDetail_form";
     }
+
     private String getUserDeviceToken(Long memberId) {
         // 사용자의 FCM 디바이스 토큰을 데이터베이스에서 가져오는 로직
         // 실제 구현은 데이터베이스에 따라 다를 수 있습니다.
@@ -47,7 +53,7 @@ public class CommentController {
     }
 
     @PostMapping("/commentLike")
-    public String commentLike(Principal principal, @RequestParam("id") Long id) {
+    public String commentLike(HttpSession session, Principal principal, @RequestParam("id") Long id) {
 
 
         if (principal != null) {
@@ -61,8 +67,9 @@ public class CommentController {
             } else {
                 commentService.Like(comment, member);
             }
-
+            session.setAttribute("anchorId",comment.getId());
             return "redirect:/post/detail/" + postId + "/1";
+//            return "redirect:/post/detail/" + postId + "/1" + "#" + comment.getId();
 
         } else {
             return "redirect:/member/login";
@@ -81,7 +88,7 @@ public class CommentController {
     }
 
     @PostMapping("/updateComment/{id}")
-    public String updateComment(Model model, @PathVariable Long id, @ModelAttribute Comment updateComment) {
+    public String updateComment(HttpSession session, Model model, @PathVariable Long id, @ModelAttribute Comment updateComment) {
 
         Comment existingComment = commentRepository.findById(id).orElse(null);
 
@@ -99,7 +106,7 @@ public class CommentController {
             model.addAttribute("post", post);
 
         }
-
+        session.setAttribute("anchorId",comment.getId());
         return "redirect:/post/detail/" + postId + "/1";
 
     }
@@ -201,20 +208,23 @@ public class CommentController {
 
     //대댓글 생성 메서드
     @PostMapping("reply/{id}")
-    public String addReply(@PathVariable("id") Long commentId,
+    public String addReply(@PathVariable("id") Long commentId, HttpSession session,
                            @RequestParam(value = "commentReply", required = false) String commentreply, Principal principal) {
         Comment comment = commentService.getComment(commentId);
         Member member = this.memberService.getMember(principal.getName());
         commentService.createCommentReply(commentId,commentreply, member.getProfile());
-
+        session.setAttribute("anchorId",comment.getId());
         return "redirect:/post/detail/" + comment.getPost().getId() + "/1";
     }
 
+    //대댓글수정
     @PostMapping("reply/{id}/update")
-    public String updateReply(@PathVariable("id") Long replyId,
+    public String updateReply(@PathVariable("id") Long replyId, HttpSession session,
                            @RequestParam(value = "updateReply", required = false) String updateReply, Principal principal) {
         Comment parentComment = commentService.getComment(replyId).getParentComment();
         commentService.updateCommentReply(replyId,updateReply);
+
+        session.setAttribute("anchorId",parentComment.getId());
         return "redirect:/post/detail/" + parentComment.getPost().getId() + "/1";
     }
 

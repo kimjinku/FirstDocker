@@ -106,15 +106,7 @@
                 <div class="media align-items-end profile-header">
                     <div class="profile mr-3">
                         <div class="avatar" style="display:flex; width:30px, height:30px;">
-                            <img th:src="@{|/files/${profile.profileImage.fileName}|}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
-                            <!--                            기본이미지로 변경하는 폼-->
-                            <form th:action="@{|/profile/deleteProfileImage|}" method="post" th:unless="${'no_img.jpg' == profile.profileImage.fileName}">
-                                <input type="hidden" name="profileid" th:value="${profile.id}">
-                                <button th:if="${siteUser == profile.member}" type="submit" class="btn-gradient-2" >기본이미지로 변경하기</button>
-                            </form>
-
-                            <!--                            기본이미지로 변경하는 폼-->
-
+                            <img th:src="@{|/files/${profile.profileImage.fileName}|}" alt="user" class="avatar-img rounded-circle" style="width:300px; height:300px; margin-top:20px;"/>
                             <div class="flexbox">
                                 <div class="speechbubble">
                                     <a th:href="@{|/profile/petprofile/petList|}" style="text-decoration:none; color:inherit;">
@@ -131,6 +123,13 @@
                     </div>
 
                     <div class="media-body mb-5 ">
+                        <!--                            기본이미지로 변경하는 폼-->
+                        <form th:action="@{|/profile/deleteProfileImage|}" method="post" th:unless="${'no_img.jpg' == profile.profileImage.fileName}">
+                            <input type="hidden" name="profileid" th:value="${profile.id}">
+                            <button th:if="${siteUser == profile.member}" type="submit" class="btn-gradient-2" >기본이미지로 변경하기</button>
+                        </form>
+
+                        <!--                            기본이미지로 변경하는 폼-->
                         <span>
                             <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn-gradient-2" style="text-decoration:none; color:inherit;">✏️</a>
                         <h4 class="mt-0 mb-0" th:text="${profile.profileName}" style="color:black;"></h4>

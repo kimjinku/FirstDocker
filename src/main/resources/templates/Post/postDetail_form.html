@@ -155,24 +155,21 @@
     </style>
     <div class="container">
         <div>
-            <div>
+            <div style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
                 <div class="d-flex justify-content-start">
                     <div class="pt-5">
                         <div class="border-bottom pt-2 mb-4">
                             <h2 th:text="${post.title}"></h2>
                         </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="sticker" style="margin-left:30px;">
-                        <a class="text"  th:text="${post.author.profileName}" th:href="@{|/profile/detail/${post.author.profileName}|}" style="text-decoration:none; color:inherit;"></a>
-                    </div>
-                </div>
-                <p style="margin-top: 10px; font-size: 17px; "
-                   th:if="${!post.getTagList().isEmpty()}">
+                        <p style="margin-top: 10px; font-size: 17px; "
+                           th:if="${!post.getTagList().isEmpty()}">
                                             <span th:each="tag, loop : ${post.getTagList()}"
                                                   th:text="' '+ @{|#${tag.name}|}"></span>
-                </p>
+                        </p>
+                    </div>
+                </div>
+
+
                 <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">
                     <input type="hidden" id="heart-fill"
                            th:value="${#lists.contains(post.likeMembers, loginedMember)}">
@@ -194,7 +191,7 @@
 <!--                <hr class="mt-1 mb-5">-->
                 <div class="col">
                     <div th:each="img, iterStat : ${post.postImages}">
-                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="포스트 이미지"
                              style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
                     </div>
                 </div>
@@ -210,6 +207,11 @@
                     <div th:unless="${post.modifyDate != null}">
                                 <span style="font-size: 14px; color: #777;"
                                       th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                    </div>
+                </div>
+                <div>
+                    <div class="sticker" style="margin-left:30px;">
+                        <a class="text"  th:text="${post.author.profileName}" th:href="@{|/profile/detail/${post.author.profileName}|}" style="text-decoration:none; color:inherit;"></a>
                     </div>
                 </div>
                 <br>
@@ -363,8 +365,9 @@
                 </div>
 
 
+
                 <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
-                    <textarea name="content" class="form-control" id="content" rows="3" style="background:transparent;"
+                    <textarea name="content" class="form-control" id="content" rows="3" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px"
                               placeholder="답변을 작성해 주세요"></textarea>
                     <br>
                     <div class="d-flex justify-content-end">
@@ -373,9 +376,11 @@
                 </form>
                 <hr>
                 <div th:each="comment : ${post.comments}" th:if="${comment.parentComment == null}" style="display:flex;">
-                    <div class="card mb-4" style="width:40%; display:flex; background:transparent;">
-                        <div class="card-body">
 
+                    <div class="card mb-4" style="width:40%; display:flex; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px;">
+                        <div class="card-body" th:id="${(anchorId != null ) ? (anchorId == comment.id ? 'scrollToAnchor' : '') : ''}">
+<!--                        <div class="card-body">-->
+<!--                            <a th:id="|${anchorId}|"></a>-->
                             <div style="font-size: 14px; color: #777;" th:text="${comment.content}"></div>
                             <div>
                                 <div th:if="${comment.modifyDate != null}">
@@ -421,13 +426,13 @@
                                 </div>
 
                             </div>
+                            <div th:text="'댓글 : ' + ${comment.replies.size()}"></div>
                         </div>
                         <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
                             <form th:action="@{|/comment/reply/${comment.id}|}" method="post">
-                                <input type="text" id="commentReply" name="commentReply" onclick="checkInput()" oninput="checkInput()">
-                                <button type="submit" id="submitButton" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
+                                <input type="text" th:id="'commentReply' + ${comment.id}" name="commentReply" th:onclick="'checkInput(\'' + ${comment.id} + '\')'" th:oninput="'checkInput(\'' + ${comment.id} + '\')'">
+                                <button type="submit" th:id="'submitButton' + ${comment.id}" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
                             </form>
-
                         </div>
 
 
@@ -548,10 +553,10 @@
                         </div>
 
                     </div>
-                    <div class="reply" th:if="${comment.replies != null and comment.replies.size() > 0}">
+                    <div class="reply" th:if="${comment.replies != null and comment.replies.size() > 0}" style="margin-left: 100px">
                         <div class="msger">
                             <div class="msger-chat" style="max-height:300px; width:600px; overflow-y: auto;">
-                                <div class="msg left-msg" th:each="comment : ${comment.replies}" >
+                                <div class="msg left-msg" th:each="comment : ${comment.replies}">
                                     <div class="imessage" >
                                         <div class="msg-info">
                                             <div class="msg-text" th:text="${comment.content}">
@@ -581,6 +586,22 @@
         </div>
     </div>
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+       //댓글 달때,  앵커기능
+
+        document.addEventListener('DOMContentLoaded', function() {
+                console.log('aaa');
+                var anchorElement = document.getElementById('scrollToAnchor');
+
+                if(anchorElement) {
+                    console.log('anchorelementexist');
+                    anchorElement.scrollIntoView({behavior : 'auto'});
+                }
+
+            }
+
+        )
+
+
         function DeletePost() {
             return confirm("게시글을 삭제하시겠습니까?");
         }
@@ -646,13 +667,16 @@
         }
 
 <!--        //대댓글 입력칸 확인-->
-        function checkInput() {
-            var replyValue = document.getElementById('commentReply').value;
-            var submitButton = document.getElementById('submitButton');
+        function checkInput(commentid) {
+            console.log('인풋칸확인함수'+ commentid);
+            var replyValue = document.getElementById('commentReply'+commentid).value;
+            var submitButton = document.getElementById('submitButton'+commentid);
 
             if (replyValue.trim() === '' ) {
+            console.log('인풋칸입력값empty');
                 submitButton.disabled = true;
             } else {
+            console.log('인풋칸입력값occupied');
                 submitButton.disabled = false;
                 submitButton.style.cursor = 'pointer';
             }
@@ -685,7 +709,6 @@
             }
 
         }
-
 
     </script>
 </div>
