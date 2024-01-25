@@ -1,11 +1,9 @@
 package com.korea.project2_team4.Controller;
 
-import com.korea.project2_team4.Model.Entity.SendMessage;
+import com.korea.project2_team4.Model.Dto.SendMessage;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 

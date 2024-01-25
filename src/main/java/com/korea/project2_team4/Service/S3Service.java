@@ -91,4 +91,12 @@ public class S3Service {
             log.info("파일이 삭제되지 못했습니다.");
         }
     }
+
+//////////////////////////////////////선영 dm이미지 //////////////////////////////////////////////////////////
+    public String generateDmImageName(String sender,String createDate, String contentType) {
+        String FileExtension = getFileExtension(contentType);
+        System.out.println(FileExtension);
+        return "DmImg/"  + sender + "/" + createDate + "." + FileExtension;
+    }
+
 }

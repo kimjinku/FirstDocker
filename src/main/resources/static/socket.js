@@ -46,26 +46,83 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
     // 템플릿의 id=receiver 에서 값 가져오기
     var receiverName = $("#receiver").val();
     var createDate = $("#createDate").val();
+    // dmImage가 필수 사항이 아닌 경우에만 값을 가져옴
+//    var dmImage = $("#dmImage").length > 0 ? $("#dmImage").val() : null;
+//    var dmImage = $("#dmImage").val();
+    var message;
+    var imageInput = document.getElementById('dmImage');
 
-    console.log(typeof createDate);
+    if (selectedFiles && selectedFiles.length > 0) {
+        var dmImage = selectedFiles[0]; // 첫 번째 파일에 접근
+        const imageContentType = dmImage.type;
+        const reader = new FileReader();
 
 
-    // contentValue와 receiverName 포함한 메시지 객체 생성
-        var message = {
-            'content': contentValue,
-            'receiver': receiverName,
-            'createDate' : createDate
+
+        reader.onload = function(e) {
+            const imageBytes = new Uint8Array(e.target.result);
+            // 이제 imageBytes와 imageContentType를 사용할 수 있습니다.
+                // contentValue와 receiverName 포함한 메시지 객체 생성
+            message = {
+                'content': contentValue,
+                'receiver': receiverName,
+                'createDate' : createDate,
+                'dmImage' : {
+                        data : Array.from(imageBytes),
+                        contentType : imageContentType
+                            }
+            };
+
+            if (stompClient && stompClient.connected) {
+                    stompClient.send("/pub/hello", {}, JSON.stringify(message));
+                    stompClient.send("/pub/connect-status", {}, JSON.stringify(message));
+                    console.log('서버전송');
+            //        console.log(message.dmImage);
+                } else {
+                    console.error('WebSocket connection is not established.');
+                }
+
         };
+        reader.readAsArrayBuffer(dmImage);
+        // 입력 폼 초기화
+        contentValue.value = '';
+        imageInput.value = '';
+    } else {
+
+           message = {
+               'content': contentValue,
+               'receiver': receiverName,
+               'createDate' : createDate,
+               'dmImage' : null
+           };
+
+           if (stompClient && stompClient.connected) {
+                   stompClient.send("/pub/hello", {}, JSON.stringify(message));
+                   stompClient.send("/pub/connect-status", {}, JSON.stringify(message));
+                   console.log('서버전송');
+           //        console.log(message.dmImage);
+           } else {
+               console.error('WebSocket connection is not established.');
+           }
+
+            // 입력 폼 초기화
+               contentValue.value = '';
+
+    }
+
+
+
+
+        // dmImage가 필수 사항이 아닌 경우에만 추가
+//        if (dmImage !== null) {
+//            message['dmImage'] = dmImage;
+//            console.log('디엠이미지전송성공');
+//        }
 
 //    stompClient.send("/app/hello", {}, JSON.stringify(message));
 
     // stompClient가 정의되어 있고 연결이 성공적인 경우에만 send 호출
-    if (stompClient && stompClient.connected) {
-        stompClient.send("/pub/hello", {}, JSON.stringify(message));
-        stompClient.send("/pub/connect-status", {}, JSON.stringify(message));
-    } else {
-        console.error('WebSocket connection is not established.');
-    }
+
 
 }
 
@@ -82,8 +139,6 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
 
     console.log(message.author);
     console.log(myprofileNameReg);
-    console.log(typeof message.author);
-    console.log(typeof myprofileName);
 
     // author가 myprofileNameReg와 일치하는지 확인하여 조건에 따라 id가 Me 또는 You인 balloon을 동적으로 생성
          var balloonHTML;
@@ -109,6 +164,24 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
                                    '</div>'
                                    '</div>';
          }
+
+          // message 객체에서 image 속성이 null인지 확인
+        if (message.image === null) {
+            // image가 null일 때의 처리
+            console.log("Image is null");
+        } else {
+            // image가 null이 아닐 때의 처리
+            console.log("Image is not null");
+            var imageElement = document.createElement('img');
+            imageElement.src = message.image;
+            imageElement.style.borderRadius = '10px';
+            imageElement.style.maxWidth = '150px';
+            imageElement.style.maxHeight = '150px';
+
+            var msgImg = document.querySelector('.msg-text');
+            msgImg.appendChild(imageElement);
+        }
+
 
          // 생성된 HTML을 #savemessages에 추가
          $("#savemessages").append(balloonHTML);
