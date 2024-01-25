@@ -407,6 +407,7 @@ public class PostController {
     public String updatePost(Principal principal, Model model, @PathVariable("id") Long id) {
         List<Tag> getPostTags = tagService.getTagListByPost(postService.getPost(id));
         model.addAttribute("getPostTags", getPostTags);
+//        System.out.println(getPostTags.size());
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
