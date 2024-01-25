@@ -1,5 +1,6 @@
-package com.korea.project2_team4.Model.Entity;
+package com.korea.project2_team4.Model.Dto;
 
+import com.korea.project2_team4.Model.Entity.DmPage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,14 +16,10 @@ public class SaveMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-//    private Profile user;
+    private String content;
     private String author;
     private String receiver;
-
-
-    private String content;
-
+    private String image;
     private LocalDateTime createDate;
 
     @ManyToOne
@@ -32,11 +29,12 @@ public class SaveMessage {
     public SaveMessage() {
     }
 
-    public SaveMessage(String content, String author, String receiver,LocalDateTime timenow, DmPage dmPage) {
+    public SaveMessage(String content, String author, String receiver, String image, LocalDateTime timenow, DmPage dmPage) {
 
         this.content = content;
         this.author = author;
         this.receiver = receiver;
+        this.image = image;
         this.createDate = timenow;
         this.dmPage = dmPage;
     }

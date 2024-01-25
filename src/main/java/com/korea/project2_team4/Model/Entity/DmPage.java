@@ -1,6 +1,6 @@
 package com.korea.project2_team4.Model.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.korea.project2_team4.Model.Dto.SaveMessage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

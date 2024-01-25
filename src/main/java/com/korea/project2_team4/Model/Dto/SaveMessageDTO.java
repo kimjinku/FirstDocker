@@ -11,6 +11,7 @@ public class SaveMessageDTO {
     private Long authorId;
     private String author;
     private String receiver;
+    private String image;
     private String content;
     private LocalDateTime createDate;
 

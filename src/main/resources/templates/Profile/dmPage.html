@@ -189,12 +189,15 @@
             </div>
         </div>
 
-            <div class="msger-inputarea">
-                <input type="hidden" id="createDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
-                <input type="hidden" id="receiver" th:value="${partner.profileName}">
-                <input type="text" id="content" class="msger-input" placeholder="Enter your message...">
-                <button type="submit" id="btn-chat" class="msger-send-btn">✔</button>
-            </div>
+        <div class="msger-inputarea">
+            <input type="hidden" id="createDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
+            <input type="hidden" id="receiver" th:value="${partner.profileName}">
+            <input type="text" id="content" class="msger-input" placeholder="Enter your message...">
+            <button type="submit" id="btn-chat" class="msger-send-btn">✔</button>
+        </div>
+        <div class="images-inputarea">
+            <input type="file" id="dmImage" name="dmImage" accept="image/*" multiple/>
+        </div>
     </div>
 <script>
 
@@ -225,6 +228,7 @@
         stompClient.send("/pub/connect-status", {}, status.toString());
     }
 
+    //앵커기능
     document.addEventListener('DOMContentLoaded', function() {
 
             var anchorElement = document.getElementById('scrollToAnchor');
@@ -236,6 +240,20 @@
         }
 
     )
+
+    var selectedFiles; // 전역 변수로 선택된 파일들을 저장
+
+    $("#dmImage").on("change", function(event) {
+        // 파일 선택 시 전역 변수에 저장
+        selectedFiles = event.target.files;
+        console.log(selectedFiles);
+    });
+
+
+    function sendFilesToServer(files) {
+        // 여기에서 파일들을 WebSocket을 통해 서버로 전송하는 로직을 작성
+        // 예: 웹소켓 세션을 열고 파일 데이터를 전송
+    }
 
 
 </script>
