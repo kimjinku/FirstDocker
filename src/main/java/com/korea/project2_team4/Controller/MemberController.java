@@ -63,14 +63,16 @@ public class MemberController {
     public String signup(@Valid MemberCreateForm memberCreateForm, BindingResult bindingResult,
                          String authenticationCode,
                          SessionStatus sessionStatus,
-                         HttpSession session) {
+                         HttpSession session,
+                         Model model) {
 
 //        // 세션에서 authenticationCode 속성 가져오기
 //        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
 //
 //        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
 //        if (expectedAuthenticationCode == null) {
-//            return "redirect:/member/signup";
+//            model.addAttribute("codeNotFound","인증번호를 받은 기록이 없습니다. 인증번호를 받아주세요");
+//            return "Member/signup_form";
 //        }
 //        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
 //        if (expectedAuthenticationCode.equals(authenticationCode)) {
@@ -101,7 +103,8 @@ public class MemberController {
             }
             return "redirect:/";
         }
-//        return "redirect:member/signup";
+//        model.addAttribute("mismatchCode","인증번호가 일치하지 않습니다.");
+//        return "Member/signup_form";
 //    }
 
     @PreAuthorize("isAuthenticated()")
