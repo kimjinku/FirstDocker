@@ -4,6 +4,7 @@ import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Repository.ProfileRepository;
 import com.korea.project2_team4.Repository.ResalePostRepository;
 import com.korea.project2_team4.Repository.TagRepository;
+import com.korea.project2_team4.Service.ImageService;
 import com.korea.project2_team4.Service.ResalePostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -22,12 +23,15 @@ public class DataLoader implements CommandLineRunner {
 
     private final ResalePostService resalePostService;
 
+    private final ImageService imageService;
+
     @Autowired
-    public DataLoader(TagRepository tagRepository, ResalePostRepository resalePostRepository, ProfileRepository profileRepository, ResalePostService resalePostService) {
+    public DataLoader(TagRepository tagRepository, ResalePostRepository resalePostRepository, ProfileRepository profileRepository, ResalePostService resalePostService, ImageService imageService) {
         this.tagRepository = tagRepository;
         this.resalePostRepository = resalePostRepository;
         this.profileRepository = profileRepository;
         this.resalePostService = resalePostService;
+        this.imageService = imageService;
     }
 
     @Override
@@ -60,6 +64,11 @@ public class DataLoader implements CommandLineRunner {
                 resalePost.setPrice("10000");
                 resalePost.setCategory("강아지");
                 resalePost.setCreateDate(LocalDateTime.now());
+                String fileName = "no_img.jpg";
+                String savePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+                String saveName = "no_img.jpg";
+                String filePath = savePath + "\\" + saveName;
+                imageService.createResalePostImage(fileName,saveName,filePath,resalePost);
                 String orderId = resalePostService.makeRandomCode(resalePost.getCreateDate());
                 resalePost.setOrderId(orderId);
                 Profile sellerProfile = profileRepository.findByProfileName("테스트유저1" ).get();

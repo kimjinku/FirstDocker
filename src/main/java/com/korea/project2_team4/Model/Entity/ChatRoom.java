@@ -37,7 +37,7 @@ public class ChatRoom {
     public ChatRoom(Long id, String roomName, Member admin, String password, int maxMember) {
         this.id = id;
         this.roomName = roomName;
-        this.admin = admin;
+        this.changeAdmin(admin);
         this.password = password;
         this.maxMember = maxMember;
     }
