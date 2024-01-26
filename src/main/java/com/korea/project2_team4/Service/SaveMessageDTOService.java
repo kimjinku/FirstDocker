@@ -60,6 +60,7 @@ public class SaveMessageDTOService {
             d.setAuthor(s.getAuthor());
             d.setReceiver(s.getReceiver());
             d.setContent(s.getContent());
+            d.setImage(s.getImage());
             d.setCreateDate(s.getCreateDate());
 
             newList.add(d);
