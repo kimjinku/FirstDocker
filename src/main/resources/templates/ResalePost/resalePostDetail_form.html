@@ -86,26 +86,6 @@
                                   th:text="${post.wishProfiles.size()}"></span></i>
                     </div>
 
-                    <!--                    <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">-->
-                    <!--                        <input type="hidden" id="heart-fill"-->
-                    <!--                               th:value="${#lists.contains(post.likeMembers, loginedMember)}">-->
-                    <!--                        <form id="likeForm" class="flex-fill" th:action="@{|/post/postLike|}" method="post"-->
-                    <!--                              onsubmit="return toggleHeartIcon()">-->
-                    <!--                            <input type="hidden" name="id" th:value="${post.id}">-->
-                    <!--                            <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"-->
-                    <!--                               style="font-size: 2rem; color:red; cursor:pointer;">-->
-                    <!--                            <span class="badge rounded-pill bg-primary"-->
-                    <!--                                  th:text="${post.likeMembers.size()}"></span></i>-->
-                    <!--                        </form>-->
-                    <!--                    </div>-->
-                    <!--                    <div class="pb-5 col-md-12 text-end">-->
-                    <!--                        <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"-->
-                    <!--                           style="font-size: 2rem; color:red; cursor:pointer;">-->
-                    <!--                            <span class="badge rounded-pill bg-primary"-->
-                    <!--                                  th:text="${post.likeMembers.size()}"></span></i>-->
-                    <!--                    </div>-->
-                    <!--                    -->
-                    <!--                    <a type="button" class="btn btn-primary" th:href="@{|/resalePost/payment|}">결제 페이지로</a>-->
                     <div th:if="${loginedMember != null}">
                         <input type="hidden" id="buyer_email" th:value="${loginedMember.email}"/>
                         <input type="hidden" id="buyer_name" th:value="${loginedMember.realName}"/>
@@ -145,6 +125,63 @@
                             </button>
                         </form>
                     </div>
+                    <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+                        <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
+                                th:data-bs-target="'#reportPostModal'"
+                                th:onclick="'reportPostModal'" style="border:0px;">🚨신고
+                        </button>
+                        <div th:if="${alreadyReportedMessage}" class="alert alert-warning" role="alert">
+                            <p th:text="${alreadyReportedMessage}"></p>
+                        </div>
+                    </div>
+                    <!--                    게시물 신고 모달 창-->
+                    <!-- Modal Structure -->
+                    <div class="modal fade" id="reportPostModal" tabindex="-1" role="dialog" aria-labelledby="reportPostModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reportPostModalLabel">게시글 신고</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Form for reporting post -->
+                                    <form sec:authorize="isAuthenticated()" th:action="@{|/resalePost/report/${post.id}|}" method="post">
+                                        <!-- Checkboxes for report reasons -->
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                            <label class="form-check-label">부적절한 내용</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                            <label class="form-check-label">광고성 콘텐츠</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                            <label class="form-check-label">개인정보 노출</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                            <label class="form-check-label">저작권 침해</label>
+                                        </div>
+                                        <!-- Add more checkboxes as needed -->
+
+                                        <!-- Textarea for additional comments -->
+                                        <div class="form-group">
+                                            <label for="additionalComments">추가적인 내용</label>
+                                            <textarea class="form-control" id="additionalComments" name="reportPostContent" rows="3"></textarea>
+                                        </div>
+
+                                        <!-- Submit button -->
+                                        <button type="submit" class="btn btn-primary">신고하기</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--                    게시물 신고 모달 창 끝-->
                     <!--                    <a type="button" class="btn btn-primary" th:href="@{|/resalePost/previousPage|}">이전 화면으로</a>-->
                 </div>
             </div>
@@ -181,6 +218,10 @@
         }
         function soldPost() {
             return confirm("게시글을 판매 내역으로 옮기시겠습니까?");
+        }
+         // 게시물 신고 모달
+         function reportPostModal() {
+            $('#reportPostModal').modal('show');
         }
 
         //게시물 좋아요

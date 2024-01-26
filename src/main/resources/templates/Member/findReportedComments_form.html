@@ -17,6 +17,7 @@
                         <a class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
                         <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/posts|}" data-page="2">게시글 관리</a>
                         <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/comments|}" data-page="3">댓글 관리</a>
+                        <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/resalePosts|}" data-page="3">중고 거래글 관리</a>
                     </div>
                     <h2 class="font-700 mt-5r mb-5">신고된 댓글</h2>
                     <div class="col">
@@ -190,6 +191,14 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-auto"
+                                             th:if="${(comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and comment.author.member.role != 'ROLE_ADMIN'}">
+                                            <form th:action="@{|/comment/cancelReport/${comment.id}|}" method="post"
+                                                  onsubmit="return cancelReport();">
+                                                <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">신고해제
+                                                </button>
+                                            </form>
+                                        </div>
 <!--                                        <div class="col-md-auto"-->
 <!--                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">-->
                                             <div class="col-md-auto"
@@ -249,6 +258,9 @@
         }
         function openApproveModal() {
         $('#approveModal').modal('show');
+        }
+        function cancelReport() {
+        return confirm("신고를 해제하시겠습니까?");
         }
     </script>
     </body>

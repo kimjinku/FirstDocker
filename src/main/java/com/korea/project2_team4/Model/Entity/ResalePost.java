@@ -56,5 +56,8 @@ public class ResalePost {
 
     private String orderId;
 
+    @OneToMany(mappedBy = "resalePost", cascade = CascadeType.REMOVE )
+    private List<Report> reports;
+
 }
 

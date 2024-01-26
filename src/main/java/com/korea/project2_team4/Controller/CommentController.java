@@ -246,6 +246,15 @@ public class CommentController {
 
         return "redirect:/report/comments";
     }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/cancelReport/{id}")
+    public String cancelReport(@PathVariable("id") Long id){
+        Comment comment = commentService.getComment(id);
+        List <Report> reports = comment.getReports();
+        reportService.deleteReports(reports);
+
+        return "redirect:/report/comments";
+    }
 
     //대댓글 생성 메서드
     @PostMapping("reply/{id}")

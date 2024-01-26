@@ -2,6 +2,7 @@ package com.korea.project2_team4.Controller;
 
 import com.korea.project2_team4.Model.Entity.Comment;
 import com.korea.project2_team4.Model.Entity.Post;
+import com.korea.project2_team4.Model.Entity.ResalePost;
 import com.korea.project2_team4.Model.Entity.Tag;
 import com.korea.project2_team4.Repository.PostRepository;
 import com.korea.project2_team4.Service.*;
@@ -45,6 +46,14 @@ public class ReportController {
         model.addAttribute("defaultTagList", defaultTagList);
         model.addAttribute("paging",reportedComments);
         return "Member/findReportedComments_form";
+    }
+    @GetMapping("/resalePosts")
+    public String reportedResalePosts(Model model, @RequestParam(value = "page", defaultValue = "0") int page){
+        Page<ResalePost> reportedPosts = reportService.findResalePostsLinkedWithReports(page);
+        List<Tag> defaultTagList = tagService.getDefaultTags();
+        model.addAttribute("defaultTagList", defaultTagList);
+        model.addAttribute("paging",reportedPosts);
+        return "Member/findReportedResalePosts_form";
     }
 
 
