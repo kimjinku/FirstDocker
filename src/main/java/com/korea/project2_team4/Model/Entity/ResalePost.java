@@ -29,6 +29,7 @@ public class ResalePost {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String price;

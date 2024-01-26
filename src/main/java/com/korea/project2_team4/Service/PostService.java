@@ -171,6 +171,10 @@ public class PostService {
         return postRepository.findByCommentContent(kw);
     }
 
+    public List<Post> searchTagName(String kw) {
+        return postRepository.findByTagName(kw);
+    }
+
     // post를 optional타입으로 가져오기
     public Post getPost(Long id) {
         Optional<Post> postOptional = postRepository.findById(id);
@@ -384,6 +388,13 @@ public class PostService {
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
         return postRepository.findByCommentWithPaging(kw, pageable);
+    }
+
+    public Page<Post> pagingByTagName(String kw, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
+        return postRepository.findByTagNameWithPaging(kw, pageable);
     }
 
 }
