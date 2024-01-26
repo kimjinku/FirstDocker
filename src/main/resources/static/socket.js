@@ -204,8 +204,11 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
     }
 
 
-     // 생성된 HTML을 #savemessages에 추가
-     $("#savemessages").append(balloonHTML);
+     // 생성된 HTML을 #savemessages에 추가. 텍스트 입력이 있을때만.
+     if (message.content != null && message.content.trim() !== "") {
+         $("#savemessages").append(balloonHTML);
+     }
+
 
 
      // 메시지 추가 후에 스크롤하도록
