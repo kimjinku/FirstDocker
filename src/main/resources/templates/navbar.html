@@ -52,27 +52,23 @@
                     <li class="nav-item" style="margin-right: 10px;">
                         <a class="nav-link" th:href="@{|/adoption/main|}">리뷰공간</a>
                     </li>
-                    <li class="nav-item dropdown" style="margin-right: 10px;">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            중고거래
+                    <li class="nav-item" style="margin-right: 10px;">
+                        <a class="nav-link" th:href="@{|/resalePost/main|}">
+                            중고시장
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" th:href="@{|/resalePost/main|}">팔아요</a></li>
-    <!--                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>-->
-                            <li><hr class="dropdown-divider"></li>
-                            <li sec:authorize="isAuthenticated()"><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
-                        </ul>
                     </li>
 
                     <li class="nav-item" style="margin-right: 10px;">
 
-                        <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>
-
+                        <a class="nav-link active" sec:authorize="isAuthenticated()" href="/chat/chatRoomList">채팅</a>
                     </li>
+
                     <li class="nav-item" style="margin-right: 10px;">
 
-                        <a class="nav-link active" sec:authorize="isAuthenticated()" href="/chat/chatRoomList">채팅기능(임시)</a>
+                        <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기</a>
+
                     </li>
+
 
 
 
