@@ -405,6 +405,15 @@ public class PostController {
 
         return "redirect:/report/posts";
     }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/cancelReport/{id}")
+    public String cancelReport(@PathVariable("id") Long id){
+        Post post = postService.getPost(id);
+        List <Report> reports = post.getReports();
+        reportService.deleteReports(reports);
+
+        return "redirect:/report/posts";
+    }
 
     @GetMapping("/updatePost/{id}")
     public String updatePost(Principal principal, Model model, @PathVariable("id") Long id) {

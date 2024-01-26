@@ -1,5 +1,6 @@
 package com.korea.project2_team4.Model.Entity;
 
+import com.korea.project2_team4.Service.ReportService;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -28,6 +29,9 @@ public class Report {
     @ManyToOne
 //    @JoinColumn(name="comment_id")
     private Comment comment;
+
+    @ManyToOne
+    private ResalePost resalePost;
 
     @ManyToOne
     @JoinColumn(name="member_id", nullable = false)
