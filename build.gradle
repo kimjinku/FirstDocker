@@ -56,6 +56,8 @@ dependencies {
 //	// https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
 //	compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
+	// flexmark-java 버전
+	implementation 'com.vladsch.flexmark:flexmark-all:0.62.2'
 
 	allprojects {
 		repositories {

@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
 <div layout:fragment="content" class="row py-5 px-4">
 
-    <form th:action="@{/post/createPost}" th:object="${postForm}" method="post" enctype="multipart/form-data" id="myForm">
+    <form th:action="@{/post/createPost}" th:object="${postForm}" method="post" enctype="multipart/form-data" id="myForm" onsubmit="submitForm()">
         <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
             <div>
                 <label class="form=label">태그 선택</label>
@@ -44,7 +44,24 @@
             </div>
             <div class="mb-3">
                 <label for="content" class="form-label">내용</label>
-                <textarea class="form-control" id="content" th:field="*{content}" rows="3"></textarea>
+                <input id="content" type="hidden" name="editorContent" th:field="*{content}">
+                <div  class="toast-editor-custom" style="background:white;">
+                    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+                    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+                    <div id="editor"></div>
+                    <script>
+                        const editor = new toastui.Editor({
+                          el: document.querySelector('#editor'),
+                          previewStyle: 'vertical',
+                          height: '500px',
+                          initialValue: ""
+                        });
+                    </script>
+                </div>
+
+<!--                <textarea class="form-control" id="content" th:field="*{content}" rows="3"></textarea>-->
+<!--                <textarea type="hidden" id="content" name="editorContent" class="form-control" th:field="*{content}" rows="3"></textarea>-->
+
             </div>
 
             <div>
@@ -54,7 +71,7 @@
 
             </div>
             <button type="submit" class="btn btn-light" onclick="checkTitle()">저장</button>
-
+            <button type="button" id="checkeditor" onclick="checkEditor()"></button>
         </div>
     </form>
 
@@ -103,5 +120,30 @@
     document.getElementById('myForm').onsubmit = function() {
         return checkTitle();
     };
+
+   // 폼이 제출될 때 실행되는 함수
+    function submitForm() {
+        // 텍스트 에디터의 내용 가져오기
+        var editorContent = editor.getMarkdown();
+        console.log(editorContent);
+
+        // 숨겨진 필드에 텍스트 에디터의 내용 설정
+        document.getElementById('content').value = editorContent;
+
+        // 폼 제출
+        document.getElementById('myForm').submit();
+    }
+
+    function checkEditor() {
+        // 텍스트 에디터의 내용 가져오기
+        var editorContent = editor.getMarkdown();
+        console.log(editorContent);
+
+        // 숨겨진 필드에 텍스트 에디터의 내용 설정
+        document.getElementById('content').value = editorContent;
+        console.log('Editor Content After Setting Hidden Field:' + document.getElementById('content').value);
+
+
+    }
 </script>
 </html>

@@ -322,10 +322,14 @@ public class PostController {
         }
         if (hit == 0) {
             Post post = postService.getPostIncrementView(id);
+            String htmlContent = MarkdownToHtmlConverter.convertToHtml(post.getContent());
             model.addAttribute("post", post);
+            model.addAttribute("htmlContent", htmlContent);
         } else {
             Post post = postService.getPost(id);
+            String htmlContent = MarkdownToHtmlConverter.convertToHtml(post.getContent());
             model.addAttribute("post", post);
+            model.addAttribute("htmlContent", htmlContent);
         }
         if (principal != null) {
             String username = principal.getName();
