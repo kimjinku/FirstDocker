@@ -50,6 +50,7 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
 //    var dmImage = $("#dmImage").length > 0 ? $("#dmImage").val() : null;
 //    var dmImage = $("#dmImage").val();
     var message;
+    var messageInput = document.getElementById('content');
     var imageInput = document.getElementById('dmImage');
 
     if (selectedFiles && selectedFiles.length > 0) {
@@ -85,7 +86,7 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
         };
         reader.readAsArrayBuffer(dmImage);
         // 입력 폼 초기화
-        contentValue.value = '';
+        messageInput.value = '';
         imageInput.value = '';
     } else {
 
@@ -106,7 +107,7 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
            }
 
             // 입력 폼 초기화
-               contentValue.value = '';
+           messageInput.value = '';
 
     }
 
