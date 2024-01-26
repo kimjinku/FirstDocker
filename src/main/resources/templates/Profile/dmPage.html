@@ -97,6 +97,7 @@
 
         .left-msg .msg-bubble {
           border-bottom-left-radius: 0;
+          background: #dcdcdc;
         }
 
         .right-msg {
@@ -160,7 +161,9 @@
     <div class="msger">
         <div class="msger-header">
             <div class="msger-header-title">
-                <span> <img th:src="@{|/files/${partner.profileImage.fileName}|}" style="width: 50px;
+                <span>
+                    <a th:href="@{|/profile/detail/${partner.profileName}|}" style="text-decoration:none; color:inherit;">
+                        <img th:src="@{|/files/${partner.profileImage.fileName}|}" style="width: 50px;
   height: 50px;
   margin-right: 10px;
   background: #ddd;
@@ -168,6 +171,7 @@
   background-position: center;
   background-size: cover;
   border-radius: 50%;"> <div th:text="${partner.profileName}" style="display:inline;"></div>
+                    </a>
                 </span>
 
 
