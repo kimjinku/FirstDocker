@@ -140,6 +140,7 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
 
     // author가 myprofileNameReg와 일치하는지 확인하여 조건에 따라 id가 Me 또는 You인 balloon을 동적으로 생성
      var balloonHTML;
+     var imageballoonHTML;
 
      if (message.author === myprofileNameReg) {
          // 보낸메시지
@@ -171,19 +172,41 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
     } else {
         // image가 null이 아닐 때의 처리
         console.log("Image is not null");
+
         var imageElement = document.createElement('img');
         imageElement.src = message.image;
         imageElement.style.borderRadius = '10px';
         imageElement.style.maxWidth = '150px';
         imageElement.style.maxHeight = '150px';
 
-        var msgImg = document.getElementById(message.id);
-        msgImg.appendChild(imageElement);
+        if (message.author === myprofileNameReg) {
+            //보낸메세지일때
+             imageballoonHTML =  '<div class="msg right-msg" id="scrollToAnchor">' +
+                                                    '<div class="msg-bubble">' +
+
+                                                     '<div class="msg-text" th:id="${message.id}" th:text="${message.content}">' +
+                                                         '<img src="' + message.image + '" >' +
+                                                     '</div>' +
+                                                   '</div>'
+                                                   '</div>';
+        } else { //받은메세지 일때
+            imageballoonHTML =  '<div class="msg left-msg" id="scrollToAnchor">' +
+                                                    '<div class="msg-bubble">' +
+
+                                                     '<div class="msg-text" th:id="${message.id}" th:text="${message.content}">' +
+                                                           '<img src="' + message.image + '" >' +
+                                                     '</div>' +
+                                                   '</div>'
+                                                   '</div>';
+        }
+        // 생성된 HTML을 #savemessages에 추가
+        $("#savemessages").append(imageballoonHTML);
     }
 
 
      // 생성된 HTML을 #savemessages에 추가
      $("#savemessages").append(balloonHTML);
+
 
      // 메시지 추가 후에 스크롤하도록
      var anchorElement = document.getElementById('scrollToAnchor');

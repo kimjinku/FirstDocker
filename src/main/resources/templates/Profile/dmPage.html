@@ -181,8 +181,13 @@
             <div th:each="message, iterStat : ${dmPageMessages}">
                 <div th:class="${message.authorId == me.getId} ? 'msg right-msg' : 'msg left-msg'" th:id="${iterStat.last} ? 'scrollToAnchor' : ''">
                     <div class="msg-bubble">
-
+<!--                        <div th:if="${message.image != null}" class="msg-image" id="msg-image">-->
+<!--                            <img src="" alt="">-->
+<!--                        </div>-->
+                        <img th:if="${message.image}" th:src="${message.image}" alt="img" style="width:150px; height:150px;">
                         <div class="msg-text" th:id="${message.id}" th:text="${message.content}">
+<!--                            <p th:text="${message.image}"></p>-->
+<!--                            <img th:src="${message.image}" alt="img">-->
                         </div>
                     </div>
                 </div>
