@@ -3,18 +3,37 @@
 <div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
     <head>
         <style>
-            body, html {
-           height: 100%;
-           margin: 0;
-       }
+        .search-input{
+          width: 300px;
+          padding: 10px;
+          border: 4px solid transparent;
+          border-radius:10px 10px 10px 10px ;
+          outline: none;
+          font-size: 20px;
+          color: inherit;
+          background: white;
+        }
+        .search-button{
+             text-align: center;
+            <!--height: 51px;-->
+            width: 40px;
+            outline: none;
+            cursor: pointer;
+            border: 4px solid transparent;
+             border-radius: 0 10px 10px 0 ;
+            border-left: none;
+            background: none;
+            font-size: 20px;
+            border-left: 4px solid transparent;
+        }
+            .transparent-button {
+            background-color: rgba(0, 0, 0, 0); /* 빨간색 배경색, 투명도 0.5 (50%) */
+            border: none; /* 기본 테두리 제거 (선택적) */
+            color: white; /* 텍스트 색상 지정 (선택적) */
+            padding: 10px 20px; /* 내부 여백 지정 (선택적) */
+            cursor: pointer; /* 마우스 커서를 포인터로 변경 (선택적) */
+        }
 
-      body {
-       background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
-         background-size: cover;
-         background-attachment: fixed;
-         color: #555;
-        font-family: sans-serif;
-      }
         </style>
         <meta charset="UTF-8">
         <title>중고 거래</title>
@@ -23,12 +42,7 @@
     <!-- Section-->
     <section class="py-5" style="width: 100rem;">
 <!--        class="d-flex justify-content-start"-->
-        <div class="col" style="">
-            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main}">🚀전체</a>
-            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='강아지')}" >🐶강아지</a>
-            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='고양이')}" >🐱고양이</a>
-            <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='기타')}" >👽기타</a>
-        </div>
+
         <div sec:authorize="isAuthenticated()" class="d-flex justify-content-end">
             <!--            <form th:action="@{/post/search}" class="d-flex" role="search">-->
             <!--                <div class="input-group">-->
@@ -37,34 +51,44 @@
             <!--                    <button class="btn btn-outline-success" type="submit">🔍</button>-->
             <!--                </div>-->
             <!--            </form>-->
-            <a type="button" class="btn btn-primary" th:href="@{|/resalePost/createResalePost|}">거래글 쓰기</a>
 
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="resaleDropdown"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    중고거래
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="resaleDropdown">
-                    <li><a class="dropdown-item" th:href="@{|/resalePost/myWishList|}">관심목록</a></li>
-                    <li><a class="dropdown-item" th:href="@{|/resalePost/soldOutResalePosts|}">판매내역</a></li>
-                    <li><a class="dropdown-item" th:href="@{|/resalePost/purchaseHistory|}">구매내역</a></li>
-                    <li class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
-                </ul>
-            </div>
         </div>
         <div class="container px-3 px-lg-5 mt-5">
             <!--            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-start">-->
             <div class="d-flex justify-content-start">
+
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="resaleDropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background:transparent; border:0px; color:black;">
+                        🛒
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="resaleDropdown">
+                        <li><a class="dropdown-item" th:href="@{|/resalePost/myWishList|}">관심목록</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/resalePost/soldOutResalePosts|}">판매내역</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/resalePost/purchaseHistory|}">구매내역</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓</a></li>
+                    </ul>
+                </div>
+                <a type="button" class="btn btn-primary" th:href="@{|/resalePost/createResalePost|}" style="background:transparent; border:0px; color:black;">내물건올리기</a>
+                <div class="col" style="margin-left:100px;">
+                    <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main}" style="text-decoration:none; color:inherit;">🚀전체</a>
+                    <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='강아지')}" style="text-decoration:none; color:inherit;" >🐶강아지</a>
+                    <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='고양이')}" style="text-decoration:none; color:inherit;" >🐱고양이</a>
+                    <a type="button" class="btn-gradient-2" th:href="@{/resalePost/main(category='기타')}" style="text-decoration:none; color:inherit;" >👽기타</a>
+                </div>
+
+
                 <form th:action="@{/resalePost/search}" class="d-flex" role="search">
                     <div class="input-group">
-                        <input class="form-control me-2" type="text" id="search_kw" name="kw"
+                        <input class="search-input" type="text" id="search_kw" name="kw"
                                placeholder="거래 글의 제목, 내용, 상품명을 검색하세요" aria-label="Search"
-                               style="width: 330px;" th:value="${kw}">
-                        <button class="btn btn-outline-success" type="submit">🔍</button>
+                               style="width: 330px; height:40px;" th:value="${kw}">
+                        <button class="search-button" type="submit">🔍</button>
                     </div>
                 </form>
-                <a type="button" class="btn btn-primary" th:href="@{|/resalePost/main|}">검색어 초기화</a>
+                <a type="button" class="transparent-button" th:href="@{|/resalePost/main|}" style="text-decoration:none; color:inherit;">검색어 초기화</a>
+
             </div>
             <div class="row gx-3 gx-lg-5 row-cols-1 row-cols-md-4 row-cols-xl-4 justify-content-center">
                 <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
@@ -89,14 +113,16 @@
                             </div>
                             <!-- post-->
                             <div class="card-body p-4">
-                                <div class="text-center">
+                                <div class="">
                                     <!--post title-->
-                                    <h5 class="fw-bolder" th:text="${post.title}"></h5>
+                                    <h5  th:text="${post.title}" style="text-weight:bold;"></h5>
                                     <!--post content-->
-                                    <span th:text="'가격 : ' + ${post.price} + '원'"></span>
-                                    <div th:text="'조회수 : ' + ${post.view}"></div>
-                                    <div th:text="'찜한 회원 : ' + ${post.wishProfiles.size() + '명'}"></div>
+                                    <div th:text="${post.price} + '원'"></div>
                                     <div th:text="'상품명 : ' + ${post.name}"></div>
+                                    <span style="font-size: 14px;">
+                                        <div th:text="'💛찜 ' + ${post.wishProfiles.size()}" style="display:inline;"></div>
+                                        <div th:text="'view : ' + ${post.view}" style="display:inline; margin-left:10px;"></div>
+                                    </span>
                                 </div>
                             </div>
                         </div>
