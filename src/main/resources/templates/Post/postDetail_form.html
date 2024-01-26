@@ -202,7 +202,8 @@
                 </div>
                 <br>
                 <div class="pt-3 pb-5">
-                    <div th:text="${post.content}"></div>
+<!--                    <div th:text="${post.content}"></div>-->
+                    <div th:utext="${htmlContent}"></div>
                 </div>
                 <div>
                     <div th:if="${post.modifyDate != null}">
