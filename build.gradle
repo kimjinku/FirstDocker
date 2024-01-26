@@ -59,6 +59,7 @@ dependencies {
 	// flexmark-java 버전
 	implementation 'com.vladsch.flexmark:flexmark-all:0.62.2'
 
+
 	allprojects {
 		repositories {
 			maven { url 'https://jitpack.io' }

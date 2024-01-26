@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -265,6 +266,67 @@ public class ResalePostController {
     @GetMapping("/payment")
     public String paymentPage(){
         return "ResalePost/payment";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/report/{id}")
+    public String reportResalePost(@PathVariable("id") Long id, @RequestParam(value = "reasons", required = false) List<String> categories,
+                             @RequestParam("reportPostContent") String content, Principal principal) {
+        // 현재 사용자 정보 가져오기
+        if (principal != null) {
+            String username = principal.getName();
+
+            // 이미 해당 사용자가 신고한 게시물인지 확인
+            if (reportService.isAlreadyResalePostReported(id, username)) {
+                // 이미 신고한 경우, 여기에서 처리할 내용 추가
+                return "redirect:/resalePost/detail/{id}/1"; // 또는 적절한 경로로 리다이렉트
+            }
+        }
+        Report report = new Report();
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        Member member = memberService.getMember(principal.getName());
+        if (categories != null && !categories.isEmpty()) {
+            report.setCategory(categories);
+            System.out.println("카테고리 : " + categories);
+        } else {
+            report.setCategory(new ArrayList<>());
+        }
+        if (!content.isEmpty() && content != null) {
+            report.setContent(content);
+        } else {
+            report.setContent("");
+        }
+        report.setMember(member);
+        report.setResalePost(resalePost);
+        report.setReportDate(LocalDateTime.now());
+        reportService.save(report);
+
+        return "redirect:/resalePost/detail/{id}/1";
+    }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/cancelReport/{id}")
+    public String cancelReport(@PathVariable("id") Long id){
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        List <Report> reports = resalePost.getReports();
+//        resalePost.setReports(null);
+//        resalePostService.save(resalePost);
+        reportService.deleteReports(reports);
+
+        return "redirect:/report/resalePosts";
+    }
+
+    @PostMapping("/deleteReportedResalePost/{id}")
+    public String deleteReportedResalePost(@PathVariable("id") Long id) {
+        String encodedCategory;
+        try {
+            encodedCategory = URLEncoder.encode(postService.getPost(id).getCategory(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // 예외 처리 필요
+            encodedCategory = "";
+        }
+        resalePostService.deleteById(id);
+
+        return "redirect:/report/resalePosts";
     }
 }
 
