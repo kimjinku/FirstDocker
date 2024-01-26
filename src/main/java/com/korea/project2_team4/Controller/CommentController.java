@@ -165,7 +165,7 @@ public class CommentController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/report/{id}")
-    public String reportPost(@PathVariable("id") Long id, @RequestParam(value = "reasons", required = false) List<String> categories,
+    public String report(@PathVariable("id") Long id, @RequestParam(value = "reasons", required = false) List<String> categories,
                              @RequestParam("reportCommentContent") String content, Principal principal) {
         // 현재 사용자 정보 가져오기
         Comment comment = commentService.getComment(id);
@@ -197,10 +197,51 @@ public class CommentController {
 
         return "redirect:/post/detail/" + comment.getPost().getId() + "/1";
     }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/reportReply/{id}")
+    public String reportReply(@PathVariable("id") Long id, @RequestParam(value = "reasons", required = false) List<String> categories,
+                         @RequestParam("reportReplyContent") String content, Principal principal) {
+        // 현재 사용자 정보 가져오기
+        Comment comment = commentService.getComment(id);
+        if (principal != null) {
+            String username = principal.getName();
+            // 이미 해당 사용자가 신고한 댓글인지 확인
+            if (reportService.isAlreadyCommentReported(id, username)) {
+                // 이미 신고한 경우, 여기에서 처리할 내용 추가
+                return "redirect:/post/detail/" + comment.getPost().getId() + "/1"; // 또는 적절한 경로로 리다이렉트
+            }
+        }
+        Report report = new Report();
+        Member member = memberService.getMember(principal.getName());
+        if (categories != null && !categories.isEmpty()) {
+            report.setCategory(categories);
+            System.out.println("카테고리 : " + categories);
+        } else {
+            report.setCategory(new ArrayList<>());
+        }
+        if (!content.isEmpty() && content != null) {
+            report.setContent(content);
+        } else {
+            report.setContent("");
+        }
+        report.setMember(member);
+        report.setComment(comment);
+        report.setReportDate(LocalDateTime.now());
+        reportService.save(report);
+
+        return "redirect:/post/detail/" + comment.getPost().getId() + "/1";
+    }
+
+
     @PostMapping("/deleteReportedComment/{id}")
     public String deleteReportedComment(@PathVariable Long id) {
+        Comment comment = commentService.getComment(id);
+
 
         commentService.deleteById(id);
+
 
 
         return "redirect:/report/comments";

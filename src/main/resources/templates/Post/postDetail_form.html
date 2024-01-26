@@ -359,10 +359,10 @@
             <div class="mb-3">
                 <button th:onclick="@{|window.location='/post/community/main?category=${post.category}&amp;sort=&amp;TagName='|}"
                         style="background:transparent; border:0px;" th:text="'🠔 뒤로가기' + ' : ' + ${post.category} "> </button>
-                <div class="pt-5">
-                    <p th:text="'댓글 ' + ${parentComments.size()} + '개'"
-                       style="background:transparent; padding: 10px; display: inline-block; border-radius: 1rem;"></p>
-                </div>
+<!--                <div class="pt-5">-->
+<!--                    <p th:text="'댓글 ' + ${parentComments.size()} + '개'"-->
+<!--                       style="background:transparent; padding: 10px; display: inline-block; border-radius: 1rem;"></p>-->
+<!--                </div>-->
 
 
 
@@ -447,14 +447,19 @@
                                     </button>
                                 </div>
                                 <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+<!--                                    <button type="button" class="btn-gradient-2" data-bs-toggle="modal"-->
+<!--                                                     th:data-bs-target="'#reportCommentModal'"-->
+<!--                                                     th:onclick="'reportCommentModal'" style="background:transparent; border:0px;">🚨-->
+<!--                                </button>-->
                                     <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
-                                            th:data-bs-target="'#reportCommentModal'"
-                                            th:onclick="'reportCommentModal'" style="background:transparent; border:0px;">🚨
+                                            th:data-bs-target="'#reportCommentModal' + ${comment.id}"
+                                            th:onclick="'reportCommentModal(\'' + ${comment.id} + '\')'" style="background:transparent; border:0px;">🚨
                                     </button>
                                 </div>
 
                                 <!--                                댓글 신고 모달창-->
-                                <div class="modal fade" id="reportCommentModal" tabindex="-1" role="dialog" aria-labelledby="reportCommentModalLabel" aria-hidden="true">
+<!--                                <div class="modal fade" id="reportCommentModal" tabindex="-1" role="dialog" aria-labelledby="reportCommentModalLabel" aria-hidden="true">-->
+                                <div class="modal fade" th:id="'reportCommentModal' + ${comment.id}" tabindex="-1" role="dialog" aria-labelledby="'reportCommentModalLabel' + ${comment.id}" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -572,7 +577,64 @@
                                                     <input type="text" th:id="'updateReply'+${comment.id}" name="updateReply" th:value="${comment.content}" style="display:none;" th:onclick="'checkInputReply(\'' + ${comment.id} + '\')'" th:oninput="'checkInputReply(\'' + ${comment.id} + '\')'"/>
                                                     <button type="button" th:id="'updateReplyButton'+${comment.id}" class="btn-gradient-2" style="border:0px; cursor:default;" th:onclick="'visableInput(\'' + ${comment.id} + '\')'">✏️</button>
                                                 </form>
+                                                <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+<!--                                                    <button type="button" class="btn-gradient-2" data-bs-toggle="modal"-->
+<!--                                                            th:data-bs-target="'#reportReplyModal'"-->
+<!--                                                            th:onclick="'reportReplyModal'" style="background:transparent; border:0px;">🚨-->
+<!--                                                    </button>-->
+                                                    <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
+                                                            th:data-bs-target="'#reportReplyModal' + ${comment.id}"
+                                                            th:onclick="|reportReplyModal('${comment.id}')|" style="background:transparent; border:0px;">🚨
+                                                    </button>
+                                                </div>
+                                                <!--                               대댓글 신고 모달창-->
+<!--                                                <div class="modal fade" id="reportReplyModal" tabindex="-1" role="dialog" aria-labelledby="reportReplyModalLabel" aria-hidden="true">-->
+                                                <div class="modal fade" th:id="'reportReplyModal' + ${comment.id}" tabindex="-1" role="dialog" aria-labelledby="'reportReplyModalLabel' + ${comment.id}" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="reportReplyModalLabel">게시글 신고</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                        aria-label="Close">
+                                                                    <span aria-hidden="true"></span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- Form for reporting post -->
+                                                                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/reportReply/${comment.id}|}" method="post">
+                                                                    <!-- Checkboxes for report reasons -->
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                                                        <label class="form-check-label">부적절한 내용</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                                                        <label class="form-check-label">광고성 콘텐츠</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                                                        <label class="form-check-label">개인정보 노출</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                                                        <label class="form-check-label">저작권 침해</label>
+                                                                    </div>
+                                                                    <!-- Add more checkboxes as needed -->
 
+                                                                    <!-- Textarea for additional comments -->
+                                                                    <div class="form-group">
+                                                                        <label for="additionalComments">추가적인 내용</label>
+                                                                        <textarea class="form-control" id="reportReplies" name="reportReplyContent" rows="3"></textarea>
+                                                                    </div>
+
+                                                                    <!-- Submit button -->
+                                                                    <button type="submit" class="btn btn-primary">신고</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--                                대댓글 신고 모달창 끝-->
                                                 <a th:href="@{|/comment/reply/${comment.id}/delete|}" style="text-decoration:none; color:inherit;">❌</a>
                                             </div>
                                         </div>
@@ -581,6 +643,7 @@
                             </div>
                         </div>
                     </div>
+                    <!--                여기까지-->
                 </div>
             </div>
         </div>
@@ -662,9 +725,21 @@
         function reportPostModal() {
             $('#reportPostModal').modal('show');
         }
-        function reportCommentModal() {
-            $('#reportCommentModal').modal('show');
-        }
+<!--        function reportCommentModal() {-->
+<!--            $('#reportCommentModal').modal('show');-->
+<!--        }-->
+<!--        function reportReplyModal(){-->
+<!--            $('#reportReplyModal').modal('show');-->
+<!--        }-->
+
+    function reportReplyModal(commentId) {
+        $('#reportReplyModal' + commentId).modal('show');
+    }
+
+    function reportCommentModal(commentId) {
+        $('#reportCommentModal' + commentId).modal('show');
+    }
+
 
 <!--        //대댓글 입력칸 확인-->
         function checkInput(commentid) {

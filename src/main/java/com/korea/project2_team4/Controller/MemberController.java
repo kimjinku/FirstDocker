@@ -218,7 +218,7 @@ public class MemberController {
         OAuth2UserInfo socialLogin = (OAuth2UserInfo) session.getAttribute("SOCIAL_LOGIN");
 
         if (socialLogin != null) {
-            memberCreateForm.setNickName(socialLogin.getName());
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                memberCreateForm.setNickName(socialLogin.getName());
             memberCreateForm.setUserName(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
             memberCreateForm.setPassword(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
             memberCreateForm.setRe_password(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
