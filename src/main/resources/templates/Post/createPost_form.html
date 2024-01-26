@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
 <div layout:fragment="content" class="row py-5 px-4">
 
-    <form th:action="@{/post/createPost}" th:object="${postForm}" method="post" enctype="multipart/form-data" id="myForm" onsubmit="submitForm()">
+    <form th:action="@{/post/createPost}" th:object="${postForm}" method="post" enctype="multipart/form-data" id="myForm">
         <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
             <div>
                 <label class="form=label">태그 선택</label>
@@ -70,8 +70,7 @@
                 <input type="file" id="imageFiles" name="imageFiles" multiple>
 
             </div>
-            <button type="submit" class="btn btn-light" onclick="checkTitle()">저장</button>
-
+            <button type="submit" class="btn btn-light" onclick="submitForm()" >저장</button>
         </div>
     </form>
 
@@ -130,8 +129,10 @@
         // 숨겨진 필드에 텍스트 에디터의 내용 설정
         document.getElementById('content').value = editorContent;
 
+
         // 폼 제출
         document.getElementById('myForm').submit();
     }
+
 </script>
 </html>
