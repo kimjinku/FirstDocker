@@ -12,7 +12,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByPostTitle.size() > 0}"
                          th:each="post : ${searchResultsByPostTitle}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 170px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -25,7 +25,7 @@
                                     <div class="mt-4" th:text="${post.author.profileName}"></div>
                                 </div>
                                 <div class="d-flex mt-3">
-                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
+                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
                                         <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
@@ -50,7 +50,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByPostContent.size() > 0}"
                          th:each="post : ${searchResultsByPostContent}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 170px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -63,7 +63,7 @@
                                     <div class="mt-4" th:text="${post.author.profileName}"></div>
                                 </div>
                                 <div class="d-flex mt-3">
-                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
+                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
                                         <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
@@ -88,7 +88,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByProfileName.size() > 0}"
                          th:each="post : ${searchResultsByProfileName}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 170px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -101,7 +101,7 @@
                                     <div class="mt-4" th:text="${post.author.profileName}"></div>
                                 </div>
                                 <div class="d-flex mt-3">
-                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
+                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
                                         <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
@@ -126,12 +126,12 @@
                     </div>
                     <div class="col" th:if="${searchResultsByCommentContent.size() > 0}"
                          th:each="post : ${searchResultsByCommentContent}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 170px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
-                                    <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
+                                    <div class="mb-2" th:text="${#strings.length(post.title) > 30 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
                                          style="font-size: 18px; font-weight: bold; color: #333;"></div>
-                                    <div th:text="${#strings.length(post.content) > 100 ? #strings.substring(post.content, 0, 60) + '...' : post.content}"
+                                    <div th:text="${#strings.length(post.content) > 60 ? #strings.substring(post.content, 0, 60) + '...' : post.content}"
                                          style="font-size: 14px; color: #777;"></div>
                                     <div class="mt-1" style="font-size: 12px; color: #aaa;">
                                         댓글 수: <span th:text="${#lists.size(post.comments)}"></span>
@@ -139,7 +139,7 @@
                                     <div class="mt-4" th:text="${post.author.profileName}"></div>
                                 </div>
                                 <div class="d-flex mt-3">
-                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
+                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
                                         <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
