@@ -182,7 +182,7 @@
                 <div th:class="${message.authorId == me.getId} ? 'msg right-msg' : 'msg left-msg'" th:id="${iterStat.last} ? 'scrollToAnchor' : ''">
                     <div class="msg-bubble">
 
-                        <div class="msg-text" th:text="${message.content}">
+                        <div class="msg-text" th:id="${message.id}" th:text="${message.content}">
                         </div>
                     </div>
                 </div>
