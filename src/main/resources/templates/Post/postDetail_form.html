@@ -152,6 +152,11 @@
          padding: 0.2rem 0.5rem;
          cursor: pointer;
        }
+
+       #charCountMessage {
+         font-weight: bold;
+         color: red;
+       }
     </style>
     <div class="container">
         <div>
@@ -368,7 +373,8 @@
 
                 <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
                     <textarea name="content" class="form-control" id="content" rows="3" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px"
-                              placeholder="답변을 작성해 주세요"></textarea>
+                              placeholder="답변을 작성해 주세요 (최대 500자 까지 작성 가능합니다.)" oninput="checkLength()"></textarea>
+                    <div class="mt-5" style="" id="charCountMessage"></div>
                     <br>
                     <div class="d-flex justify-content-end">
                         <input class="btn-gradient-2" type="submit" value="✔댓글달기" style="border:0px;">
@@ -708,6 +714,19 @@
                 submitButton.type = 'submit';
             }
 
+        }
+
+        function checkLength() {
+            var textarea = document.getElementById('content');
+            var charCountMessage = document.getElementById('charCountMessage');
+            var maxLength = 500;
+
+            if (textarea.value.length > maxLength) {
+                textarea.value = textarea.value.substring(0, maxLength);
+                charCountMessage.innerHTML = '최대 500자 까지만 입력 가능합니다.';
+            } else {
+                charCountMessage.innerHTML = '';
+            }
         }
 
     </script>

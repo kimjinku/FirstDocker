@@ -43,6 +43,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "WHERE LOWER(c.content) LIKE LOWER(CONCAT('%',:kw,'%')) ")
     List<Post> findByCommentContent(@Param("kw") String kw);
 
+    // 태그 이름으로 검색 조회
+    @Query("SELECT p FROM Post p" + " LEFT JOIN p.tagMaps tm " + "LEFT JOIN tm.tag t " +
+            "WHERE LOWER(t.name) LIKE LOWER(CONCAT('%',:kw,'%')) ")
+    List<Post> findByTagName(@Param("kw") String kw);
+
 
      //태그명을 기준으로 해당 태그를 갖고 있는 포스트를 페이징하여 조회
     @Query("SELECT p FROM Post p JOIN p.tagMaps tm JOIN tm.tag t WHERE t.name = :tagName")
@@ -151,5 +156,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT DISTINCT p FROM Post p JOIN p.comments c " +
             "WHERE LOWER(c.content) LIKE LOWER(CONCAT('%',:kw,'%')) ")
     Page<Post> findByCommentWithPaging(@Param("kw") String kw, Pageable pageable);
+
+    @Query("SELECT p FROM Post p " +
+            "WHERE LOWER(p.tagMaps) LIKE LOWER(CONCAT('%',:kw,'%')) ")
+    Page<Post> findByTagNameWithPaging(@Param("kw") String kw, Pageable pageable);
 
 }

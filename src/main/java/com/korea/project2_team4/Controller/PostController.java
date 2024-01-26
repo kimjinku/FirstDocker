@@ -211,22 +211,26 @@ public class PostController {
         List<Post> searchResultsByPostContent = postService.searchPostContent(kw);
         List<Post> searchResultsByProfileName = postService.searchProfileName(kw);
         List<Post> searchResultsByCommentContent = postService.searchCommentContent(kw);
+        List<Post> searchResultsByTagName = postService.searchTagName(kw);
         List<String> recentSearchKeywords = recentSearchService.getRecentSearchKeywords();
 
         Collections.reverse(searchResultsByPostTitle);
         Collections.reverse(searchResultsByPostContent);
         Collections.reverse(searchResultsByProfileName);
         Collections.reverse(searchResultsByCommentContent);
+        Collections.reverse(searchResultsByTagName);
 
         searchResultsByPostTitle = searchResultsByPostTitle.subList(0, Math.min(5, searchResultsByPostTitle.size()));
         searchResultsByPostContent = searchResultsByPostContent.subList(0, Math.min(5, searchResultsByPostContent.size()));
         searchResultsByProfileName = searchResultsByProfileName.subList(0, Math.min(5, searchResultsByProfileName.size()));
         searchResultsByCommentContent = searchResultsByCommentContent.subList(0, Math.min(5, searchResultsByCommentContent.size()));
+        searchResultsByTagName = searchResultsByTagName.subList(0, Math.min(5, searchResultsByTagName.size()));
 
         model.addAttribute("searchResultsByPostTitle", searchResultsByPostTitle);
         model.addAttribute("searchResultsByPostContent", searchResultsByPostContent);
         model.addAttribute("searchResultsByProfileName", searchResultsByProfileName);
         model.addAttribute("searchResultsByCommentContent", searchResultsByCommentContent);
+        model.addAttribute("searchResultsByTagName", searchResultsByTagName);
         model.addAttribute("recentSearchKeywords", recentSearchKeywords);
         model.addAttribute("kw", kw);
 
@@ -280,6 +284,19 @@ public class PostController {
         model.addAttribute("searchfor", "댓글 검색 결과 조회");
         model.addAttribute("pagingBy", pagingByComment);
         model.addAttribute("kw", kw);
+        return "Search/showMore";
+    }
+
+    @GetMapping("/showMoreTagName")
+    public String showMoreTagNames(@RequestParam(value = "kw", defaultValue = "") String kw,
+                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                   Model model) {
+        Page<Post> pagingByTagName = postService.pagingByTagName(kw, page);
+
+        model.addAttribute("searchfor", "태그 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByTagName);
+        model.addAttribute("kw", kw);
+
         return "Search/showMore";
     }
 
