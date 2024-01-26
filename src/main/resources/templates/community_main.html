@@ -38,7 +38,7 @@
                 <div class="row row-cols-1 align-items-center">
                     <div class="col">
                         <div class="col" th:each="post, loop : ${paging}">
-                            <div class="card" style="width: 100%; background:transparent;">
+                            <div class="card mt-2" style="width: 100%; background:transparent;">
                                 <div class="d-flex">
                                     <div th:if="${not #lists.isEmpty(post.postImages)}">
                                         <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">

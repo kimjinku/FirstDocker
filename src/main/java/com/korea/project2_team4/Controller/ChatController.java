@@ -54,6 +54,16 @@ public class ChatController {
         return "Chat/chatList_form";
     }
 
+    @GetMapping("/searchChatRoom")
+    public String searchChatRoom(@RequestParam("roomId") Long roomId, Model model, Principal principal) {
+
+        List<ChatRoomListResponseDto> searchResult = chatService.searchRoomsById(roomId, principal);
+
+        model.addAttribute("searchResult", searchResult);
+        return "Chat/searchChatList_form";
+    }
+
+
 
 
     @PostMapping("/chatRoom")
