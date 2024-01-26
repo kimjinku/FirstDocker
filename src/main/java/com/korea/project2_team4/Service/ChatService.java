@@ -159,7 +159,7 @@ public class ChatService {
         if (chatDTO.getImage() != null) {
             ChatImageDto chatImage = chatDTO.getImage();
             // 파일명 생성
-            String fileName =  s3Service.generateChatImageName(chatDTO.getRoomId(), chatDTO.getSender(),chatDTO.getTime(), chatImage.getContentType());
+            String fileName = s3Service.generateChatImageName(chatDTO.getRoomId(), chatDTO.getSender(), chatDTO.getTime(), chatImage.getContentType());
             // s3에 이미지를 업로드하고 그 이미지 path 경로를 img에 저장
             img = s3Service.uploadToS3(fileName, chatImage.getData(), chatImage.getContentType());
         } else
@@ -232,4 +232,26 @@ public class ChatService {
         }
 
     }
+
+    public List<ChatRoomListResponseDto> searchRoomsById(Long roomId, Principal principal) {
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        List<ChatRoomListResponseDto> searchResults = new ArrayList<>();
+
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(roomId);
+        chatRoomOptional.ifPresent(chatRoom -> {
+            searchResults.add(ChatRoomListResponseDto.builder()
+                    .id(chatRoom.getId())
+                    .roomName(chatRoom.getRoomName())
+                    .adminName(chatRoom.getAdmin().getUserName())
+                    .memberCount(chatRoom.getMemberChatRooms().size())
+                    .maxMember(chatRoom.getMaxMember())
+                    .inChatRoom(memberChatRoomRepository.findByChatroomAndMember(chatRoom, member).isPresent())
+                    .build());
+        });
+
+        return searchResults;
+    }
+
 }
