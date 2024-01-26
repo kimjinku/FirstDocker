@@ -71,7 +71,7 @@
 
             </div>
             <button type="submit" class="btn btn-light" onclick="checkTitle()">저장</button>
-            <button type="button" id="checkeditor" onclick="checkEditor()"></button>
+
         </div>
     </form>
 
@@ -132,18 +132,6 @@
 
         // 폼 제출
         document.getElementById('myForm').submit();
-    }
-
-    function checkEditor() {
-        // 텍스트 에디터의 내용 가져오기
-        var editorContent = editor.getMarkdown();
-        console.log(editorContent);
-
-        // 숨겨진 필드에 텍스트 에디터의 내용 설정
-        document.getElementById('content').value = editorContent;
-        console.log('Editor Content After Setting Hidden Field:' + document.getElementById('content').value);
-
-
     }
 </script>
 </html>
