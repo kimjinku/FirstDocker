@@ -74,6 +74,7 @@ public class DmController {
         Profile profile = profileService.getProfileByName(saveMessage.getAuthor());
 
         SaveMessageDTO messageDTO = new SaveMessageDTO();
+        messageDTO.setId(saveMessage.getId());
         messageDTO.setAuthorId(profile.getId());
         messageDTO.setAuthor(saveMessage.getAuthor());
         messageDTO.setContent(saveMessage.getContent());

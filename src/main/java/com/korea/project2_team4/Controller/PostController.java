@@ -312,6 +312,7 @@ public class PostController {
                 parentComments.add(c);
             }
         }
+        model.addAttribute("parentComments", parentComments);
 
 
         if (principal != null) {
@@ -348,7 +349,7 @@ public class PostController {
             session.removeAttribute("anchorId");
         }
 
-        model.addAttribute("parentComments", parentComments);
+
         model.addAttribute("getPostTags", getPostTags);
         model.addAttribute("allTags", allTags);
         model.addAttribute("postForm", postForm);
