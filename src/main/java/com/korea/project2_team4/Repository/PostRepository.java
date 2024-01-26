@@ -157,8 +157,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "WHERE LOWER(c.content) LIKE LOWER(CONCAT('%',:kw,'%')) ")
     Page<Post> findByCommentWithPaging(@Param("kw") String kw, Pageable pageable);
 
-    @Query("SELECT p FROM Post p " +
-            "WHERE LOWER(p.tagMaps) LIKE LOWER(CONCAT('%',:kw,'%')) ")
+    @Query("SELECT DISTINCT p FROM Post p JOIN p.tagMaps tm " +
+            "WHERE LOWER(tm.tag.name) LIKE LOWER(CONCAT('%', :kw, '%'))")
     Page<Post> findByTagNameWithPaging(@Param("kw") String kw, Pageable pageable);
 
 }
