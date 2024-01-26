@@ -138,61 +138,59 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
     let myprofileNameReg = myprofileName.replace(reg, "");
 
 
-    console.log(message.author);
-    console.log(myprofileNameReg);
-
     // author가 myprofileNameReg와 일치하는지 확인하여 조건에 따라 id가 Me 또는 You인 balloon을 동적으로 생성
-         var balloonHTML;
-         if (message.author === myprofileNameReg) {
-             // 보낸메시지
-             balloonHTML =  '<div class="msg right-msg" id="scrollToAnchor">' +
-                            '<div class="msg-bubble">' +
+     var balloonHTML;
 
-                             '<div class="msg-text" th:text="${message.content}">' +
-                                 message.content +
-                             '</div>' +
-                           '</div>'
-                           '</div>';
+     if (message.author === myprofileNameReg) {
+         // 보낸메시지
+         balloonHTML =  '<div class="msg right-msg" id="scrollToAnchor">' +
+                        '<div class="msg-bubble">' +
 
-         } else {
-             // 받은메시지
-            balloonHTML =  '<div class="msg left-msg" id="scrollToAnchor">' +
-                                    '<div class="msg-bubble">' +
+                         '<div class="msg-text" th:id="${message.id}" th:text="${message.content}">' +
+                             message.content +
+                         '</div>' +
+                       '</div>'
+                       '</div>';
 
-                                     '<div class="msg-text" th:text="${message.content}">' +
-                                         message.content +
-                                     '</div>' +
-                                   '</div>'
-                                   '</div>';
-         }
+     } else {
+         // 받은메시지
+        balloonHTML =  '<div class="msg left-msg" id="scrollToAnchor">' +
+                                '<div class="msg-bubble">' +
 
-          // message 객체에서 image 속성이 null인지 확인
-        if (message.image === null) {
-            // image가 null일 때의 처리
-            console.log("Image is null");
-        } else {
-            // image가 null이 아닐 때의 처리
-            console.log("Image is not null");
-            var imageElement = document.createElement('img');
-            imageElement.src = message.image;
-            imageElement.style.borderRadius = '10px';
-            imageElement.style.maxWidth = '150px';
-            imageElement.style.maxHeight = '150px';
+                                 '<div class="msg-text" th:id="${message.id}" th:text="${message.content}">' +
+                                     message.content +
+                                 '</div>' +
+                               '</div>'
+                               '</div>';
+     }
 
-            var msgImg = document.querySelector('.msg-text');
-            msgImg.appendChild(imageElement);
-        }
+      // message 객체에서 image 속성이 null인지 확인
+    if (message.image === null) {
+        // image가 null일 때의 처리
+        console.log("Image is null");
+    } else {
+        // image가 null이 아닐 때의 처리
+        console.log("Image is not null");
+        var imageElement = document.createElement('img');
+        imageElement.src = message.image;
+        imageElement.style.borderRadius = '10px';
+        imageElement.style.maxWidth = '150px';
+        imageElement.style.maxHeight = '150px';
+
+        var msgImg = document.getElementById(message.id);
+        msgImg.appendChild(imageElement);
+    }
 
 
-         // 생성된 HTML을 #savemessages에 추가
-         $("#savemessages").append(balloonHTML);
+     // 생성된 HTML을 #savemessages에 추가
+     $("#savemessages").append(balloonHTML);
 
-         // 메시지 추가 후에 스크롤하도록
-         var anchorElement = document.getElementById('scrollToAnchor');
-         if (anchorElement) {
+     // 메시지 추가 후에 스크롤하도록
+     var anchorElement = document.getElementById('scrollToAnchor');
+     if (anchorElement) {
 
-             anchorElement.scrollIntoView({ behavior: 'auto' });
-         }
+         anchorElement.scrollIntoView({ behavior: 'auto' });
+     }
 
 }
 
