@@ -5,6 +5,8 @@ import com.korea.project2_team4.Model.Dto.ChatMessageResponseDto;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
 import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
+import com.korea.project2_team4.Model.Entity.Member;
+import com.korea.project2_team4.Model.Entity.Profile;
 import com.korea.project2_team4.Service.ChatService;
 import com.korea.project2_team4.Service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +50,17 @@ public class ChatController {
     @GetMapping("/chatRoomList")
     public String showChatRoomList(Model model, Principal principal) {
         List<ChatRoomListResponseDto> chatRooms = chatService.findAllRoom(principal);
+
+//        Member sitemember = this.memberService.getMember(principal.getName());
+////        Profile partner = profileService.getProfileByName(profileName);
+//        List<ChatRoomListResponseDto> myChatRooms = new ArrayList<>();
+//        for (ChatRoomListResponseDto c : chatRooms) {
+//            if(c.isInChatRoom()) {
+//                myChatRooms.add(c);
+//            }
+//        }
+//
+//        model.addAttribute("mychatRoomList", myChatRooms);
 
         model.addAttribute("list", chatRooms);
         log.info("SHOW ALL ChatList{}", chatRooms);
