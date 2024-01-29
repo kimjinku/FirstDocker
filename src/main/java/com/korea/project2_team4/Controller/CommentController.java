@@ -28,6 +28,7 @@ public class CommentController {
     private final MemberService memberService;
     private final CommentRepository commentRepository;
     private final ReportService reportService;
+    private final TagService tagService;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
@@ -116,6 +117,9 @@ public class CommentController {
     public String getMyPosts(Model model, Principal principal, @RequestParam(value = "page", defaultValue = "0") int page) {
         Profile author = memberService.getMember(principal.getName()).getProfile();
         Page<Comment> myComments = commentService.getMyComments(page, author);
+        List<Tag> defaultTagList = tagService.getDefaultTags();
+        model.addAttribute("defaultTagList", defaultTagList);
+
         model.addAttribute("paging", myComments);
         return "Member/findMyComments_form";
     }
@@ -125,6 +129,8 @@ public class CommentController {
     public String getMyLikedComments(Model model, Principal principal, @RequestParam(value = "page", defaultValue = "0") int page) {
         Member member = memberService.getMember(principal.getName());
         Page<Comment> myLikedComments = commentService.getMyLikedComments(page, member);
+        List<Tag> defaultTagList = tagService.getDefaultTags();
+        model.addAttribute("defaultTagList", defaultTagList);
         model.addAttribute("paging", myLikedComments);
         return "Member/findMyLikedComments_form";
     }

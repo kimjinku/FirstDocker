@@ -15,22 +15,23 @@
                     </div>
                 </div>
             </div>
-            <div class="row row-cols-1 align-items-center">
-                <div class="col">
-                    <div>
-                        <p th:text="${'회원 닉네임 : '+ siteMember.getNickName()}"></p>
-                        <p th:text="${'회원 전화 번호 : '+ siteMember.getPhoneNum()}"></p>
-                        <p th:text="${'회원 이메일 : '+ siteMember.getEmail()}"></p>
-                        <p th:text="${'회원 주소지 : '+ siteMember.getStreetAddress()+' '+siteMember.getDetailAddress()}"></p>
+            <div class="container">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-md-6"> <!-- 여기서 col-md-6은 화면의 중앙에 내용을 배치하기 위한 Bootstrap의 그리드 시스템을 사용한 것입니다. -->
+                        <h2 class="text-center">회원 정보</h2> <!-- text-center를 추가하여 제목을 중앙 정렬합니다. -->
+                        <div class="card">
+                            <div class="card-body">
+                                <p th:text="${'회원 닉네임 : '+ siteMember.getNickName()}"></p>
+                                <p th:text="${'회원 전화 번호 : '+ siteMember.getPhoneNum()}"></p>
+                                <p th:text="${'회원 이메일 : '+ siteMember.getEmail()}"></p>
+                                <p th:text="${'회원 주소지 : '+ siteMember.getStreetAddress()+' '+siteMember.getDetailAddress()}"></p>
+                                <div class="text-center"> <!-- 버튼들도 중앙에 배치하기 위해 text-center 클래스를 추가합니다. -->
+                                    <a type="button" class="btn btn-primary" th:href="@{|/profile/myPage/update|}">회원 정보 수정</a>
+                                    <a type="button" class="btn btn-primary" th:href="@{|/member/resetPassword|}">비밀 번호 변경</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <a type="button" class="btn btn-primary" th:href="@{|/profile/myPage/update|}">회원 정보 수정</a>
-                    <a type="button" class="btn btn-primary" th:href="@{|/member/resetPassword|}">비밀 번호 변경</a>
-<!--                    <form th:action="@{|/notifications/subscribe/${siteMember.getId()}|}" th:method="post">-->
-<!--                        <input type="checkbox" id="admin" name="subscribe"-->
-<!--                               th:checked="${siteMember != null and siteMember.isSubscribed}"/>-->
-<!--                        <button th:if="${siteMember != null and siteMember.isSubscribed}" type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">알림 설정 해제</button>-->
-<!--                        <button th:if="${siteMember != null and !siteMember.isSubscribed}" type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">알림 설정 받기</button>-->
-<!--                    </form>-->
                 </div>
             </div>
         </div>

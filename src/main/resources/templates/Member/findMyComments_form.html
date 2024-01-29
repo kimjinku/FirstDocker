@@ -19,82 +19,143 @@
 
                         </div>
                     </div>
+                    <h2>내가 쓴 댓글 목록</h2>
                     <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
                     <div class="col" th:each="comment, loop : ${paging}">
-                        <div class="card" style="width: 100%;">
+                        <div class="card" style="width: 100%; background:transparent;">
                             <div class="d-flex">
-                                <div class="card-body">
-                                    <!--                                <a th:href="'/post/' + ${post.id}" style="text-decoration: none; color:inherit;">-->
-                                    <h5 class="card-title">내가 댓글을 작성한 게시물 :
-                                        <a th:href=@{|/post/detail/${comment.getPost.id}/0|} th:text="${comment.getPost.title}"></a>
+                                <div th:if="${not #lists.isEmpty(comment.post.postImages)}">
+                                    <div th:each="img, iterStat : ${comment.post.postImages}" th:if="${iterStat.index lt 1}">
+                                        <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                    </div>
+                                </div>
+                                <div th:unless="${comment.post.postImages != null and not #lists.isEmpty(comment.post.postImages)}">
+                                    <img class="card-img-top" th:src="@{|/img/no_img.jpg|}" alt="default image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                </div>
+                                <div class="card-body" style="display: flex; flex-direction: column; height: 100%;">
+                                    <h3 th:if="${comment.parentComment != null}" th:text="${comment.parentComment.content +'에 달린 대댓글'}">
+                                    </h3>
+                                    <h5 class="card-title">
+                                        <a th:href=@{|/post/detail/${comment.post.id}/0|} th:text="${#strings.length(comment.post.title) &gt; 20 ? #strings.substring(comment.post.title, 0, 20) + ' . . . ' : '내가 댓글을 작성한 게시물 : ' + comment.post.title}" style="font-weight:bold; text-decoration: none; color:inherit;"></a>
                                     </h5>
-                                    <!--                                    <p th:text="${post.someProperty}"></p>-->
-                                    내가 작성한 댓글 :  <p class="card-text" th:text="${comment.content}"></p>
-                                    <!--                                </a>-->
-                                    <!--                                <a th:href="'/profile/' + ${post.userId}" style="text-decoration: none; color:inherit;">-->
-                                    <!--                                    <p class="text-muted">프로필이미지+ 닉넴 ( 프로필로 이동)</p>-->
-                                    <!--                                </a>-->
-                                    <div>
-                                        <form th:action="@{|/profile/detail|}">
-                                            <input type="hidden" name="postid" th:value="${comment.getPost.id}">
-                                            <button type="submit" class="btn btn-link" th:text="${comment.author.profileName}" style="text-decoration:none; color:inherit;"></button>
-                                        </form>
-                                        <!--                                        <a th:href="@{|/profile/detail|}" th:text="${post.author.profileName}" style="text-decoration:none; color:inherit;"></a>-->
+                                    <p class="card-text text-muted" th:text="${#strings.length(comment.content) &gt; 50 ? #strings.substring(comment.content, 0, 50) + ' . . . ' : '내가 작성한 댓글 내용 : ' + comment.content}" style="width:400px;"></p>
+                                    <!--                                        <span th:text="${#strings.length(post.content) &gt; 100 ? #strings.substring(post.content, 0, 30) + ' . . . ' : post.content}"></span>-->
+                                    <div style="display:flex; flex-direction:column; justify-content:flex-end align-self:flex-end">
                                         <div>
+                                            <div style="margin-top: 10px; font-size: 17px; display:inline;" th:if="${!comment.post.getTagList().isEmpty()}">
+                                                <span th:each="tag, loop : ${comment.post.getTagList()}" th:text="' '+ @{|#${tag.name}|}"></span>
+                                            </div>
+                                            <form th:if="${comment.post.author.member.role != 'ROLE_ADMIN'}" th:action="@{|/profile/detail/${comment.post.author.profileName}|}" style="display:inline;">
+                                                <!--                                                <input type="hidden" name="postid" th:value="${post.id}">-->
+                                                <button type="submit" class="btn btn-link"
+                                                        th:text="${comment.post.author.profileName}"
+                                                        style="font-weight:bold; text-decoration:none; color:inherit; display:inline;"></button>
+                                            </form>
+                                        </div>
+                                        <div>
+                                                <span style="display:inline;">
+                                                    <div id="voteCount" th:text="${'❤️ '+comment.likeMembers.size()}" style="display:inline;"></div>
+                                                    <div th:text="${'💬 ' + #lists.size(comment.replies)}" style="display:inline;"></div>
+                                                    <div th:text="${'post''s views ' + comment.post.view}" style="display:inline; margin-left:10px;"></div>
+                                                </span>
+                                        </div>
+                                        <div style="font-size:12px; display:inline;" >
                                             <div th:if="${comment.modifyDate != null}">
-                                                댓글 작성일 : <span th:text="${#temporals.format(comment.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                                <span th:text="${#temporals.format(comment.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
                                             </div>
                                             <div th:unless="${comment.modifyDate != null}">
-                                                댓글 수정일 : <span th:text="${#temporals.format(comment.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                                <span th:text="${#temporals.format(comment.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
                                             </div>
                                         </div>
-                                        <span id="voteCount" th:text="${'내 댓글에 달린 좋아요 : '+comment.likeMembers.size()}"></span>
-<!--                                        <p th:text="|${'댓글 : ' + #lists.size(comment.getPost.comments)}|"></p>-->
+                                        <div th:if="${comment.post.category != '카테고리' && comment.post.category != null}"
+                                             th:text="${'카테고리 : ' + comment.post.category}">
+                                        </div>
                                     </div>
-<!--                                    <p style="margin-top: 10px; font-size: 17px; " th:if="${!comment.getPost.getTagList().isEmpty()}">-->
-<!--                                        <span th:each="tag, loop : ${comment.getPost.getTagList()}" th:text="@{|#${tag.name}|}"></span>-->
-<!--                                    </p>-->
-<!--                                    <div>-->
-<!--                                        <p th:text="${'조회수 : ' + comment.getPost.view}"></p>-->
-<!--                                    </div>-->
-                                    <div class="pb-5">
-                                        <button type="button" class="btn btn-primary admin-btn" style="margin-right: 1.3rem" data-bs-toggle="modal"
-                                                th:data-bs-target="'#approveCommentModal' + ${comment.id}"
-                                                th:onclick="'openApproveCommentModal(' + ${comment.id} + ')'" >수정</button>
-                                        <!-- 댓글 수정 모달 창 -->
-                                        <div class="modal fade" th:id="'approveCommentModal' + ${comment.id}" tabindex="-1" role="dialog"
-                                             aria-labelledby="'approveCommentModalLabel' + ${comment.id}" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title fw-bold fs-4" th:id="'approveCommentModalLabel' + ${comment.id}">댓글 수정</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true"></span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <!-- 여기에 승인 폼이나 내용을 추가하세요 -->
-                                                        <form th:action="@{|/comment/editComment/${comment.id}|}" method="post" onsubmit="return UpdateComment();">
-                                                            <input type="hidden" name="commentId" th:value="${comment.id}"/>
-                                                            <div class="font-400 ">
-                                                                <label for="commentContent" class="form-label fw-bold">내용</label>
-                                                                <textarea name="content" class="form-control" id="commentContent"
-                                                                          th:text="${comment.content}" style="height: 300px"></textarea>
-                                                            </div>
-                                                            <br>
-                                                            <div class="modal-footer">
-                                                                <button type="submit" class="btn btn-success btn-modal" style="margin-top: 15px">수정</button>
-                                                                <button type="button" class="btn btn-secondary btn-modal" style="margin-top: 15px" data-bs-dismiss="modal">닫기</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <form th:action="@{|/comment/removeComment/${comment.id}|}" method="post" onsubmit="return DeleteComment();">
-                                            <button type="submit" class="btn btn-danger admin-btn" >삭제</button>
-                                        </form>
+                                    <div>
+<!--                                        <div class="col-md-auto"-->
+<!--                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">-->
+<!--                                            <button type="button" class="btn btn-primary admin-btn"-->
+<!--                                                    style="margin-right: 0.1rem"-->
+<!--                                                    data-bs-toggle="modal"-->
+<!--                                                    th:data-bs-target="'#approveModal' + ${post.id}"-->
+<!--                                                    th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+                                        <!--                                        관리자 게시물 수정 모달창-->
+<!--                                        <div class="modal fade" th:id="'approveModal' + ${post.id}" tabindex="-1"-->
+<!--                                             role="dialog"-->
+<!--                                             aria-labelledby="'approveModalLabel' + ${post.id}" aria-hidden="true">-->
+<!--                                            <div class="modal-dialog" role="document">-->
+<!--                                                <div class="modal-content">-->
+<!--                                                    <div class="modal-header">-->
+<!--                                                        <h5 class="modal-title fw-bold fs-4"-->
+<!--                                                            th:id="'approveModalLabel' + ${post.id}">게시물-->
+<!--                                                            수정</h5>-->
+<!--                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                                                aria-label="Close">-->
+<!--                                                            <span aria-hidden="true"></span>-->
+<!--                                                        </button>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="modal-body">-->
+<!--                                                        여기에 승인 폼이나 내용을 추가하세요-->
+<!--                                                        <form th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}" th:action="@{|/post/updatePostByAdmin/${post.id}|}" method="post"-->
+<!--                                                              th:object="${postForm}"-->
+<!--                                                              onsubmit="return UpdatePost();">-->
+<!--                                                            <input type="hidden" name="postId" th:value="${post.id}">-->
+<!--                                                            <div>-->
+<!--                                                                <label class="form-label">태그 선택</label>-->
+<!--                                                                <div th:each="tag : ${post.getDefaultTagsToPostTagList(defaultTagList)}">-->
+<!--                                                                    <label th:for="${'tag_' + tag.name}">-->
+<!--                                                                        <input type="checkbox" id="${'tag_' + tag.name}"-->
+<!--                                                                               name="selectedTagNames"-->
+<!--                                                                               th:value="${tag.name}"-->
+<!--                                                                               th:text="${tag.name}"-->
+<!--                                                                               th:checked="${post.getTagList().contains(tag)}">-->
+<!--                                                                    </label>-->
+<!--                                                                </div>-->
+<!--                                                            </div>-->
+<!--                                                            <br>-->
+<!--                                                            &lt;!&ndash;                                        <option selected>카테고리</option>&ndash;&gt;-->
+<!--                                                            카테고리 선택-->
+<!--                                                            <div>-->
+<!--                                                                <select id="category" name="category"-->
+<!--                                                                        class="form-select"-->
+<!--                                                                        aria-label="Default select example">-->
+<!--                                                                    <option selected>카테고리</option>-->
+<!--                                                                    <option value="자유게시판"-->
+<!--                                                                            th:selected="${post.category == '자유게시판'}">-->
+<!--                                                                        자유게시판-->
+<!--                                                                    </option>-->
+<!--                                                                    <option value="QnA"-->
+<!--                                                                            th:selected="${post.category == 'QnA'}">QnA-->
+<!--                                                                    </option>-->
+<!--                                                                </select>-->
+<!--                                                            </div>-->
+<!--                                                            <br>-->
+<!--                                                            <div class="modal-footer">-->
+<!--                                                                <button type="submit" class="btn btn-success btn-modal"-->
+<!--                                                                        style="margin-top: 15px">수정-->
+<!--                                                                </button>-->
+<!--                                                                <button type="button"-->
+<!--                                                                        class="btn btn-secondary btn-modal"-->
+<!--                                                                        style="margin-top: 15px"-->
+<!--                                                                        data-bs-dismiss="modal">닫기-->
+<!--                                                                </button>-->
+<!--                                                            </div>-->
+<!--                                                        </form>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div class="col-md-auto"-->
+<!--                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">-->
+<!--                                            <form th:action="@{|/post/deletePost/${post.id}|}" method="post"-->
+<!--                                                  onsubmit="return deletePost()">-->
+<!--                                                <button type="submit" class="btn btn-danger admin-btn"-->
+<!--                                                        style="margin-right: 2rem">삭제-->
+<!--                                                </button>-->
+<!--                                            </form>-->
+<!--                                        </div>-->
                                     </div>
                                 </div>
                             </div>

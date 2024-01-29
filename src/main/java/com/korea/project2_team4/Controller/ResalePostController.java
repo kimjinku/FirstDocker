@@ -102,7 +102,7 @@ public class ResalePostController {
 //            return "redirect:/resalePost/main";
 //        }
 //    }
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/createResalePost")
     public String createPost(Model model, ResalePostForm resalePostForm) {
         model.addAttribute("resalePostForm", resalePostForm);
@@ -212,7 +212,7 @@ public class ResalePostController {
 
         return "redirect:/resalePost/detail/{id}/1";
     }
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/myWishList")
     public String wishList(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
     Member member = memberService.getMember(principal.getName());
@@ -221,6 +221,7 @@ public class ResalePostController {
     model.addAttribute("paging",postList);
     return "ResalePost/myWishList";
     }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/myMarket")
     public String myMarket(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Member member = memberService.getMember(principal.getName());
@@ -238,6 +239,7 @@ public class ResalePostController {
         resalePostService.save(resalePost);
         return "redirect:/resalePost/main";
     }
+
     @PostMapping("/sold/{id}")
     public String soldOut(@PathVariable Long id) {
         ResalePost resalePost = resalePostService.getResalePost(id);
@@ -245,6 +247,7 @@ public class ResalePostController {
         resalePostService.save(resalePost);
         return "redirect:/resalePost/main";
     }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/soldOutResalePosts")
     public String soldOutResalePosts(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Member member = memberService.getMember(principal.getName());
@@ -253,7 +256,7 @@ public class ResalePostController {
         model.addAttribute("paging", postList);
         return "ResalePost/soldOut";
     }
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/purchaseHistory")
     public String purchasedResalePosts(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Member member = memberService.getMember(principal.getName());

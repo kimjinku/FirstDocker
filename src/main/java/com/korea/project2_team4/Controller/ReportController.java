@@ -1,18 +1,13 @@
 package com.korea.project2_team4.Controller;
 
-import com.korea.project2_team4.Model.Entity.Comment;
-import com.korea.project2_team4.Model.Entity.Post;
-import com.korea.project2_team4.Model.Entity.ResalePost;
-import com.korea.project2_team4.Model.Entity.Tag;
+import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Repository.PostRepository;
 import com.korea.project2_team4.Service.*;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -54,6 +49,14 @@ public class ReportController {
         model.addAttribute("defaultTagList", defaultTagList);
         model.addAttribute("paging",reportedPosts);
         return "Member/findReportedResalePosts_form";
+    }
+    @GetMapping("/checkAlreadyReportedPost/{id}")
+    @ResponseBody
+    public boolean alreadyReportedPost(@PathVariable Long id){
+        Post post = postService.getPost(id);
+        Member member = post.getAuthor().getMember();
+        String userName = member.getUserName();
+        return !reportService.isAlreadyPostReported(id,userName);
     }
 
 

@@ -30,9 +30,9 @@ public class ReportService {
 
         return reportRepository.existsByCommentIdAndMemberUserName(commentId, username);
     }
-    public boolean isAlreadyResalePostReported(Long commentId, String username) {
+    public boolean isAlreadyResalePostReported(Long resalePostId, String username) {
 
-        return reportRepository.existsByResalePostIdAndMemberUserName(commentId, username);
+        return reportRepository.existsByResalePostIdAndMemberUserName(resalePostId, username);
     }
 
     public Page<Post> findPostsLinkedWithReports(int page) {
