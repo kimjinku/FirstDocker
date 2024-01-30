@@ -124,11 +124,6 @@ public class PostController {
                 tagMap.setPost(post);
                 tagMap.setTag(tag);
                 tagMapService.save(tagMap);
-//                if (newTagNames != null && !newTagNames.isEmpty()) {
-//                    for (String newTagName : newTagNames) {
-//                        tagService.deleteById(tagService.getTagByTagName(newTagName).getId());
-//                    }
-//                }
             }
         }
         if (petTagNames !=null && !petTagNames.isEmpty()) {

@@ -69,8 +69,12 @@
                         </button>
                     </form>
                 </td>
-                <td th:if="${!member.isBlocked}" style="width: 8rem">차단되지 않은 유저</td>
-                <td th:if="${member.isBlocked}" style="width: 8rem" th:text="${member.unblockDate +' 까지 차단되었습니다.'}"></td>
+<!--                <td th:if="${!member.isBlocked}" style="width: 8rem">차단되지 않은 유저</td>-->
+<!--                <td th:if="${member.isBlocked}" style="width: 8rem" th:text="${member.unblockDate +' 까지 차단되었습니다.'}"></td>-->
+                <td th:if="${member.unblockDate == null or #temporals.createNow().isAfter(member.unblockDate)}" style="width: 8rem">차단되지 않은 유저</td>
+                <td th:if="${member.unblockDate != null and #temporals.createNow().isBefore(member.unblockDate)}" style="width: 8rem"
+                    th:text="${member.unblockDate + ' 까지 차단되었습니다.'}"></td>
+
                 <td style="width: 9rem">
                     <form th:action="@{|/member/block/${member.userName}|}" th:method="post">
 <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->

@@ -180,7 +180,7 @@
                            th:value="${#lists.contains(post.likeMembers, loginedMember)}">
                     <form id="likeForm" class="flex-fill" th:action="@{|/post/postLike|}" method="post"
                           onsubmit="return toggleHeartIcon()">
-                        <input type="hidden" name="id" th:value="${post.id}">
+                        <input type="hidden" name="post_id" th:value="${post.id}">
                         <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
                            style="font-size: 2rem; color:red; cursor:pointer;">
                             <span class="badge rounded-pill "
@@ -323,8 +323,9 @@
                                 </div>
                                 <div class="modal-body">
                                     <!-- Form for reporting post -->
-                                    <form sec:authorize="isAuthenticated()" th:action="@{|/post/report/${post.id}|}" method="post">
+                                    <form sec:authorize="isAuthenticated()" th:action="@{|/post/report/${post.id}|}" method="post" onsubmit="return CheckForReportPostStatus()">
                                         <!-- Checkboxes for report reasons -->
+                                        <input type="hidden" th:id="postId" th:value="${post.id}">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
                                             <label class="form-check-label">부적절한 내용</label>
@@ -383,7 +384,7 @@
                 </form>
                 <hr>
                 <div th:each="comment : ${post.comments}" th:if="${comment.parentComment == null}" style="display:flex;">
-
+                    <input type="hidden" th:id="comment_id" th:value="${comment.id}">
                     <div class="card mb-4" style="width:40%; display:flex; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px;">
                         <div class="card-body" th:id="${(anchorId != null ) ? (anchorId == comment.id ? 'scrollToAnchor' : '') : ''}">
 <!--                        <div class="card-body">-->
@@ -478,7 +479,8 @@
                                             </div>
                                             <div class="modal-body">
                                                 <!-- Form for reporting post -->
-                                                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/report/${comment.id}|}" method="post">
+                                                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/report/${comment.id}|}" method="post" onsubmit="return CheckForReportCommentStatus()">
+                                                    <input type="hidden" th:id="commentId" th:value="${comment.id}">
                                                     <!-- Checkboxes for report reasons -->
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
@@ -598,7 +600,7 @@
                                             </div>
                                             <!--                               대댓글 신고 모달창-->
                                             <!--                                                <div class="modal fade" id="reportReplyModal" tabindex="-1" role="dialog" aria-labelledby="reportReplyModalLabel" aria-hidden="true">-->
-                                            <div class="modal fade" th:id="'reportReplyModal' + ${comment.id}" tabindex="-1" role="dialog" aria-labelledby="'reportReplyModalLabel' + ${comment.id}" aria-hidden="true">
+                                            <div class="modal fade" th:id="'reportReplyModal' + ${comment.id}" tabindex="-1" role="dialog" aria-labelledby="'reportReplyModalLabel' + ${comment.id}" aria-hidden="true" onsubmit="return CheckForReportCommentStatus()">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -805,6 +807,53 @@
             }
         }
 
+
+
+        function CheckForReportPostStatus(postId) {
+    var postId = parseInt(document.getElementById('postId').value, 10);
+    $.ajax({
+        type: "GET",
+        url: "/report/checkPost/" + postId,
+        headers: { "X-CSRF-TOKEN": $("input[name='_csrf']").val() },
+        async: false, // 동기적으로 실행되도록 설정
+        success: function (response) {
+            if (!response) {
+                alert('이미 신고한 게시물입니다');
+                return false;
+            } else {
+                // 여기에서 추가로 수행해야 할 로직이 있다면 여기에 추가
+                return true;
+            }
+        },
+        error: function (error) {
+            console.error("Error checking ReportPost " + postId + ": " + error);
+            return false;
+        }
+    });
+}
+
+        function CheckForReportCommentStatus(commentId) {
+    var commentId = parseInt(document.getElementById('commentId').value, 10);
+    $.ajax({
+        type: "GET",
+        url: "/report/checkComment/" + commentId,
+        headers: { "X-CSRF-TOKEN": $("input[name='_csrf']").val() },
+        async: false, // 동기적으로 실행되도록 설정
+        success: function (response) {
+            if (!response) {
+                alert('이미 신고한 댓글입니다');
+                return false;
+            } else {
+                // 여기에서 추가로 수행해야 할 로직이 있다면 여기에 추가
+                return true;
+            }
+        },
+        error: function (error) {
+            console.error("Error checking ReportPost " + commentId + ": " + error);
+            return false;
+        }
+    });
+}
     </script>
 </div>
 </html>

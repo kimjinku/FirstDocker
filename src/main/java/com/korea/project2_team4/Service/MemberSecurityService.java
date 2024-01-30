@@ -52,6 +52,12 @@ public class MemberSecurityService implements UserDetailsService {
 
             throw new LockedException("User is blocked until " + member.getUnblockDate());
         }
+        if (member.isBlocked() && (member.getUnblockDate() != null || LocalDateTime.now().isAfter(member.getUnblockDate()))) {
+            // 차단기간이 지나서 로그인한 경우, db에서 차단여부를 확인하는 변수를 false로 바꾼다.
+            member.setBlocked(false);
+            member.setUnblockDate(null);
+            memberService.save(member);
+        }
         //추가 부분 끝
         List<GrantedAuthority> authorities = new ArrayList<>();
         if ("admin".equals(username)) {

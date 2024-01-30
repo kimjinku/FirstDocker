@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -26,6 +27,7 @@ public class ReportController {
     private final TagMapService tagMapService;
     private final RecentSearchService recentSearchService;
     private final ReportService reportService;
+    private final ResalePostService resalePostService;
     @GetMapping("/posts")
     public String reportedPosts(Model model, @RequestParam(value = "page", defaultValue = "0") int page){
         Page<Post> reportedPosts = reportService.findPostsLinkedWithReports(page);
@@ -50,13 +52,29 @@ public class ReportController {
         model.addAttribute("paging",reportedPosts);
         return "Member/findReportedResalePosts_form";
     }
-    @GetMapping("/checkAlreadyReportedPost/{id}")
+    @GetMapping("/checkPost/{id}")
     @ResponseBody
-    public boolean alreadyReportedPost(@PathVariable Long id){
+    public boolean alreadyReportedPost(@PathVariable Long id, Principal principal){
         Post post = postService.getPost(id);
-        Member member = post.getAuthor().getMember();
+        Member member = memberService.getMember(principal.getName());
         String userName = member.getUserName();
         return !reportService.isAlreadyPostReported(id,userName);
+    }
+    @GetMapping("/checkComment/{id}")
+    @ResponseBody
+    public boolean alreadyReportedComment(@PathVariable Long id, Principal principal){
+        Comment comment = commentService.getComment(id);
+        Member member = memberService.getMember(principal.getName());
+        String userName = member.getUserName();
+        return !reportService.isAlreadyCommentReported(id,userName);
+    }
+    @GetMapping("/checkResalePost/{id}")
+    @ResponseBody
+    public boolean alreadyReportedResalePost(@PathVariable Long id, Principal principal){
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        Member member = memberService.getMember(principal.getName());
+        String userName = member.getUserName();
+        return !reportService.isAlreadyResalePostReported(id,userName);
     }
 
 

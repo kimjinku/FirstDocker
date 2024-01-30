@@ -79,7 +79,14 @@ public class  PrincipalOauth2UserService extends DefaultOAuth2UserService {
                 session.setAttribute("BLOCK_MSG", msg);
                 throw new LockedException("User is blocked until " + member.getUnblockDate());
             }
+            if (member.isBlocked() && (member.getUnblockDate() != null || LocalDateTime.now().isAfter(member.getUnblockDate()))) {
+                // 차단기간이 지나서 로그인한 경우, db에서 차단여부를 확인하는 변수를 false로 바꾼다.
+                member.setBlocked(false);
+                member.setUnblockDate(null);
+                memberService.save(member);
+            }
         }
+
 
 
         //처음 서비스를 이용한 회원일 경우

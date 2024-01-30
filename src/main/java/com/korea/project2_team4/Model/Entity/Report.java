@@ -23,11 +23,9 @@ public class Report {
     private String content;
 
     @ManyToOne
-//    @JoinColumn(name="post_id")
     private Post post;
 
     @ManyToOne
-//    @JoinColumn(name="comment_id")
     private Comment comment;
 
     @ManyToOne
@@ -38,8 +36,6 @@ public class Report {
     private Member member;
 
     private LocalDateTime reportDate;
-
-
 
 
 }

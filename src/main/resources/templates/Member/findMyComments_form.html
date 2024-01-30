@@ -33,7 +33,7 @@
                                     <img class="card-img-top" th:src="@{|/img/no_img.jpg|}" alt="default image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
                                 </div>
                                 <div class="card-body" style="display: flex; flex-direction: column; height: 100%;">
-                                    <h3 th:if="${comment.parentComment != null}" th:text="${comment.parentComment.content +'에 달린 대댓글'}">
+                                    <h3 th:if="${comment.parentComment != null}" th:text="${comment.parentComment.content +'에 덧붙인 대댓글'}">
                                     </h3>
                                     <h5 class="card-title">
                                         <a th:href=@{|/post/detail/${comment.post.id}/0|} th:text="${#strings.length(comment.post.title) &gt; 20 ? #strings.substring(comment.post.title, 0, 20) + ' . . . ' : '내가 댓글을 작성한 게시물 : ' + comment.post.title}" style="font-weight:bold; text-decoration: none; color:inherit;"></a>
