@@ -58,7 +58,7 @@ dependencies {
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 	// flexmark-java 버전
 	implementation 'com.vladsch.flexmark:flexmark-all:0.62.2'
-
+	runtimeOnly 'org.postgresql:postgresql'
 
 	allprojects {
 		repositories {
@@ -79,3 +79,6 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+jar {
+	enabled = false
+}
