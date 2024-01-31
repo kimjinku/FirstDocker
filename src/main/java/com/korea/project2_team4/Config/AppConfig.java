@@ -15,5 +15,6 @@ public class AppConfig {
     static String getImageFileDirPath()
     {
         return System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files\\";
+//        return "c:\\files\\";
     }
 }

@@ -180,7 +180,7 @@
                            th:value="${#lists.contains(post.likeMembers, loginedMember)}">
                     <form id="likeForm" class="flex-fill" th:action="@{|/post/postLike|}" method="post"
                           onsubmit="return toggleHeartIcon()">
-                        <input type="hidden" name="post_id" th:value="${post.id}">
+                        <input type="hidden" name="id" th:value="${post.id}">
                         <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
                            style="font-size: 2rem; color:red; cursor:pointer;">
                             <span class="badge rounded-pill "

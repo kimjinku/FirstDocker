@@ -105,6 +105,7 @@ public class ImageService {
             String saveName = generateRandomFileName(fileName);
 
             String savePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+//            String savePath = "c:\\files";
 
             if (!new File(savePath).exists()) {
                 try {
