@@ -11,7 +11,9 @@ public class CustomWebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.addResourceHandler("/resources/**")
-                .addResourceLocations("file:/"+AppConfig.getImageFileDirPath());
+//                .addResourceLocations("file:/"+AppConfig.getImageFileDirPath());
+                .addResourceLocations("file:/app/files/");
+
     }
 
 }

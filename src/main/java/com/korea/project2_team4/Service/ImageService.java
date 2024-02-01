@@ -104,7 +104,11 @@ public class ImageService {
 
             String saveName = generateRandomFileName(fileName);
 
-            String savePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+            String savePath = "/app/files";
+            //String savePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println("savePath : " + savePath);
+
 //            String savePath = "c:\\files";
 
             if (!new File(savePath).exists()) {
@@ -115,7 +119,8 @@ public class ImageService {
                 }
             }
 
-            String filePath = savePath + "\\" + saveName;
+            String filePath = savePath + "/" + saveName;
+//          String filePath = savePath + "\\" + saveName;
 
             File origFile = new File(filePath);
             multipartFile.transferTo(origFile);
@@ -135,8 +140,8 @@ public class ImageService {
             }//multipartFile 이 비어 있다면 continue 문을 실행 하여 현재 반복을 중지 하고 다음 반복문 으로 넘어갈 것
 
             String saveName = generateRandomFileName(fileName);
-
-            String savePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+            String savePath = "/app/files";
+            //String savePath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
 
             if (!new File(savePath).exists()) {
                 try {
@@ -146,8 +151,8 @@ public class ImageService {
                 }
             }
 
-            String filePath = savePath + "\\" + saveName;
-
+            String filePath = savePath + "/" + saveName;
+//          String filePath = savePath + "\\" + saveName;
             File origFile = new File(filePath);
             multipartFile.transferTo(origFile);
 
