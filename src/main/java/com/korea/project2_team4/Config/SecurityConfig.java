@@ -69,7 +69,7 @@ public class SecurityConfig {
 
     CorsConfigurationSource myWebsiteConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://project-team2-kimjinku4.fly.dev/"));
+        configuration.setAllowedOrigins(Arrays.asList("https://project-team2-kimjinku6.fly.dev/"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
