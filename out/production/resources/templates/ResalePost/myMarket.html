@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+    <head>
+        <style>
+            body, html {
+           height: 100%;
+           margin: 0;
+       }
+
+      body {
+       background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+         background-size: cover;
+         background-attachment: fixed;
+         color: #555;
+        font-family: sans-serif;
+      }
+        </style>
+        <meta charset="UTF-8">
+        <title>중고 거래</title>
+    </head>
+    <body>
+    <!-- Section-->
+    <section class="py-5" style="width: 100rem;">
+        <div class="d-flex justify-content-start">
+                <div class="container">
+                    <div class="row row-cols-1">
+                        <h2>내 마켓(내가 판매중인 상품)</h2>
+                        <div class="col" style="">
+                            <a type="button" class="btn btn-primary" th:href="@{|/resalePost/myMarket|}">내가 판매중인 상품</a>
+                            <a type="button" class="btn btn-primary" th:href="@{|/resalePost/myWishList|}">관심목록</a>
+                            <a type="button" class="btn btn-primary" th:href="@{|/resalePost/soldOutResalePosts|}">판매내역</a>
+                            <a type="button" class="btn btn-primary" th:href="@{|/resalePost/purchaseHistory|}">구매내역</a>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="d-flex justify-content-end">
+            <!--            <form th:action="@{/post/search}" class="d-flex" role="search">-->
+            <!--                <div class="input-group">-->
+            <!--                    <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"-->
+            <!--                           style="width: 330px;" th:value="${kw}">-->
+            <!--                    <button class="btn btn-outline-success" type="submit">🔍</button>-->
+            <!--                </div>-->
+            <!--            </form>-->
+            <a type="button" class="btn btn-primary" th:href="@{|/resalePost/createResalePost|}">거래글 쓰기</a>
+
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="resaleDropdown"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    중고거래
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="resaleDropdown">
+                    <li><a class="dropdown-item" th:href="@{|/resalePost/myWishList|}">관심목록</a></li>
+                    <li><a class="dropdown-item" th:href="@{|/resalePost/soldOutResalePosts|}">판매내역</a></li>
+                    <li><a class="dropdown-item" th:href="@{|/resalePost/purchaseHistory|}">구매내역</a></li>
+                    <li class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" th:href="@{|/resalePost/myMarket|}">내 마켓 보기</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container px-3 px-lg-5 mt-5">
+            <!--            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-start">-->
+            <!--            <div class="d-flex justify-content-start">-->
+            <!--                <form th:action="@{/resalePost/search}" class="d-flex" role="search">-->
+            <!--                    <div class="input-group">-->
+            <!--                        <input class="form-control me-2" type="text" id="search_kw" name="kw"-->
+            <!--                               placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"-->
+            <!--                               style="width: 330px;" th:value="${kw}">-->
+            <!--                        <button class="btn btn-outline-success" type="submit">🔍</button>-->
+            <!--                    </div>-->
+            <!--                </form>-->
+            <!--                <a type="button" class="btn btn-primary" th:href="@{|/resalePost/main|}">검색어 초기화</a>-->
+            <!--            </div>-->
+            <div class="row gx-3 gx-lg-5 row-cols-1 row-cols-md-4 row-cols-xl-4 justify-content-center">
+                <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
+                <div th:each="post : ${paging}" class="col mb-5">
+                    <a th:href=@{|/resalePost/detail/${post.id}/0|} style="text-decoration: none; color:inherit; ">
+                        <div class="card h-100">
+                            <!--post image-->
+                            <!--                            <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">-->
+                            <!--                                <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">-->
+                            <!--                            </div>-->
+                            <div th:if="${not #lists.isEmpty(post.resalePostImages)}">
+                                <div th:each="img, iterStat : ${post.resalePostImages}" th:if="${iterStat.index lt 1}">
+                                    <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image"
+                                         style="width:100%; height:250px;">
+                                </div>
+                            </div>
+                            <div th:unless="${post.resalePostImages != null and not #lists.isEmpty(post.resalePostImages)}">
+                                <!-- Use a default image if post.postImages is empty -->
+                                <!--                                <img class="card-img-top" th:src="@{|/resources/no_img.jpg|}" alt="default image" style="width:100%; height:300px;">-->
+                                <img class="card-img-top" src="no_img.jpg" alt="default image"
+                                     style="width:100%; height:300px;">
+                            </div>
+                            <!-- post-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!--post title-->
+                                    <h5 class="fw-bolder" th:text="${post.title}"></h5>
+                                    <!--post content-->
+                                    <span th:text="'가격 : ' + ${post.price} + '원'"></span>
+                                    <div th:text="'조회수 : ' + ${post.view}"></div>
+                                    <div th:text="'찜한 회원 : ' + ${post.wishProfiles.size() + '명'}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!-- ========================여기까지 each문으로 포스트 적용하면 됩니다=======================.-->
+            </div>
+        </div>
+        <!-- 페이징처리 시작 -->
+        <div th:if="${kw}==null">
+            <div th:if="${!paging.isEmpty()}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{|?page=${paging.number-1}|}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+                    <li th:each="page: ${#numbers.sequence(1, paging.totalPages)}"
+                        th:if="${page >= paging.number-5 and page <= paging.number+5}"
+                        th:classappend="${page == paging.number+1} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page}" class="page-link" th:href="@{|?page=${page-1}|}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                        <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 페이징처리 끝 -->
+        <!-- 페이징처리 시작 -->
+        <div th:if="${kw}!=null">
+            <div th:if="${!paging.isEmpty()}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                        <a class="page-link" th:href="@{|/resalePost/search?kw=${kw}&page=${paging.number-1}|}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+                    <li th:each="page: ${#numbers.sequence(1, paging.totalPages)}"
+                        th:if="${page >= paging.number-5 and page <= paging.number+5}"
+                        th:classappend="${page == paging.number+1} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page}" class="page-link"
+                           th:href="@{|/resalePost/search?kw=${kw}&page=${page-1}|}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                        <a class="page-link" th:href="@{|/resalePost/search?kw=${kw}&page=${paging.number+1}|}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 페이징처리 끝 -->
+    </section>
+    </body>
+</div>
+</html>

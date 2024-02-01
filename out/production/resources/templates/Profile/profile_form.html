@@ -1,0 +1,76 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <style>
+
+
+      button:disabled,
+        button[disabled]{
+          border: 1px solid #999999;
+          background-color: #cccccc;
+          color: #666666;
+        }
+    </style>
+</head>
+
+<div layout:fragment="content" class="row py-5 px-4">
+    <form th:object="${profileForm}" method="post" enctype="multipart/form-data" id="myForm">
+
+        <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+            <button type="submit" id="submitButton" class="btn btn-light" >✔️</button>
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="mb-3 profile-image">
+                <label for="profileImage">이미지 업로드</label>
+                <input type="file" id="profileImage" name="profileImage" accept="image/*" onchange="showThumbnail(event);"/>
+                <div id="image_container" style="width:100px; height:100px;"></div>
+            </div>
+
+
+            <div class="mb-3 profile-name">
+                <div th:if="${#fields.hasErrors('profileName')}" class="text-danger" th:errors="*{profileName}"></div>
+                <label for="profileName" class="form-label">이름</label>
+                <input type="text" class="form-control" id="profileName" th:field="*{profileName}" oninput="checkInput()">
+            </div>
+            <div class="mb-3 profile-content">
+                <label for="content" class="form-label">소개</label>
+                <textarea class="form-control" id="content" th:field="*{content}" rows="3"></textarea>
+            </div>
+
+
+        </div>
+
+    </form>
+    <script>
+        function showThumbnail(event) {
+          var reader = new FileReader();
+
+          reader.onload = function(event) {
+            var img = document.createElement("img");
+            img.setAttribute("src", event.target.result);
+            // 이미지의 최대 너비와 높이 설정
+            img.style.maxWidth = "100px";
+            img.style.maxHeight = "100px";
+
+            document.querySelector("div#image_container").appendChild(img);
+          };
+
+          reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function checkInput() {
+            var profileNameValue = document.getElementById('profileName').value;
+            var submitButton = document.getElementById('submitButton');
+
+            if (profileNameValue.trim() === '' ) {
+                console.log('empty');
+                submitButton.disabled = true;
+            } else {
+                submitButton.disabled = false;
+            }
+
+        }
+    </script>
+
+</div>
+</html>

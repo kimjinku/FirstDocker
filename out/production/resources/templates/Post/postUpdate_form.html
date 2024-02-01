@@ -1,0 +1,109 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+    <input type="hidden" id="header-name" th:value="${_csrf.headerName}">
+    <input type="hidden" id="token-value"  th:value="${_csrf.token}">
+    <div class="container">
+        <div>
+            <div>
+                <form th:action="@{|/post/updatePost/${post.id}|}" id="updateForm" method="post" enctype="multipart/form-data">
+                    <div class="d-flex justify-content-start mt-5" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+                        <div class="pt-5">
+                            <div class=" pt-2 mb-4">
+                                <h2>제목</h2>
+                                <textarea class="form-control" name="title" th:text="${post.title}" style="width:800px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-3 pb-5 mt-5" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+                        <h2>내용</h2>
+                        <textarea class="form-control" name="content" th:text="${post.content}" style="height:300px;"></textarea>
+                    </div>
+                    <div class="pb-5 mt-5" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+                        <h2>태그</h2>
+                        <div th:each="tag : ${getPostTags}">
+                            <label th:for="${'tag_' + tag.name}">
+                                <input type="checkbox" id="${'tag_' + tag.name}"
+                                       name="selectedTagNames" th:value="${tag.name}"
+                                       th:text="${tag.name}"
+                                       th:checked="${post.getTagList().contains(tag)}">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="pb-4 mt-5" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+                        <h2>카테고리</h2>
+                        <select id="category" name="category" class="form-select">
+                            <option th:selected="${post.category == '자유게시판'}" value="자유게시판">자유게시판</option>
+                            <option th:selected="${post.category == 'QnA'}" value="QnA">QnA</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-5" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+                        <div class="mb-5">
+                            <h2>이미지</h2>
+                            <input type="file" id="imageFiles" name="imageFiles" multiple>
+                        </div>
+                        <div class="col">
+                            <div th:each="img, iterStat : ${post.postImages}">
+                                <img class="postImage image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="게시물 이미지"
+                                     style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                <a class="btn btn-danger" onclick="deleteImage(this);">X</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mb-5">
+                        <input type="hidden" id="updatePost" name="updatePost">
+                        <button class="btn shadow mt-3" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px"
+                                type="submit">수정완료</button>
+                    </div>
+                </form>
+            </div>
+            <style>
+                hr {
+                    height: 4px;
+                    background-color: black;
+                }
+                .card {
+                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+               }
+
+                .image{
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                    }
+                .form-control {
+                    border: 1px solid #6c757d;
+                }
+            </style>
+        </div>
+    </div>
+    <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+        function deleteImage(buttonElement) {
+                    var imageElement = $(buttonElement).prev('.postImage');  // 'postImage' 클래스를 가진 형제 중에서 이전 요소 찾기
+                    console.log(imageElement.attr('src'));
+                    var saveName = imageElement.attr('src').substring(imageElement.attr('src').lastIndexOf('/') + 1);
+                    console.log(saveName);
+                    console.log(saveName);
+                    var csrfToken = $("#token-value").val();
+                    var csrfHeader = $("#header-name").val();
+
+                    $.ajax({
+                    url: '/post/delete-image',  // 서버의 이미지 삭제 엔드포인트
+                    method: 'POST',
+                    data: { saveName: saveName },  // 삭제할 이미지 파일명 전송
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+                    },
+                    success: function(response) {
+                        // 서버에서 응답이 성공적으로 온 경우
+                        $(imageElement).parent().remove();  // 이미지를 감싸는 부모 요소 삭제
+                        alert("이미지가 삭제되었습니다.");
+                    },
+                    error: function(error) {
+                        alert("이미지 삭제에 실패했습니다.");
+                    }
+                  });
+                }
+    </script>
+</div>
+
+</html>

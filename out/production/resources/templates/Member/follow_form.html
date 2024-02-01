@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Follow Status</title>
+</head>
+<body>
+
+<h2>Follow Status</h2>
+
+<%-- 팔로우 여부를 확인하는 폼 --%>
+<form action="/member/follow" method="post">
+    <label for="followerId">Follower ID:</label>
+    <input type="text" id="followerId" name="followerId" required>
+
+    <label for="followingId">Following ID:</label>
+    <input type="text" id="followingId" name="followingId" required>
+
+    <button type="submit">Follow</button>
+</form>
+
+<%-- 언팔로우를 확인하는 폼 --%>
+<form action="/member/unfollow" method="post">
+    <label for="unfollowerId">Unfollower ID:</label>
+    <input type="text" id="unfollowerId" name="followerId" required>
+
+    <label for="unfollowingId">Unfollowing ID:</label>
+    <input type="text" id="unfollowingId" name="followingId" required>
+
+    <button type="submit">Unfollow</button>
+</form>
+
+</body>
+</html>

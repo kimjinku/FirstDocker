@@ -1,0 +1,44 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <style>
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+
+
+        .list-item-content {
+            margin-left: 20px;
+        }
+
+        .list-item-content h4,
+        .list-item-content p {
+            margin: 0;
+        }
+
+    </style>
+</head>
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<div layout:fragment="content">
+
+    <div class="list-wrapper" ng-app="app" ng-controller="MainCtrl as ctrl" style="max-width: 400px;
+     margin: 50px auto;">
+        <ul class="list" style=" background: white; border-radius: 2px; list-style: none; padding: 10px 20px;">
+            <li ng-repeat="user in ctrl.users" class="list-item" th:each="profile : ${followerList}" style="display: flex; margin: 10px; padding-bottom: 5px; padding-top: 5px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <div>
+                    <img th:src="@{|/files/${profile.profileImage.fileName}|}" class="list-item-image" style="border-radius: 50%; width: 64px;">
+                </div>
+                <div class="list-item-content">
+                    <a th:href="@{|/profile/detail/${profile.profileName}|}" style="text-decoration:none; color:inherit;">
+                        <h4 th:text="${profile.profileName}" style="margin-top: 10px; font-size: 18px;"></h4>
+                    </a>
+                    <a href="#">
+                        <p style="margin-top: 5px; color: white-two;">펫프로필추가?</p>
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</html>

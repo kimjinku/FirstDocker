@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="row py-5 px-4">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pet Planet!</title>
+    </head>
+    <body>
+    <!--    style="height:50%;"-->
+    <div>
+        <!--        style="margin-top:100px;"-->
+        <div class="container">
+            <div>
+                <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+                    <div>
+<!--                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"-->
+                        <a class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
+                        <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/posts|}" data-page="2">게시글 관리</a>
+                        <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/comments|}" data-page="3">댓글 관리</a>
+                        <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/resalePosts|}" data-page="3">중고 거래글 관리</a>
+                    </div>
+                    <h2 class="font-700 mt-5r mb-5">신고된 게시물</h2>
+                    <div class="col">
+                        <div class="col" th:each="post, loop : ${paging}">
+                            <div class="card" style="width: 100%;">
+                                <div class="d-flex">
+                                    <div th:if="${not #lists.isEmpty(post.resalePostImages)}">
+                                        <div th:each="img, iterStat : ${post.resalePostImages}" th:if="${iterStat.index lt 1}">
+                                            <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                        </div>
+                                    </div>
+                                    <div th:unless="${post.resalePostImages != null and not #lists.isEmpty(post.resalePostImages)}">
+                                        <img class="card-img-top" src="no_img.jpg" alt="default image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                    </div>
+
+
+
+                                    <div class="card-body">
+                                        <h5 class="card-title">게시물제목 :
+                                            <a th:href=@{|/resalePost/detail/${post.id}/0|} th:text="${post.title}"></a>
+                                        </h5>
+                                        <p class="card-text" th:text="${post.content}">게시물내용</p>
+                                        <div>
+                                            <form th:action="@{|/profile/detail|}">
+                                                <input type="hidden" name="postid" th:value="${post.id}">
+                                                <button type="submit" class="btn btn-link"
+                                                        th:text="${post.seller.profileName}"
+                                                        style="font-weight:bold; text-decoration:none; color:inherit;"></button>
+                                            </form>
+                                            <div>
+                                                <div th:if="${post.modifyDate != null}">
+                                                    <span th:text="${#temporals.format(post.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                                </div>
+                                                <div th:unless="${post.modifyDate != null}">
+                                                    <span th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                                </div>
+                                            </div>
+                                            <span id="voteCount" th:text="${'좋아요 : '+post.wishProfiles.size()}"></span>
+                                        </div>
+                                        <div>
+                                            <p th:if="${post.category != '카테고리' && post.category != null}"
+                                               th:text="${'카테고리 : ' + post.category}"></p>
+                                        </div>
+                                        <div>
+                                            <p th:text="${'조회수 : ' + post.view}"></p>
+                                        </div>
+                                        <!--                                        <div>-->
+                                        <!--                                            <h4 style="color: #ff0000; font-size: 1.5em;">신고 사유</h4>-->
+                                        <!--                                            <div th:each="category, loop : ${post.getPostReportCategories}" style="color: #ff0000;">-->
+                                        <!--                                                <p th:text="${category}" style="font-size: 1.2em;"></p>-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <p th:text="${'신고 상세 내용 : ' + post.getPostReportContent}" style="color: #ff0000; font-size: 1.2em;"></p>-->
+                                        <!--                                        </div>-->
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" th:data-bs-target="'#reportModal' + ${post.id}">
+                                            신고 정보 보기
+                                        </button>
+                                        <div th:if="${post.seller.member.getRole != 'ROLE_ADMIN'}">
+                                            <form th:action="@{|/member/block/${post.seller.member.userName}|}" th:method="post">
+                                                <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->
+                                                <input type="number" name="reportDurationDays" placeholder="차단 기간(일)" required/>
+                                                <button class="btn btn-danger flex-container admin-btn" style="margin-left: 20px" type="submit"
+                                                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"
+                                                        onclick="confirmUserBlock()">유저 차단
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <!-- 신고 모달 -->
+                                        <div class="modal fade" th:id="'reportModal' + ${post.id}" tabindex="-1" role="dialog" aria-labelledby="'reportModalLabel' + ${post.id}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="'reportModalLabel' + ${post.id}">신고 정보</h5>
+                                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <h3 th:text="${'이 게시물을 신고한 회원 수 : '+post.reports.size()}"></h3>
+                                                        <h4 style="color: #ff0000; font-size: 1.5em;">신고 사유</h4>
+                                                        <div th:each="report : ${post.reports}" style="color: #ff0000;">
+                                                            <p th:text="${'신고한 회원 닉네임 : ' + report.getMember().getNickName()}" style="font-size: 1.2em;"></p>
+                                                            <p th:text="${report.category}" style="font-size: 1.2em;"></p>
+                                                            <p th:text="${' 신고 상세 내용 : ' + report.content}" style="font-size: 1.2em;"></p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 신고 모달 끝 -->
+<!--                                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"-->
+
+
+<!--                                        onsubmit="return deletePost()"-->
+                                        <div class="col-md-auto"
+                                             th:if="${(post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and post.seller.member.role != 'ROLE_ADMIN'}">
+                                            <form th:action="@{|/resalePost/cancelReport/${post.id}|}" method="post"
+                                                  onsubmit="return cancelReport();">
+                                                <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">신고해제
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-auto"
+                                             th:if="${(post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and post.seller.member.role != 'ROLE_ADMIN'}">
+                                            <form th:action="@{|/resalePost/deleteReportedResalePost/${post.id}|}" method="post"
+                                                  onsubmit="return deletePost();">
+                                                <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <!--                                    <div>-->
+                                    <!--                                        <h4 style="color: #ff0000; font-size: 1.5em;">신고 사유</h4>-->
+                                    <!--                                        <div th:each="category, loop : ${post.getPostReportCategories}" style="color: #ff0000;">-->
+                                    <!--                                            <p th:text="${category}" style="font-size: 1.2em;"></p>-->
+                                    <!--                                        </div>-->
+                                    <!--                                        <p th:text="${'신고 상세 내용 : ' + post.getPostReportContent}" style="color: #ff0000; font-size: 1.2em;"></p>-->
+                                    <!--                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 페이징처리 시작 -->
+                        <div th:if="${!paging.isEmpty()}">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{|?page=${paging.number-1}|}">
+                                        <span>이전</span>
+                                    </a>
+                                </li>
+                                <li th:each="page: ${#numbers.sequence(1, paging.totalPages)}"
+                                    th:if="${page >= paging.number-5 and page <= paging.number+5}"
+                                    th:classappend="${page == paging.number+1} ? 'active'"
+                                    class="page-item">
+                                    <a th:text="${page}" class="page-link" th:href="@{|?page=${page-1}|}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                                    <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+                                        <span>다음</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- 페이징처리 끝 -->
+                        <!--============================여기까지 each문으로 포스트 적용하면 됩니다.=====================================-->
+                        <!--============================아래부분 예시. 추후 삭제 예정 =====================================-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script layout:fragment="script" type='text/javascript'>
+        function deletePost() {
+        return confirm("게시글을 삭제하시겠습니까?");
+        }
+        function cancelReport() {
+        return confirm("신고를 해제하시겠습니까?");
+        }
+        function openApproveModal() {
+        $('#approveModal').modal('show');
+        }
+        function confirmUserBlock() {
+        return confirm("정말로 해당 유저를 차단하시겠습니까?");
+        }
+    </script>
+    </body>
+</div>
+</html>
+

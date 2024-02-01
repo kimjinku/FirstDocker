@@ -1,0 +1,366 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<!--    html이 만들어질 때 발행되는 토큰값과 이름을 가져온다-->
+<div layout:fragment="content" class="row py-5 px-4">
+
+    <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+        <form th:action="@{|/member/signup|}" th:object="${memberCreateForm}" method="post" onsubmit="return validateRegistration()" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+            <div>
+                <div th:if="${mismatchCode}" class="alert alert-danger">
+                    <p th:text="${mismatchCode}"></p>
+                </div>
+                <div th:if="${codeNotFound}" class="alert alert-danger">
+                    <p th:text="${codeNotFound}"></p>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label">아이디</label>
+                    <input id="username" type="text" th:field="*{userName}" class="form-control"
+                           placeholder="4~15자 이내로 입력해 주세요" required oninput="validateUsername()">
+                    <input type="button" class="btn btn-primary" onclick="checkDuplicateUsername()" value="아이디 중복 확인" required>
+                    <div id="username_result" style="height: 1rem">
+
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input id="password" type="password" th:field="*{password}" class="form-control"
+                           placeholder="8자 이상(영어, 숫자, 특수문자 필수)" required oninput="validatePassword()">
+                    <div id="password_result" style="height: 1rem">
+
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="re_password" class="form-label">비밀번호 확인</label>
+                    <input id="re_password" type="password" th:field="*{re_password}" class="form-control"
+                           placeholder="비밀번호를 다시 한번 입력해 주세요" required oninput="validatePassword()">
+                    <div id="re_password_result" style="height: 1rem"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">이메일</label>
+                    <input id="email" type="email" th:field="*{email}" class="form-control"
+                           placeholder="예시)rasgulla@gmail.com" required>
+                    <input type="button" class="btn btn-primary" onclick="checkDuplicateEmail()" value="이메일 중복 확인" required>
+                    <div id="email_result" style="height: 1rem"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phoneNum" class="form-label">휴대폰 번호</label>
+                    <input id="phoneNum" type="text" th:field="*{phoneNum}" name="to" class="form-control text-danger"
+                           placeholder="'-'없이 번호만 입력해 주세요. 예시) 01012345678" required>
+<!--                    <button type="button" class="btn btn-primary" onclick="sendAuthenticationCode()">인증번호 받기</button>-->
+                </div>
+<!--                <div class="mb-3">-->
+<!--                    <label for="authenticationCode">인증번호 :</label>-->
+<!--                    <input type="text" id="authenticationCode" name="authenticationCode" required>-->
+<!--                </div>-->
+                <label class="form-label">회원 주소(필수 입력사항 아님)</label>
+                <div class="form-group">
+                    <input class="form-control" style="width: 40%; display: inline;" placeholder="우편번호(필수 입력사항 아님)" name="postCode" th:field="*{postCode}" id="postCode" type="text" readonly="readonly" >
+                    <button type="button" class="btn btn-primary" onclick="execPostcode()">우편번호 찾기</button>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" style="top: 5px;" placeholder="주소(필수 입력사항 아님)" name="streetAddress" th:field="*{streetAddress}" id="streetAddress" type="text" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <input class="form-control" placeholder="상세주소를 입력해주세요(필수 입력사항 아님)" name="detailAddress" th:field="*{detailAddress}" id="detailAddress" type="text"  />
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" id="extraAddress" placeholder="참고항목(필수 입력사항 아님)" readonly="readonly">
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="realName" class="form-label">실명</label>
+                    <input id="realName" type="text" th:field="*{realName}" class="form-control"
+                           placeholder="예시)홍길동" required>
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="nickName" class="form-label">닉네임</label>
+                    <input id="nickName" type="text" th:field="*{nickName}" class="form-control"
+                           placeholder="예시)동에번쩍서에번쩍" required>
+                    <input type="button" class="btn btn-primary" onclick="checkDuplicateNickName()" value="닉네임 중복 확인" required>
+                    <div id="nickName_result" style="height: 1rem"></div>
+                </div>
+
+                <div>
+                    <div class="my-2">
+                        <div class="flex-container" style="margin-top: -10px">
+                            <div style="margin-right: 1rem">
+                                <a href="/oauth2/authorization/google" class="btn bg-google shadow logo-center sns-logo">
+                                <div>
+                                    <svg style="margin-bottom: 1.2px" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 48 48">
+                                        <path  fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                                    </svg>
+                                </div>
+                                </a>
+                            </div>
+
+                            <div>
+                                <a href="/oauth2/authorization/naver">네이버 회원가입</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <input type="submit" class="btn btn-primary form-control" style="margin-top: 15px" th:value="@{회원가입}">
+
+        </form>
+    </div>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        function execPostcode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                    // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                    var addr = ''; // 주소 변수
+                    var extraAddr = ''; // 참고항목 변수
+
+                    //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                    if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                        addr = data.roadAddress;
+                    } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                        addr = data.jibunAddress;
+                    }
+
+                    // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                    if(data.userSelectedType === 'R'){
+                        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                        if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                            extraAddr += data.bname;
+                        }
+                        // 건물명이 있고, 공동주택일 경우 추가한다.
+                        if(data.buildingName !== '' && data.apartment === 'Y'){
+                            extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                        }
+                        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                        if(extraAddr !== ''){
+                            extraAddr = ' (' + extraAddr + ')';
+                        }
+                        // 조합된 참고항목을 해당 필드에 넣는다.
+                        document.getElementById("extraAddress").value = extraAddr;
+
+                    } else {
+                        document.getElementById("extraAddress").value = '';
+                    }
+
+                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                    document.getElementById('postCode').value = data.zonecode;
+                    document.getElementById("streetAddress").value = addr;
+                    // 커서를 상세주소 필드로 이동한다.
+                    document.getElementById("detailAddress").focus();
+                }
+            }).open();
+        }
+    </script>
+</div>
+<script layout:fragment="script" type='text/javascript'>
+
+        var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+
+
+    function validateUsername() {
+            var username = document.getElementById('username').value;
+            var usernameResult = document.getElementById('username_result');
+
+            // 아이디의 길이가 4에서 15자 사이인지 확인
+            if (username.length >= 4 && username.length <= 15) {
+                usernameResult.innerHTML = '유효한 아이디입니다. 아이디 중복 확인 해주세요';
+                usernameResult.style.color = 'green';
+            } else {
+                usernameResult.innerHTML = '아이디는 4~15자 이내로 입력해 주세요.';
+                usernameResult.style.color = 'red';
+            }
+        }
+    function validatePassword() {
+        var newPassword = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('re_password').value;
+        var resDiv = document.getElementById('password_result');
+        var re_resDiv = document.getElementById('re_password_result');
+
+        var passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,16}$/;
+
+        if (passwordRegex.test(newPassword)) {
+            resDiv.innerHTML = '사용가능한 비밀번호입니다.';
+            resDiv.style.color = 'green';
+            if (newPassword === confirmPassword) {
+                re_resDiv.innerHTML = '비밀번호가 일치하며 유효합니다.';
+                re_resDiv.style.color = 'green';
+            } else {
+                re_resDiv.innerHTML = '비밀번호가 일치하지 않습니다.';
+                re_resDiv.style.color = 'red';
+            }
+        } else {
+            resDiv.innerHTML = '8자 이상, 영문자, 숫자 및 특수 문자를 포함해야 합니다.';
+            resDiv.style.color = 'red';
+        }
+    }
+    function sendAuthenticationCode() {
+                var phoneNum = document.getElementById("phoneNum").value;
+
+                // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+                // Ajax 호출을 통해 서버에 이메일 전송 및 인증번호 요청
+                $.ajax({
+                    type: "POST",
+                    url: "/member/phoneCheck",
+                    data: {
+                        phoneNum : phoneNum,
+                        // CSRF 토큰 추가
+                        _csrf: csrfToken
+                    },
+                    success: function(response) {
+                        alert("인증번호가 문자로 전송되었습니다!");
+                    },
+                    error: function(error) {
+                        alert("인증번호 전송에 실패했습니다. 작성하신 내용이 올바른지 확인해주세요");
+                    }
+                });
+            }
+
+    function checkDuplicateUsername() {
+        var username = document.getElementById('username').value;
+        var usernameResult = document.getElementById('username_result');
+
+        // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+        // AJAX를 통해 중복 여부 확인
+        $.ajax({
+            type: "GET",
+            url: "/member/checkDuplicateUsername/"+username, // 실제 서버의 엔드포인트로 변경해야 함
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+            headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+            success: function(response) {
+                if (response) {
+                    usernameResult.innerHTML = '사용 가능한 아이디입니다.';
+                    usernameResult.style.color = 'green';
+                } else {
+                    usernameResult.innerHTML = '이미 사용 중인 아이디입니다.';
+                    usernameResult.style.color = 'red';
+                }
+            },
+            error: function(error) {
+                console.error("Error checking duplicate username: " + error);
+            }
+        });
+    }
+<!-- ------------------------------------------------------------------------------------------------------------------------- -->
+function checkDuplicateEmail() {
+        var email = document.getElementById('email').value;
+        var emailResult = document.getElementById('email_result');
+
+        // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+        // AJAX를 통해 중복 여부 확인
+        $.ajax({
+            type: "GET",
+            url: "/member/checkDuplicateEmail/"+email, // 실제 서버의 엔드포인트로 변경해야 함
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+            headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+            success: function(response) {
+                if (response) {
+                    emailResult.innerHTML = '사용 가능한 이메일입니다.';
+                    emailResult.style.color = 'green';
+                } else {
+                    emailResult.innerHTML = '이미 사용 중인 이메일입니다.';
+                    emailResult.style.color = 'red';
+                }
+            },
+            error: function(error) {
+                console.error("Error checking duplicate email: " + error);
+            }
+        });
+    }
+<!-- ------------------------------------------------------------------------------------------------------------------------- -->
+function checkDuplicateNickName() {
+        var nickName = document.getElementById('nickName').value;
+        var nickNameResult = document.getElementById('nickName_result');
+
+        // CSRF 토큰 가져오기
+                var csrfToken = $("input[name='_csrf']").val();
+
+        // AJAX를 통해 중복 여부 확인
+        $.ajax({
+            type: "GET",
+            url: "/member/checkDuplicateNickName/"+nickName, // 실제 서버의 엔드포인트로 변경해야 함
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+            headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+            success: function(response) {
+                if (response) {
+                    nickNameResult.innerHTML = '사용 가능한 닉네임입니다.';
+                    nickNameResult.style.color = 'green';
+                } else {
+                    nickNameResult.innerHTML = '이미 사용 중인 닉네임입니다.';
+                    nickNameResult.style.color = 'red';
+                }
+            },
+            error: function(error) {
+                console.error("Error checking duplicate nickName: " + error);
+            }
+        });
+    }
+<!-- ------------------------------------------------------------------------------------------------------------------------- -->
+
+
+
+    function validateRegistration() {
+    var username = document.getElementById('username').value;
+    var email = document.getElementById('email').value;
+    var nickName = document.getElementById('nickName').value;
+
+    // 아이디 중복검사
+    if (!checkDuplicate('username', username)) {
+        alert('이미 사용 중인 아이디입니다.');
+        return false;
+    }
+
+    // 이메일 중복검사
+    if (!checkDuplicate('email', email)) {
+        alert('이미 사용 중인 이메일입니다.');
+        return false;
+    }
+
+    // 닉네임 중복검사
+    if (!checkDuplicate('nickName', nickName)) {
+        alert('이미 사용 중인 닉네임입니다.');
+        return false;
+    }
+
+    return true;
+}
+
+function checkDuplicate(field, value) {
+    var result = false;
+
+    // AJAX를 통해 중복 여부 확인
+    $.ajax({
+        type: "GET",
+        url: "/member/checkDuplicate/" + field + "/" + value,
+        headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+        async: false, // 동기적으로 실행되도록 설정
+        success: function(response) {
+            result = response;
+        },
+        error: function(error) {
+            console.error("Error checking duplicate " + field + ": " + error);
+        }
+    });
+
+    return result;
+}
+</script>
+</html>

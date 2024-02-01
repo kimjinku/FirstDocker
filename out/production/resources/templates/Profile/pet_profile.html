@@ -1,0 +1,233 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <style>
+        .transparent-button {
+            background-color: rgba(0, 0, 0, 0); /* 빨간색 배경색, 투명도 0.5 (50%) */
+            border: none; /* 기본 테두리 제거 (선택적) */
+            color: white; /* 텍스트 색상 지정 (선택적) */
+            padding: 10px 20px; /* 내부 여백 지정 (선택적) */
+            cursor: pointer; /* 마우스 커서를 포인터로 변경 (선택적) */
+        }
+
+        /* method 2 -> use background-clip to support border-radius */
+.btn-gradient-2 {
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(to right, darkblue, darkorchid) border-box;
+  border-radius: 50em;
+  border: 2px solid transparent;
+}
+
+/* demo stuff */
+.parent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 3rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+
+.btn-gradient-2 {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7em;
+  color: darkblue;
+  background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+}
+
+
+.flexbox {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    min-width: 200px;
+    margin: auto;
+}
+
+.speechbubble {
+    background: url(https://poqueiraweb.com/link2/speechbubble5.svg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    font-size: 130%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.speechbubble p {
+    margin: 0 auto;
+    margin-bottom: 20px;
+    text-align: center;
+    width: 80%;
+}
+
+.speechbubble p:first-child {
+    padding-top: 20px;
+}
+
+.speechbubble-tail {
+    width: 100%;
+    background-image: url('https://poqueiraweb.com/link2/speechbubble5-tail.svg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    height: 50px;
+}
+
+
+    </style>
+</head>
+
+<div layout:fragment="content" class="row py-5 px-4">
+    <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
+
+        <!-- Profile widget -->
+        <div class="bg-white shadow rounded overflow-hidden">
+            <div class="px-4 pt-0 pb-4" style="background-image: linear-gradient(to top, #d9ded8 0%,  #ebc0fd 100%);">
+                <div class="media align-items-end profile-header">
+                    <div class="profile mr-3">
+                        <div class="avatar justify-content-between" style="width:30px, height:30px;">
+
+                            <img th:src="@{|/files/${pet.petImage.fileName}|}" alt="pet"
+                                 class="avatar-img rounded-circle" style="width:300px; height:300px; margin-top :20px;"/>
+                            <div class="flexbox">
+                                <div class="speechbubble">
+                                    <a th:href="@{|/profile/detail/${pet.owner.profileName}|}" style="text-decoration:none; color:inherit;">
+                                        <p th:text="'Owner : ' + ${pet.owner.profileName}">
+                                        </p>
+                                    </a>
+                                </div>
+                                <div class="speechbubble-tail">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="media-body mb-5 text-white">
+                        <!--                        <a th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">프로필 수정</a>-->
+<!--                        <a th:if="${#authentication.principal.username == pet.owner.member.userName}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn-gradient-2" style="text-decoration:none; color:inherit;">✎</a>-->
+                        <div style="display:inline;">
+                            <a th:if="${#authentication.principal.username == pet.owner.member.userName}" sec:authorize="isAuthenticated()" th:href="@{|/profile/petprofile/${pet.name}/1/update|}" class="btn-gradient-2" style="text-decoration:none; color:inherit;">✎</a>
+
+                            <h4 class="mt-0 mb-0" th:text="${pet.Name}"></h4>
+                            <p class="small mb-4" th:text="${pet.content}"><i class="fa fa-map-marker mr-2"></i></p>
+                        </div>
+
+
+                        <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end" style="display:inline;">
+                            <input type="hidden" id="heart-fill" th:value="${#lists.contains(pet.likes, loginedMember.profile)}">
+<!--                            <div th:text="${loginedMember.profile.profileName}">로그인멤버이름</div>-->
+<!--                            <div th:text="${pet.likes.size()}"></div>-->
+<!--                            <div th:text="${pet.likes.iterator().next().profileName}">하나갖고옴</div>-->
+                            <!--                          △ 현재로그인멤버가, pet.likes에포함되어있는지 여부. true, false로 반환함   -->
+                            <form id="likeForm" th:action="@{|/profile/petprofile/petLike|}" method="post" onsubmit="return toggleHeartIcon()">
+                                <input type="hidden" name="id" th:value="${pet.id}">
+                                <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"  style="font-size: 2rem; color:red; cursor:pointer;">
+                                    <span class="badge rounded-pill" th:text="${pet.likes.size()}"></span>
+                                </i>
+                            </form>
+                        </div>
+
+
+
+                        <div class="pb-5 col-md-12 text-end">
+                            <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart"  onclick="heartSubmit()" style="font-size: 2rem; color:red; cursor:pointer;">
+                                <span class="badge rounded-pill" th:text="${pet.likes.size()}"></span>
+                            </i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="py-4 px-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="mb-0">About Me!</h5>
+                    <div th:if="${#authentication.principal.username == pet.owner.member.userName}"
+                         sec:authorize="isAuthenticated()">
+                        <form th:action="@{|/profile/createPetPhotos|}">
+                            <input type="hidden" name="petid" th:value="${pet.id}">
+                            <button type="submit" class="btn btn-link text-muted">추가</button>
+                        </form>
+                    </div>
+
+                </div>
+
+                <div class="py-4 px-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <!--                        <a th:href="@{|/profile/detail/${profile.profileName}/showall|}" class="btn btn-link text-muted">Show all</a>-->
+                        <!--                    <form th:action="@{|/profile/showallPostsBy|}">-->
+                        <!--                        <input type="hidden" name="profileid" th:value="${profile.id}">-->
+                        <!--                        <button type="submit" class="btn btn-link text-muted" >Show all</button>-->
+                        <!--                    </form>-->
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 mb-2 pr-lg-1 d-flex" th:each="post, iterStat : ${postList}"
+                             th:if="${post.postImages ne null and not #lists.isEmpty(post.postImages)} and ${iterStat.index < 4}">
+                            <div>
+                                <a th:href="@{|/post/detail/${post.id}/0|}">
+                                    <div>
+                                        <div class="flex-shrink-0" th:each="img, iterStat : ${post.postImages}"
+                                             th:if="${iterStat.index lt 1}">
+
+                                            <img th:src="@{|/resources/${img.saveName}|}" alt="no_img"
+                                                 class="img-fluid rounded shadow-sm" style="width:450px; height:300px;">
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <!--                <div class="py-4">-->
+                <!--                    <h5 class="mb-3">Recent posts</h5>-->
+                <!--                    <div class="p-4 bg-light rounded shadow-sm">-->
+                <!--                        <p class="font-italic mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>-->
+                <!--                        <ul class="list-inline small text-muted mt-3 mb-0">-->
+                <!--                            <li class="list-inline-item"><i class="fa fa-comment-o mr-2"></i>12 Comments</li>-->
+                <!--                            <li class="list-inline-item"><i class="fa fa-heart-o mr-2"></i>200 Likes</li>-->
+                <!--                        </ul>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script layout:fragment="script" type='text/javascript'>
+    toggleHeartIcon();
+
+    function toggleHeartIcon() {
+        console.log('aaa');
+        var heartFill = document.getElementById('heart-fill');
+        var isFilled = heartFill.value;
+        console.log(isFilled);
+
+        if (isFilled === 'false') {
+            console.log('ㅇㅇ');
+            heartIcon.classList.remove('bi bi-heart');
+            heartIcon.classList.add('bi-heart-fill');
+        } else {
+            console.log('zzzzzzzzzz');
+            heartIcon.classList.remove('bi-heart');
+            heartIcon.classList.add('bi-heart-fill');
+        }
+    }
+    function heartSubmit() {
+        document.getElementById('likeForm').submit();
+    }
+
+
+</script>
+</div>
+
+
+</html>

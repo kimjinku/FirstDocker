@@ -1,0 +1,336 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<!--    html이 만들어질 때 발행되는 토큰값과 이름을 가져온다-->
+</head>
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+
+    <div class="container">
+        <input type="hidden" id="post_name" th:value="${post.name}"/>
+        <input type="hidden" id="post_price" th:value="${post.price}"/>
+        <input type="hidden" id="post_orderId" th:value="${post.orderId}"/>
+        <input type="hidden" id="post_id" th:value="${post.id}"/>
+        <div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <div class="pt-5">
+                        <div class="border-bottom pt-2 mb-4">
+                            <h2 th:text="${post.title}"></h2>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div style="background-color: #f0f0f0; padding: 10px; display: inline-block; border-radius: 1rem;">
+
+                        <div>
+                            <form th:action="@{|/profile/detail/${post.seller.profileName}|}">
+                                <!--                                <input type="hidden" name="postid" th:value="${post.id}">-->
+                                <button type="submit" class="btn btn-link" th:text="${post.seller.profileName}"
+                                        style="font-size: 18px; font-weight: bold; color: #333; text-decoration:none; color:inherit;"></button>
+                            </form>
+                        </div>
+                        <div>
+                            <div th:if="${post.modifyDate != null}">
+                                <span style="font-size: 14px; color: #777;"
+                                      th:text="${#temporals.format(post.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                            </div>
+                            <div th:unless="${post.modifyDate != null}">
+                                <span style="font-size: 14px; color: #777;"
+                                      th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-1 mb-5">
+                <div class="col">
+                    <div th:each="img, iterStat : ${post.resalePostImages}">
+                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                             style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                    </div>
+                </div>
+                <br>
+                <div class="pt-3 pb-5">
+                    <div th:text="${post.content}"></div>
+                </div>
+                <span th:text="'가격 : ' + ${post.price} + '원'"></span>
+                <div th:text="'조회수 : ' + ${post.view}"></div>
+                <div th:text="'상품명 : ' + ${post.name}"></div>
+                <br>
+                <div class="pb-2">
+                    <!--                    <div class="col-md-auto"-->
+                    <!--                         th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">-->
+                    <!--                        <form th:action="@{|/post/updatePost/${post.id}|}" method="get">-->
+                    <!--                            <input type="hidden" name="id" th:value="${post.id}" />-->
+                    <!--                            <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>-->
+                    <!--                        </form>-->
+                    <!--                    </div>-->
+                    <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">
+                        <input type="hidden" id="heart-fill"
+                               th:value="${#lists.contains(post.wishProfiles, loginedMember.getProfile())}">
+                        <form id="likeForm" class="flex-fill" th:action="@{|/resalePost/resalePostWish|}" method="post"
+                              onsubmit="return toggleHeartIcon()">
+                            <input type="hidden" name="id" th:value="${post.id}">
+                            <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
+                               style="font-size: 2rem; color:red; cursor:pointer;">
+                            <span class="badge rounded-pill bg-primary"
+                                  th:text="${post.wishProfiles.size()}"></span></i>
+                        </form>
+                    </div>
+
+                    <div class="pb-5 col-md-12 text-end">
+                        <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart"
+                           onclick="heartSubmit()"
+                           style="font-size: 2rem; color:red; cursor:pointer;">
+                            <span class="badge rounded-pill bg-primary"
+                                  th:text="${post.wishProfiles.size()}"></span></i>
+                    </div>
+
+                    <div th:if="${loginedMember != null}">
+                        <input type="hidden" id="buyer_email" th:value="${loginedMember.email}"/>
+                        <input type="hidden" id="buyer_name" th:value="${loginedMember.realName}"/>
+                        <input type="hidden" id="buyer_tel" th:value="${loginedMember.phoneNum}"/>
+                        <input type="hidden" id="buyer_address" th:value="${loginedMember.streetAddress+' '+loginedMember.detailAddress}"/>
+                        <input type="hidden" id="buyer_postcode" th:value="${loginedMember.postCode}"/>
+                        <input type="hidden" id="buyer_id" th:value="${loginedMember.id}"/>
+                        <a type="button" class="btn btn-primary" onclick="requestPay()">카카오 결제</a>
+                        <div>
+                            <a th:href="@{|/profile/dmTo/${post.seller.profileName}|}" style="text-decoration:none; color:inherit;">✉DM문의</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/updateResalePost/${post.id}|}" method="get">
+                            <input type="hidden" name="id" th:value="${post.id}"/>
+                            <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/deleteResalePost/${post.id}|}" method="post"
+                              onsubmit="return DeletePost();">
+                            <!--                            onsubmit="return DeletePost();"-->
+                            <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/sold/${post.id}|}" method="post"
+                              onsubmit="return soldPost();">
+                            <!--                            onsubmit="return DeletePost();"-->
+                            <button type="submit" class="btn btn-primary" style="margin-right: 2rem">판매완료
+                            </button>
+                        </form>
+                    </div>
+                    <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+                        <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
+                                th:data-bs-target="'#reportPostModal'"
+                                th:onclick="'reportPostModal'" style="border:0px;">🚨신고
+                        </button>
+                        <div th:if="${alreadyReportedMessage}" class="alert alert-warning" role="alert">
+                            <p th:text="${alreadyReportedMessage}"></p>
+                        </div>
+                    </div>
+                    <!--                    게시물 신고 모달 창-->
+                    <!-- Modal Structure -->
+                    <div class="modal fade" id="reportPostModal" tabindex="-1" role="dialog" aria-labelledby="reportPostModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reportPostModalLabel">게시글 신고</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Form for reporting post -->
+                                    <form sec:authorize="isAuthenticated()" th:action="@{|/resalePost/report/${post.id}|}" method="post" onsubmit="return CheckForReportResalePostStatus()">
+                                        <!-- Checkboxes for report reasons -->
+                                        <input type="hidden" th:id="postId" th:value="${post.id}">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                            <label class="form-check-label">부적절한 내용</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                            <label class="form-check-label">광고성 콘텐츠</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                            <label class="form-check-label">개인정보 노출</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                            <label class="form-check-label">저작권 침해</label>
+                                        </div>
+                                        <!-- Add more checkboxes as needed -->
+
+                                        <!-- Textarea for additional comments -->
+                                        <div class="form-group">
+                                            <label for="additionalComments">추가적인 내용</label>
+                                            <textarea class="form-control" id="additionalComments" name="reportPostContent" rows="3"></textarea>
+                                        </div>
+
+                                        <!-- Submit button -->
+                                        <button type="submit" class="btn btn-primary">신고하기</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--                    게시물 신고 모달 창 끝-->
+                    <!--                    <a type="button" class="btn btn-primary" th:href="@{|/resalePost/previousPage|}">이전 화면으로</a>-->
+                </div>
+            </div>
+            <hr>
+            <!-- 스타일  -->
+            <!-- 스타일  -->
+            <style>
+                hr {
+                    height: 4px;
+                    background-color: black;
+                }
+
+                .card {
+                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+               }
+
+                .image{
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                    }
+                .clickable-card {
+                        cursor: pointer;
+                        transition: box-shadow 0.3s; /* 0.3초 동안 변화하는 트랜지션 설정 */
+                    }
+
+                    .clickable-card:hover {
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 마우스 호버 시 그림자 효과 변경 */
+                    }
+            </style>
+        </div>
+    </div>
+    <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+        function DeletePost() {
+            return confirm("게시글을 삭제하시겠습니까?");
+        }
+        function soldPost() {
+            return confirm("게시글을 판매 내역으로 옮기시겠습니까?");
+        }
+         // 게시물 신고 모달
+         function reportPostModal() {
+            $('#reportPostModal').modal('show');
+        }
+
+        //게시물 좋아요
+        function toggleHeartIcon() {
+            var heartFill = document.getElementById('heart-fill');
+            var isFilled = heartFill.value;
+            if (isFilled == "" || isFilled === "false") {
+                heartIcon.classList.remove('bi-heart-fill');
+                heartIcon.classList.add('bi-heart');
+            } else {
+                heartIcon.classList.remove('bi-heart');
+                heartIcon.classList.add('bi-heart-fill');
+            }
+        }
+        function heartSubmit() {
+            document.getElementById('likeForm').submit();
+        }
+        toggleHeartIcon();
+
+        function CheckForReportResalePostStatus(postId) {
+    var postId = parseInt(document.getElementById('postId').value, 10);
+    $.ajax({
+        type: "GET",
+        url: "/report/checkResalePost/" + postId,
+        headers: { "X-CSRF-TOKEN": $("input[name='_csrf']").val() },
+        async: false, // 동기적으로 실행되도록 설정
+        success: function (response) {
+            if (!response) {
+                alert('이미 신고한 게시물입니다');
+                return false;
+            } else {
+                // 여기에서 추가로 수행해야 할 로직이 있다면 여기에 추가
+                return true;
+            }
+        },
+        error: function (error) {
+            console.error("Error checking ReportPost " + postId + ": " + error);
+            return false;
+        }
+    });
+}
+    </script>
+    <!-- jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- iamport.payment.js -->
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script>
+        var IMP = window.IMP;
+        IMP.init("imp48502338");
+        var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+		var name = $("#userName").val();
+<!--		토큰 값을 script로 가져온다-->
+
+        var productCode = document.getElementById('post_orderId').value;
+        var makeMerchantUid = productCode;
+        var productName = document.getElementById('post_name').value;
+        var productPrice = parseInt(document.getElementById('post_price').value, 10);
+        var buyerEmail = document.getElementById('buyer_email').value;
+        var buyerName = document.getElementById('buyer_name').value;
+        var buyerTel = document.getElementById('buyer_tel').value;
+        var buyerAddress = document.getElementById('buyer_address').value;
+        var buyerPostCode = parseInt(document.getElementById('buyer_postcode').value, 10);
+        var postId = parseInt(document.getElementById('post_id').value, 10);
+        var buyerId = parseInt(document.getElementById('buyer_id').value, 10);
+        function requestPay() {
+            IMP.request_pay({
+                pg: "kakaopay.TC0ONETIME",
+<!--                pg: "tosspay.tosstest",-->
+<!--                pg: "html5_inicis.INIBillTst",-->
+                pay_method: "card",
+                merchant_uid: "IMP"+makeMerchantUid,   // 주문번호
+                name: productName,
+                amount: productPrice,                         // 숫자 타입
+                buyer_email: buyerEmail,
+                buyer_name: buyerName,
+                buyer_tel: buyerTel,
+                buyer_addr: buyerAddress,
+                buyer_postcode: buyerPostCode
+            }
+            , function (rsp) { // callback
+            console.log("결제 응답 객체: ", rsp);
+                $.ajax({
+                   type: 'POST',
+                   url: '/verify/' + rsp.imp_uid,
+                   beforeSend : function(xhr)
+                   {
+                      xhr.setRequestHeader(header, token);
+                   },
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+                }).done(function(data) {
+                    if(rsp.paid_amount === data.response.amount){
+                    alert("결제 성공");
+                        $.ajax({
+                   type: 'POST',
+                   url: '/resalePost/soldOut/' + postId + '/' + buyerId,
+                   beforeSend : function(xhr)
+                   {
+                      xhr.setRequestHeader(header, token);
+                   },
+<!--                   ajax로 post할 때 받아온 토큰 값을 같이 보낸다.-->
+                })
+                    } else {
+                        alert("결제 실패");
+                    }
+                });
+            });
+        }
+    </script>
+</div>
+</html>

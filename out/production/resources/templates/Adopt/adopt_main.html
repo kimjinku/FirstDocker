@@ -1,0 +1,28 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <style>
+
+
+    </style>
+</head>
+
+<div layout:fragment="content" class="row py-5 px-4">
+    <div id="map" style="width:500px;height:400px;">
+    </div>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0633e00c180107d336caf427c4eff4e8"></script>
+    <script>
+        var container = document.getElementById('map');
+        var options = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            level: 3
+        };
+
+        var map = new kakao.maps.Map(container, options);
+    </script>
+</div>
+
+<script>
+
+</script>
+</html>

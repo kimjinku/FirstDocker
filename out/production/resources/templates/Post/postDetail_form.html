@@ -1,0 +1,859 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+    <style>
+
+        <!-- 스타일  -->
+           *,
+           *:before,
+           *:after {
+             margin: 0;
+           padding: 0;
+           box-sizing: inherit;
+           }
+
+           .msger {
+             display: flex;
+             flex-flow: column wrap;
+             justify-content: space-between;
+             max-width: 867px;
+             margin: 25px 10px;
+             height: calc(100% - 50px);
+             border: var(--border);
+             border-radius: 5px;
+             background: var(--msger-bg);
+             box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+           }
+           .imessage {
+             background-color: #fff;
+             border: 1px solid #e5e5ea;
+             border-radius: 0.25rem;
+             display: flex;
+             flex-direction: column;
+             font-family: "SanFrancisco";
+             font-size: 1.25rem;
+             margin: 0 auto 1rem;
+             max-width: 600px;
+             padding: 0.5rem 1.5rem;
+           }
+
+           .msger-chat {
+             flex: 1;
+             overflow-y: auto;
+             padding: 10px;
+           }
+           .msger-chat::-webkit-scrollbar {
+             width: 6px;
+           }
+           .msger-chat::-webkit-scrollbar-track {
+             background: #ddd;
+           }
+           .msger-chat::-webkit-scrollbar-thumb {
+             background: #bdbdbd;
+           }
+
+           <!-- 스타일  -->
+
+
+
+               hr {
+                   height: 4px;
+                   background-color: black;
+               }
+
+               .card {
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+
+               .image{
+                       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                   }
+               .clickable-card {
+                       cursor: pointer;
+                       transition: box-shadow 0.3s; /* 0.3초 동안 변화하는 트랜지션 설정 */
+                   }
+
+                   .clickable-card:hover {
+                       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 마우스 호버 시 그림자 효과 변경 */
+                   }
+
+
+       /* Sticker */
+       .sticker {
+         position: relative;
+         width: 160px;
+         height: 70px;
+         float: left;
+         font-size: 1.5em;
+         font-weight: bold;
+         margin: 30px 10px 10px -90px;
+         background-color: #fcf59b;
+         border-radius: 0px 10px 250px / 0 200px 55px 250px;
+         -webkit-box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
+         -moz-box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
+         box-shadow: -3px 5px 12px 0 rgba(0,0,0,0.3);
+         //-ms-transform: rotateZ(-4deg);
+         //-webkit-transform: rotateZ(-4deg);
+         //transform: rotateZ(-4deg);
+       }
+
+       /* Text on the sticker*/
+       .text {
+         text-align: center;
+         display: block;
+         padding: 20px 20px 20px 0;
+         font-size: 70%;
+         font-weight:lighter;
+<!--          font-family: 'Shadows Into Light', cursive;-->
+       }
+
+       /* Shadow under sticker */
+       .sticker::before {
+         content: '';
+         display: block;
+         position: absolute;
+         z-index: -1;
+         width: 90%;
+         height: 20px;
+         -webkit-box-shadow: 3px 17px 6px rgba(0,0,0,.3);
+         -moz-box-shadow: 3px 17px 6px rgba(0,0,0,.3);
+         box-shadow: 3px 17px 6px rgba(0,0,0,.3);
+         bottom: 15px;
+         right: 5px;
+         -ms-transform: skew(-10deg,2deg);
+         -webkit-transform: skew(-10deg,2deg);
+         transform: skew(-10deg,2deg);
+       }
+
+       /* Curl */
+       .sticker::after {
+         content: '';
+         display: block;
+         position: absolute;
+         width: 0;
+         height: 0;
+         right: 8px;
+         bottom: 1px;
+         border-top: 10px solid rgb(156, 166, 61);
+         border-right: 10px solid transparent;
+         -webkit-transform: skew(-55deg,10deg);
+         transform: skew(-55deg,10deg);
+       }
+        .btn-gradient-2 {
+           text-decoration:none;
+         position: relative;
+         display: inline-flex;
+         justify-content: center;
+         align-items: center;
+         font-size: 1rem;
+         color: inherit;
+         background:transparent;
+<!--          background-image: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);-->
+<!--          background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);-->
+         padding: 0.2rem 0.5rem;
+         cursor: pointer;
+       }
+
+       #charCountMessage {
+         font-weight: bold;
+         color: red;
+       }
+    </style>
+    <div class="container">
+        <div>
+            <div style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px">
+                <div class="d-flex justify-content-start">
+                    <div class="pt-5">
+                        <div class="border-bottom pt-2 mb-4">
+                            <h2 th:text="${post.title}"></h2>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 17px; "
+                           th:if="${!post.getTagList().isEmpty()}">
+                                            <span th:each="tag, loop : ${post.getTagList()}"
+                                                  th:text="' '+ @{|#${tag.name}|}"></span>
+                        </p>
+                    </div>
+                </div>
+
+
+                <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">
+                    <input type="hidden" id="heart-fill"
+                           th:value="${#lists.contains(post.likeMembers, loginedMember)}">
+                    <form id="likeForm" class="flex-fill" th:action="@{|/post/postLike|}" method="post"
+                          onsubmit="return toggleHeartIcon()">
+                        <input type="hidden" name="id" th:value="${post.id}">
+                        <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
+                           style="font-size: 2rem; color:red; cursor:pointer;">
+                            <span class="badge rounded-pill "
+                                  th:text="${post.likeMembers.size()}"></span></i>
+                    </form>
+                </div>
+                <div class="pb-5 col-md-12 text-end">
+                    <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
+                       style="font-size: 2rem; color:red; cursor:pointer;">
+                            <span class="badge rounded-pill "
+                                  th:text="${post.likeMembers.size()}"></span></i>
+                </div>
+<!--                <hr class="mt-1 mb-5">-->
+                <div class="col">
+                    <div th:each="img, iterStat : ${post.postImages}">
+                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="포스트 이미지"
+                             style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                    </div>
+                </div>
+                <br>
+                <div class="pt-3 pb-5">
+<!--                    <div th:text="${post.content}"></div>-->
+                    <div th:utext="${htmlContent}"></div>
+                </div>
+                <div>
+                    <div th:if="${post.modifyDate != null}">
+                                <span style="font-size: 14px; color: #777;"
+                                      th:text="${#temporals.format(post.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                    </div>
+                    <div th:unless="${post.modifyDate != null}">
+                                <span style="font-size: 14px; color: #777;"
+                                      th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                    </div>
+                </div>
+                <div>
+                    <div class="sticker" style="margin-left:30px;">
+                        <a class="text"  th:text="${post.author.profileName}" th:href="@{|/profile/detail/${post.author.profileName}|}" style="text-decoration:none; color:inherit;"></a>
+                    </div>
+                </div>
+                <br>
+                <div class="pb-2">
+                    <div class="row justify-content-end">
+                        <div class="col-md-auto" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                            <button type="button" class="btn btn-primary admin-btn" style="margin-right: 0.1rem"
+                                    data-bs-toggle="modal" th:data-bs-target="'#approveModal' + ${post.id}"
+                                    th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정
+                            </button>
+                        </div>
+                        <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+                            <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
+                                    th:data-bs-target="'#reportPostModal'"
+                                    th:onclick="'reportPostModal'" style="border:0px;">🚨신고
+                            </button>
+                            <div th:if="${alreadyReportedMessage}" class="alert alert-warning" role="alert">
+                                <p th:text="${alreadyReportedMessage}"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-auto"
+                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                            <form th:action="@{|/post/updatePost/${post.id}|}" method="get">
+                                <input type="hidden" name="id" th:value="${post.id}" />
+                                <button type="submit" class="btn-gradient-2" style="margin-right: 0.1rem; border:0px;">✏️수정</button>
+                            </form>
+                        </div>
+                        <div class="col-md-auto"
+                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                            <form th:action="@{|/post/deletePost/${post.id}|}" method="post"
+                                  onsubmit="return DeletePost();">
+                                <button type="submit" class="btn-gradient-2" style="margin-right: 2rem; border:0px;">❌삭제
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- 게시물 수정 모달 창 -->
+                    <div class="modal fade" th:id="'approveModal' + ${post.id}" tabindex="-1" role="dialog"
+                         aria-labelledby="'approveModalLabel' + ${post.id}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold fs-4" th:id="'approveModalLabel' + ${post.id}">게시물
+                                        수정</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="modal-body">
+                                    <!-- 여기에 승인 폼이나 내용을 추가하세요 -->
+                                    <form th:action="@{|/post/updatePostByAdmin/${post.id}|}" method="post"
+                                          th:object="${postForm}"
+                                          onsubmit="return UpdatePost();">
+                                        <input type="hidden" name="postId" th:value="${post.id}"/>
+                                        <div>
+                                            <label class="form-label">태그 선택</label>
+                                            <div th:each="tag : ${getPostTags}">
+                                                <label th:for="${'tag_' + tag.name}">
+                                                    <input type="checkbox" id="${'tag_' + tag.name}"
+                                                           name="selectedTagNames" th:value="${tag.name}"
+                                                           th:text="${tag.name}"
+                                                           th:checked="${post.getTagList().contains(tag)}">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <!--                                        <option selected>카테고리</option>-->
+                                        카테고리 선택
+                                        <div>
+                                            <select id="category" name="category" class="form-select"
+                                                    aria-label="Default select example">
+                                                <option selected>카테고리</option>
+                                                <option value="자유게시판" th:selected="${post.category == '자유게시판'}">자유게시판
+                                                </option>
+                                                <option value="QnA" th:selected="${post.category == 'QnA'}">QnA</option>
+                                            </select>
+                                        </div>
+                                        <br>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success btn-modal"
+                                                    style="margin-top: 15px">수정
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-modal"
+                                                    style="margin-top: 15px" data-bs-dismiss="modal">닫기
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--                    게시물 신고 모달 창-->
+                    <!-- Modal Structure -->
+                    <div class="modal fade" id="reportPostModal" tabindex="-1" role="dialog" aria-labelledby="reportPostModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reportPostModalLabel">게시글 신고</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Form for reporting post -->
+                                    <form sec:authorize="isAuthenticated()" th:action="@{|/post/report/${post.id}|}" method="post" onsubmit="return CheckForReportPostStatus()">
+                                        <!-- Checkboxes for report reasons -->
+                                        <input type="hidden" th:id="postId" th:value="${post.id}">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                            <label class="form-check-label">부적절한 내용</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                            <label class="form-check-label">광고성 콘텐츠</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                            <label class="form-check-label">개인정보 노출</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                            <label class="form-check-label">저작권 침해</label>
+                                        </div>
+                                        <!-- Add more checkboxes as needed -->
+
+                                        <!-- Textarea for additional comments -->
+                                        <div class="form-group">
+                                            <label for="additionalComments">추가적인 내용</label>
+                                            <textarea class="form-control" id="additionalComments" name="reportPostContent" rows="3"></textarea>
+                                        </div>
+
+                                        <!-- Submit button -->
+                                        <button type="submit" class="btn btn-primary">신고하기</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--                    게시물 신고 모달 창 끝-->
+                </div>
+            </div>
+
+            <hr>
+            <!--       댓글        -->
+            <div class="mb-3">
+                <button th:onclick="@{|window.location='/post/community/main?category=${post.category}&amp;sort=&amp;TagName='|}"
+                        style="background:transparent; border:0px;" th:text="'🠔 뒤로가기' + ' : ' + ${post.category} "> </button>
+                <div class="pt-5">
+                    <p th:text="'댓글 ' + ${parentComments.size()} + '개'"
+                       style="background:transparent; padding: 10px; display: inline-block; border-radius: 1rem;"></p>
+                </div>
+
+
+
+                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
+                    <textarea name="content" class="form-control" id="content" rows="3" style="background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px"
+                              placeholder="답변을 작성해 주세요 (최대 500자 까지 작성 가능합니다.)" oninput="checkLength()"></textarea>
+                    <div class="mt-5" style="" id="charCountMessage"></div>
+                    <br>
+                    <div class="d-flex justify-content-end">
+                        <input class="btn-gradient-2" type="submit" value="✔댓글달기" style="border:0px;">
+                    </div>
+                </form>
+                <hr>
+                <div th:each="comment : ${post.comments}" th:if="${comment.parentComment == null}" style="display:flex;">
+                    <input type="hidden" th:id="comment_id" th:value="${comment.id}">
+                    <div class="card mb-4" style="width:40%; display:flex; background-color: rgba(255, 255, 255, 0.4); height: 100%; border-radius: 20px; padding: 20px;">
+                        <div class="card-body" th:id="${(anchorId != null ) ? (anchorId == comment.id ? 'scrollToAnchor' : '') : ''}">
+<!--                        <div class="card-body">-->
+<!--                            <a th:id="|${anchorId}|"></a>-->
+                            <div style="font-size: 14px; color: #777;" th:text="${comment.content}"></div>
+                            <div>
+                                <div th:if="${comment.modifyDate != null}">
+                                        <span style="font-size: 14px; color: #777;"
+                                              th:text="${#temporals.format(comment.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                </div>
+                                <div th:unless="${comment.modifyDate != null}">
+                                        <span style="font-size: 14px; color: #777;"
+                                              th:text="${#temporals.format(comment.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                </div>
+                            </div>
+
+                            <div th:with="fill=${#lists.contains(comment.likeMembers, loginedMember)}">
+                                <input type="hidden" th:id="${'CommentHeart-fill-' + comment.id}" th:value="${fill}">
+                                <form sec:authorize="isAuthenticated()" th:id="${'CommentLikeForm-' + comment.id}"
+                                      class="flex-fill d-flex justify-content-end" th:action="@{|/comment/commentLike|}"
+                                      method="post" onsubmit="return toggleCommentHeartIcon(this)">
+                                    <input type="hidden" name="id" th:value="${comment.id}">
+                                    <i th:id="${'CommentHeartIcon-' + comment.id}" class="bi"
+                                       th:classappend="${fill} ? 'bi-heart-fill' : 'bi-heart'"
+                                       th:onclick="CommentHeartSubmit([[${comment.id}]])"
+                                       style="font-size: 2rem; color:red; cursor:pointer;">
+                                        <span class="badge rounded-pill"
+                                              th:text="${comment.likeMembers.size()}"></span>
+                                    </i>
+                                </form>
+                            </div>
+                            <div class="flex-fill d-flex justify-content-end">
+                            <i sec:authorize="!isAuthenticated()" th:id="${'CommentHeartIcon-' + comment.id}" class="bi"
+                               th:classappend="${fill} ? 'bi-heart-fill' : 'bi-heart'"
+                               th:onclick="CommentHeartSubmit([[${comment.id}]])"
+                               style="font-size: 2rem; color:red; cursor:pointer;">
+                                        <span class="badge rounded-pill"
+                                              th:text="${comment.likeMembers.size()}"></span>
+                            </i>
+                            </div>
+
+                            <br>
+                            <div style="background-color: #f0f0f0; padding: 10px; display: inline-block; border-radius: 1rem;">
+                                <div style="font-size: 18px; font-weight: bold; color: #333;"
+                                     th:text="${comment.author.profileName}">
+
+                                </div>
+
+                            </div>
+                            <div th:text="'댓글 : ' + ${comment.replies.size()}"></div>
+                        </div>
+                        <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+                            <form th:action="@{|/comment/reply/${comment.id}|}" method="post">
+                                <input type="text" th:id="'commentReply' + ${comment.id}" name="commentReply" th:onclick="'checkInput(\'' + ${comment.id} + '\')'" th:oninput="'checkInput(\'' + ${comment.id} + '\')'">
+                                <button type="submit" th:id="'submitButton' + ${comment.id}" class="btn-gradient-2" style="background:transparent; border:0px; cursor:default;" disabled>💬</button>
+                            </form>
+                        </div>
+
+
+                        <div class="pb-2 pt-5">
+                            <hr>
+                            <div class="row d-flex justify-content-end">
+                                <div class="col-md-auto" th:if="${comment.author?.id == loginedMember?.id}">
+                                    <button type="button" class="btn-gradient-2" style="margin-right: 0.1rem; background:transparent; border:0px;"
+                                            data-bs-toggle="modal"
+                                            th:data-bs-target="'#approveCommentModal' + ${comment.id}"
+                                            th:onclick="'openApproveCommentModal(' + ${comment.id} + ')'" >✏️
+                                    </button>
+                                </div>
+                                <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+<!--                                    <button type="button" class="btn-gradient-2" data-bs-toggle="modal"-->
+<!--                                                     th:data-bs-target="'#reportCommentModal'"-->
+<!--                                                     th:onclick="'reportCommentModal'" style="background:transparent; border:0px;">🚨-->
+<!--                                </button>-->
+                                    <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
+                                            th:data-bs-target="'#reportCommentModal' + ${comment.id}"
+                                            th:onclick="'reportCommentModal(\'' + ${comment.id} + '\')'" style="background:transparent; border:0px;">🚨
+                                    </button>
+                                </div>
+
+                                <!--                                댓글 신고 모달창-->
+<!--                                <div class="modal fade" id="reportCommentModal" tabindex="-1" role="dialog" aria-labelledby="reportCommentModalLabel" aria-hidden="true">-->
+                                <div class="modal fade" th:id="'reportCommentModal' + ${comment.id}" tabindex="-1" role="dialog" aria-labelledby="'reportCommentModalLabel' + ${comment.id}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="reportCommentModalLabel">게시글 신고</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Form for reporting post -->
+                                                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/report/${comment.id}|}" method="post" onsubmit="return CheckForReportCommentStatus()">
+                                                    <input type="hidden" th:id="commentId" th:value="${comment.id}">
+                                                    <!-- Checkboxes for report reasons -->
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                                        <label class="form-check-label">부적절한 내용</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                                        <label class="form-check-label">광고성 콘텐츠</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                                        <label class="form-check-label">개인정보 노출</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                                        <label class="form-check-label">저작권 침해</label>
+                                                    </div>
+                                                    <!-- Add more checkboxes as needed -->
+
+                                                    <!-- Textarea for additional comments -->
+                                                    <div class="form-group">
+                                                        <label for="additionalComments">추가적인 내용</label>
+                                                        <textarea class="form-control" id="reportComments" name="reportCommentContent" rows="3"></textarea>
+                                                    </div>
+
+                                                    <!-- Submit button -->
+                                                    <button type="submit" class="btn btn-primary">신고</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--                                댓글 신고 모달창 끝-->
+                                <div class="col-md-auto"
+                                     th:if="${comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                    <form th:action="@{|/comment/deleteComment/${comment.id}|}" method="post"
+                                          onsubmit="return DeleteComment();">
+                                        <button type="submit" class="btn-gradient-2"
+                                                style="margin-right: 2rem; background:transparent; border:0px; ">❌
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- 댓글 수정 모달 창 -->
+                            <div class="modal fade" th:id="'approveCommentModal' + ${comment.id}" tabindex="-1"
+                                 role="dialog"
+                                 aria-labelledby="'approveCommentModalLabel' + ${comment.id}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title fw-bold fs-4"
+                                                th:id="'approveCommentModalLabel' + ${comment.id}">댓글 수정</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                <span aria-hidden="true"></span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- 여기에 승인 폼이나 내용을 추가하세요 -->
+                                            <form sec:authorize="isAuthenticated()" th:action="@{|/comment/updateComment/${comment.id}|}" method="post"
+                                                  onsubmit="return UpdateComment();">
+                                                <input type="hidden" name="commentId" th:value="${comment.id}"/>
+                                                <div class="font-400 ">
+                                                    <label for="commentContent" class="form-label fw-bold">내용</label>
+                                                    <textarea name="content" class="form-control" id="commentContent"
+                                                              th:text="${comment.content}"
+                                                              style="height: 300px"></textarea>
+                                                </div>
+                                                <br>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-success btn-modal"
+                                                            style="margin-top: 15px">수정
+                                                    </button>
+                                                    <button type="button" class="btn btn-secondary btn-modal"
+                                                            style="margin-top: 15px" data-bs-dismiss="modal">닫기
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 댓글 수정 모달 창 끝 -->
+                        </div>
+
+                    </div>
+                    <div class="reply" th:if="${comment.replies != null and comment.replies.size() > 0}" style="margin-left: 100px">
+                        <div class="msger">
+                            <div class="msger-chat" style="max-height:300px; width:600px; overflow-y: auto;">
+                                <div class="msg left-msg" th:each="comment : ${comment.replies}">
+                                    <div class="imessage" >
+                                        <div class="msg-info">
+                                            <div class="msg-text" th:text="${comment.content}">
+                                            </div>
+<!--                                            <div class="msg-text">-->
+<!--                                                <input type="text" style="background:transparent; border:0px;" th:id="'updateReply'+${comment.id}" name="updateReply" th:value="${comment.content}"  th:onclick="'checkInputReply(\'' + ${comment.id} + '\')'" th:oninput="'checkInputReply(\'' + ${comment.id} + '\')'" disabled/>-->
+<!--                                            </div>-->
+                                            <!--                                                <a th:href="" class="msg-info-name" th:text="${comment.author.profileName}"></a>-->
+                                            <div class="msg-info-name" th:text="${comment.author.profileName}"></div>
+                                            <div class="msg-info-time" th:text="${#temporals.format(comment.createDate, 'yyyy/MM/dd/ HH:mm')}"></div>
+                                            <div th:if="${comment.author?.id == loginedMember?.id}">
+                                                <form th:action="@{|/comment/reply/${comment.id}/update|}" method="post">
+                                                    <input type="text" th:id="'updateReply'+${comment.id}" name="updateReply" th:value="${comment.content}" style="display:none;" th:onclick="'checkInputReply(\'' + ${comment.id} + '\')'" th:oninput="'checkInputReply(\'' + ${comment.id} + '\')'"/>
+                                                    <button type="button" th:id="'updateReplyButton'+${comment.id}" class="btn-gradient-2" style="border:0px; cursor:default;" th:onclick="'visableInput(\'' + ${comment.id} + '\')'">✏️</button>
+                                                </form>
+                                                <a th:href="@{|/comment/reply/${comment.id}/delete|}" style="text-decoration:none; color:inherit;">❌</a>
+                                            </div>
+                                            <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
+                                                <!--                                                    <button type="button" class="btn-gradient-2" data-bs-toggle="modal"-->
+                                                <!--                                                            th:data-bs-target="'#reportReplyModal'"-->
+                                                <!--                                                            th:onclick="'reportReplyModal'" style="background:transparent; border:0px;">🚨-->
+                                                <!--                                                    </button>-->
+                                                <button type="button" class="btn-gradient-2" data-bs-toggle="modal"
+                                                        th:data-bs-target="'#reportReplyModal' + ${comment.id}"
+                                                        th:onclick="|reportReplyModal('${comment.id}')|" style="background:transparent; border:0px;">🚨
+                                                </button>
+                                            </div>
+                                            <!--                               대댓글 신고 모달창-->
+                                            <!--                                                <div class="modal fade" id="reportReplyModal" tabindex="-1" role="dialog" aria-labelledby="reportReplyModalLabel" aria-hidden="true">-->
+                                            <div class="modal fade" th:id="'reportReplyModal' + ${comment.id}" tabindex="-1" role="dialog" aria-labelledby="'reportReplyModalLabel' + ${comment.id}" aria-hidden="true" onsubmit="return CheckForReportCommentStatus()">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="reportReplyModalLabel">게시글 신고</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                <span aria-hidden="true"></span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- Form for reporting post -->
+                                                            <form sec:authorize="isAuthenticated()" th:action="@{|/comment/reportReply/${comment.id}|}" method="post">
+                                                                <!-- Checkboxes for report reasons -->
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                                                    <label class="form-check-label">부적절한 내용</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                                                    <label class="form-check-label">광고성 콘텐츠</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                                                    <label class="form-check-label">개인정보 노출</label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                                                    <label class="form-check-label">저작권 침해</label>
+                                                                </div>
+                                                                <!-- Add more checkboxes as needed -->
+
+                                                                <!-- Textarea for additional comments -->
+                                                                <div class="form-group">
+                                                                    <label for="additionalComments">추가적인 내용</label>
+                                                                    <textarea class="form-control" id="reportReplies" name="reportReplyContent" rows="3"></textarea>
+                                                                </div>
+
+                                                                <!-- Submit button -->
+                                                                <button type="submit" class="btn btn-primary">신고</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--                                대댓글 신고 모달창 끝-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--                여기까지-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+       //댓글 달때,  앵커기능
+
+        document.addEventListener('DOMContentLoaded', function() {
+                console.log('aaa');
+                var anchorElement = document.getElementById('scrollToAnchor');
+
+                if(anchorElement) {
+                    console.log('anchorelementexist');
+                    anchorElement.scrollIntoView({behavior : 'auto'});
+                }
+
+            }
+
+        )
+
+
+        function DeletePost() {
+            return confirm("게시글을 삭제하시겠습니까?");
+        }
+        function UpdatePost() {
+            return confirm("게시글을 수정하시겠습니까?");
+        }
+        function DeleteComment() {
+            return confirm("댓글을 삭제하시겠습니까?");
+        }
+        function UpdateComment() {
+            return confirm("댓글을 수정하시겠습니까?");
+        }
+        function WriteComment() {
+            return confirm("답변을 작성하시겠습니까?");
+        }
+        function openApproveModal() {
+            $('#approveModal').modal('show');
+        }
+        function openApproveCommentModal() {
+            $('#approveCommentModal').modal('show');
+        }
+
+        //게시물 좋아요
+        function toggleHeartIcon() {
+            var heartFill = document.getElementById('heart-fill');
+            var isFilled = heartFill.value;
+            if (isFilled == "" || isFilled === "false") {
+                heartIcon.classList.remove('bi-heart-fill');
+                heartIcon.classList.add('bi-heart');
+            } else {
+                heartIcon.classList.remove('bi-heart');
+                heartIcon.classList.add('bi-heart-fill');
+            }
+        }
+        function heartSubmit() {
+            document.getElementById('likeForm').submit();
+        }
+
+        toggleHeartIcon();
+
+        // 댓글 좋아요
+        function toggleCommentHeartIcon(commentId) {
+            var heartFill = document.getElementById('CommentHeart-fill-' + commentId);
+            var isFilled = heartFill.value;
+            var commentHeartIcon = document.getElementById('CommentHeartIcon-' + commentId);
+            if (isFilled == "" || isFilled === "false") {
+                commentHeartIcon.classList.remove('bi-heart-fill');
+                commentHeartIcon.classList.add('bi-heart');
+            } else {
+                commentHeartIcon.classList.remove('bi-heart');
+                commentHeartIcon.classList.add('bi-heart-fill');
+            }
+        }
+
+        function CommentHeartSubmit(commentId) {
+            document.getElementById('CommentLikeForm-' + commentId).submit();
+        }
+        function reportPostModal() {
+            $('#reportPostModal').modal('show');
+        }
+<!--        function reportCommentModal() {-->
+<!--            $('#reportCommentModal').modal('show');-->
+<!--        }-->
+<!--        function reportReplyModal(){-->
+<!--            $('#reportReplyModal').modal('show');-->
+<!--        }-->
+
+    function reportReplyModal(commentId) {
+        $('#reportReplyModal' + commentId).modal('show');
+    }
+
+    function reportCommentModal(commentId) {
+        $('#reportCommentModal' + commentId).modal('show');
+    }
+
+
+<!--        //대댓글 입력칸 확인-->
+        function checkInput(commentid) {
+            console.log('인풋칸확인함수'+ commentid);
+            var replyValue = document.getElementById('commentReply'+commentid).value;
+            var submitButton = document.getElementById('submitButton'+commentid);
+
+            if (replyValue.trim() === '' ) {
+            console.log('인풋칸입력값empty');
+                submitButton.disabled = true;
+            } else {
+            console.log('인풋칸입력값occupied');
+                submitButton.disabled = false;
+                submitButton.style.cursor = 'pointer';
+            }
+
+        }
+
+
+<!--대댓글 업데이트 입력칸표시 및 내용확인-->
+        function visableInput(replyid) {
+            console.log('visableinputprocess');
+            console.log(replyid);
+            var inputBar = document.getElementById('updateReply'+replyid);
+            inputBar.style.display = 'inline';
+        }
+
+        function checkInputReply(replyid) {
+            console.log('replyupdateinputCheck');
+            console.log(replyid);
+            var replyValue = document.getElementById('updateReply'+replyid).value;
+            var submitButton = document.getElementById('updateReplyButton'+replyid);
+
+            if (replyValue.trim() === '' ) {
+                    console.log('empty');
+                submitButton.disabled = true;
+                submitButton.style.cursor = 'default';
+            } else {
+                submitButton.disabled = false;
+                submitButton.style.cursor = 'pointer';
+                submitButton.type = 'submit';
+            }
+
+        }
+
+        function checkLength() {
+            var textarea = document.getElementById('content');
+            var charCountMessage = document.getElementById('charCountMessage');
+            var maxLength = 500;
+
+            if (textarea.value.length > maxLength) {
+                textarea.value = textarea.value.substring(0, maxLength);
+                charCountMessage.innerHTML = '최대 500자 까지만 입력 가능합니다.';
+            } else {
+                charCountMessage.innerHTML = '';
+            }
+        }
+
+
+
+        function CheckForReportPostStatus(postId) {
+    var postId = parseInt(document.getElementById('postId').value, 10);
+    $.ajax({
+        type: "GET",
+        url: "/report/checkPost/" + postId,
+        headers: { "X-CSRF-TOKEN": $("input[name='_csrf']").val() },
+        async: false, // 동기적으로 실행되도록 설정
+        success: function (response) {
+            if (!response) {
+                alert('이미 신고한 게시물입니다');
+                return false;
+            } else {
+                // 여기에서 추가로 수행해야 할 로직이 있다면 여기에 추가
+                return true;
+            }
+        },
+        error: function (error) {
+            console.error("Error checking ReportPost " + postId + ": " + error);
+            return false;
+        }
+    });
+}
+
+        function CheckForReportCommentStatus(commentId) {
+    var commentId = parseInt(document.getElementById('commentId').value, 10);
+    $.ajax({
+        type: "GET",
+        url: "/report/checkComment/" + commentId,
+        headers: { "X-CSRF-TOKEN": $("input[name='_csrf']").val() },
+        async: false, // 동기적으로 실행되도록 설정
+        success: function (response) {
+            if (!response) {
+                alert('이미 신고한 댓글입니다');
+                return false;
+            } else {
+                // 여기에서 추가로 수행해야 할 로직이 있다면 여기에 추가
+                return true;
+            }
+        },
+        error: function (error) {
+            console.error("Error checking ReportPost " + commentId + ": " + error);
+            return false;
+        }
+    });
+}
+    </script>
+</div>
+</html>

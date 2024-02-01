@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+
+    <div class="container">
+        <div>
+            <div class="row row-cols-1 align-items-center">
+                <div class="col">
+                    <div class="container">
+                        <div class="row row-cols-1">
+                            <div class="col" style="">
+                                <a type="button" class="btn btn-outline-warning" th:href="@{|/profile/myPage|}">회원 정보</a>
+                                <a type="button" class="btn btn-outline-warning" th:href="@{|/post/myPosts|}">내가 쓴 글</a>
+                                <a type="button" class="btn btn-outline-warning" th:href="@{|/comment/myComments|}">내가 쓴 댓글</a>
+                                <a type="button" class="btn btn-outline-warning" th:href="@{|/post/myLikedPosts|}">좋아요 누른 글</a>
+                                <a type="button" class="btn btn-outline-warning" th:href="@{|/comment/myLikedComments|}">좋아요 누른 댓글</a>
+                                <a type="button" class="btn btn-outline-warning" th:href="@{|/chat/myChatRoom|}">내가 참여한 채팅방 목록</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <h2>좋아요 누른 글 목록</h2>
+                    <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
+                    <div class="col" th:each="post, loop : ${paging}">
+                        <div class="card" style="width: 100%; background:transparent;">
+                            <div class="d-flex">
+                                <div th:if="${not #lists.isEmpty(post.postImages)}">
+                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
+                                        <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                    </div>
+                                </div>
+                                <div th:unless="${post.postImages != null and not #lists.isEmpty(post.postImages)}">
+                                    <img class="card-img-top" th:src="@{|/img/no_img.jpg|}" alt="default image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                </div>
+
+                                <div class="card-body" style="display: flex; flex-direction: column; height: 100%;">
+                                    <h5 class="card-title">
+                                        <a th:href=@{|/post/detail/${post.id}/0|} th:text="${#strings.length(post.title) &gt; 20 ? #strings.substring(post.title, 0, 20) + ' . . . ' : post.title}" style="font-weight:bold; text-decoration: none; color:inherit;"></a>
+                                    </h5>
+                                    <p class="card-text text-muted" th:text="${#strings.length(post.content) &gt; 50 ? #strings.substring(post.content, 0, 50) + ' . . . ' : post.content}" style="width:400px;"></p>
+                                    <!--                                        <span th:text="${#strings.length(post.content) &gt; 100 ? #strings.substring(post.content, 0, 30) + ' . . . ' : post.content}"></span>-->
+                                    <div style="display:flex; flex-direction:column; justify-content:flex-end align-self:flex-end">
+                                        <div>
+                                            <div style="margin-top: 10px; font-size: 17px; display:inline;" th:if="${!post.getTagList().isEmpty()}">
+                                                <span th:each="tag, loop : ${post.getTagList()}" th:text="' '+ @{|#${tag.name}|}"></span>
+                                            </div>
+                                            <form th:if="${post.author.member.role != 'ROLE_ADMIN'}" th:action="@{|/profile/detail/${post.author.profileName}|}" style="display:inline;">
+                                                <!--                                                <input type="hidden" name="postid" th:value="${post.id}">-->
+                                                <button type="submit" class="btn btn-link"
+                                                        th:text="${post.author.profileName}"
+                                                        style="font-weight:bold; text-decoration:none; color:inherit; display:inline;"></button>
+                                            </form>
+                                        </div>
+                                        <div>
+                                                <span style="display:inline;">
+                                                    <div id="voteCount" th:text="${'❤️ '+post.likeMembers.size()}" style="display:inline;"></div>
+                                                    <div th:text="${'💬 ' + #lists.size(post.comments.?[parentComment == null])}" style="display:inline;"></div>
+                                                    <div th:text="${'views ' + post.view}" style="display:inline; margin-left:10px;" ></div>
+                                                </span>
+                                        </div>
+                                        <div style="font-size:12px; display:inline;" >
+                                            <div th:if="${post.modifyDate != null}">
+                                                <span th:text="${#temporals.format(post.modifyDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                            </div>
+                                            <div th:unless="${post.modifyDate != null}">
+                                                <span th:text="${#temporals.format(post.createDate, 'yyyy년 MM월 dd일 HH:mm')}"></span>
+                                            </div>
+                                        </div>
+                                        <div th:if="${post.category != '카테고리' && post.category != null}"
+                                             th:text="${'카테고리 : ' + post.category}">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="col-md-auto"
+                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                            <button type="button" class="btn btn-primary admin-btn"
+                                                    style="margin-right: 0.1rem"
+                                                    data-bs-toggle="modal"
+                                                    th:data-bs-target="'#approveModal' + ${post.id}"
+                                                    th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정
+                                            </button>
+                                        </div>
+                                        <!--                                        관리자 게시물 수정 모달창-->
+                                        <div class="modal fade" th:id="'approveModal' + ${post.id}" tabindex="-1"
+                                             role="dialog"
+                                             aria-labelledby="'approveModalLabel' + ${post.id}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title fw-bold fs-4"
+                                                            th:id="'approveModalLabel' + ${post.id}">게시물
+                                                            수정</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true"></span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        여기에 승인 폼이나 내용을 추가하세요
+                                                        <form th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}" th:action="@{|/post/updatePostByAdmin/${post.id}|}" method="post"
+                                                              th:object="${postForm}"
+                                                              onsubmit="return UpdatePost();">
+                                                            <input type="hidden" name="postId" th:value="${post.id}">
+                                                            <div>
+                                                                <label class="form-label">태그 선택</label>
+                                                                <div th:each="tag : ${post.getDefaultTagsToPostTagList(defaultTagList)}">
+                                                                    <label th:for="${'tag_' + tag.name}">
+                                                                        <input type="checkbox" id="${'tag_' + tag.name}"
+                                                                               name="selectedTagNames"
+                                                                               th:value="${tag.name}"
+                                                                               th:text="${tag.name}"
+                                                                               th:checked="${post.getTagList().contains(tag)}">
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <!--                                        <option selected>카테고리</option>-->
+                                                            카테고리 선택
+                                                            <div>
+                                                                <select id="category" name="category"
+                                                                        class="form-select"
+                                                                        aria-label="Default select example">
+                                                                    <option selected>카테고리</option>
+                                                                    <option value="자유게시판"
+                                                                            th:selected="${post.category == '자유게시판'}">
+                                                                        자유게시판
+                                                                    </option>
+                                                                    <option value="QnA"
+                                                                            th:selected="${post.category == 'QnA'}">QnA
+                                                                    </option>
+                                                                </select>
+                                                            </div>
+                                                            <br>
+                                                            <div class="modal-footer">
+                                                                <button type="submit" class="btn btn-success btn-modal"
+                                                                        style="margin-top: 15px">수정
+                                                                </button>
+                                                                <button type="button"
+                                                                        class="btn btn-secondary btn-modal"
+                                                                        style="margin-top: 15px"
+                                                                        data-bs-dismiss="modal">닫기
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-auto"
+                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                            <form th:action="@{|/post/deletePost/${post.id}|}" method="post"
+                                                  onsubmit="return deletePost()">
+                                                <button type="submit" class="btn btn-danger admin-btn"
+                                                        style="margin-right: 2rem">삭제
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 페이징처리 시작 -->
+                    <div th:if="${!paging.isEmpty()}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{|?page=${paging.number-1}|}">
+                                    <span>이전</span>
+                                </a>
+                            </li>
+                            <li th:each="page: ${#numbers.sequence(1, paging.totalPages)}"
+                                th:if="${page >= paging.number-5 and page <= paging.number+5}"
+                                th:classappend="${page == paging.number+1} ? 'active'"
+                                class="page-item">
+                                <a th:text="${page}" class="page-link" th:href="@{|?page=${page-1}|}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                                <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+                                    <span>다음</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- 페이징처리 끝 -->
+                    <!--============================여기까지 each문으로 포스트 적용하면 됩니다.=====================================-->
+                    <!--============================아래부분 예시. 추후 삭제 예정 =====================================-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

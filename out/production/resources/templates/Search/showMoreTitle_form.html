@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+
+    <div class="container">
+        <div>
+            <div class="container">
+                <div class="row row-cols-3">
+                    <div class="col" style="">
+                        <a type="button" class="btn btn-outline-warning" href="#">강아지</a>
+                        <a type="button" class="btn btn-outline-warning" href="#">고양이</a>
+                        <a type="button" class="btn btn-outline-warning" href="#">기타</a>
+                    </div>
+                    <div class="col" style="border:1px solid;">
+                        <a href="#">자유/</a>
+                        <a href="#">QnA/</a>
+                        <a href="#">??</a>
+                    </div>
+                    <div class="col" style="border:1px solid;">
+                        <a href="#">글쓰기</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-1 align-items-center">
+                <div class="col">
+                    <div class="d-flex justify-content-center">
+                        <h2 class="pt-2 mt-5 mb-5">제목 검색 결과 조회</h2>
+                    </div>
+                    <div class="col" th:each="post : ${pagingByTitle}">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                            <div class="d-flex">
+                                <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
+                                    <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
+                                         style="font-size: 18px; font-weight: bold; color: #333;"></div>
+                                    <div th:text="${#strings.length(post.content) > 100 ? #strings.substring(post.content, 0, 60) + '...' : post.content}"
+                                         style="font-size: 14px; color: #777;"></div>
+                                    <div class="mt-1" style="font-size: 12px; color: #aaa;">
+                                        댓글 수: <span th:text="${#lists.size(post.comments)}"></span>
+                                    </div>
+                                    <div class="mt-4" th:text="${post.author.profileName}"></div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
+                                        <img class="me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                                             style="width: 7rem; height: 7rem; border-radius: 1rem;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                     .card {
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+
+                    .clickable-card {
+                        cursor: pointer;
+                        transition: box-shadow 0.3s; /* 0.3초 동안 변화하는 트랜지션 설정 */
+                    }
+
+                    .clickable-card:hover {
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 마우스 호버 시 그림자 효과 변경 */
+                    }
+                </style>
+            </div>
+        </div>
+        <br>
+        <!--        페이징 처리 시작          -->
+        <div th:if="${!pagingByTitle.isEmpty()}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!pagingByTitle.hasPrevious} ? 'disabled'">
+                    <a th:if="${kw !=null}" class="page-link"
+                       th:href="@{|?kw=${kw}&page=0|}">
+                        <span>처음</span>
+                    </a>
+
+                    <a th:if="${kw ==null}" class="page-link"
+                       th:href="@{|?page=0|}">
+                        <span>처음</span>
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${!pagingByTitle.hasPrevious} ? 'disabled'">
+                    <a th:if="${kw !=null}" class="page-link"
+                       th:href="@{|?kw=${kw}&page=${pagingByTitle.number-1}|}">
+                        <span>이전</span>
+                    </a>
+                    <a th:if="${kw ==null}" class="page-link"
+                       th:href="@{|?page=${pagingByTitle.number-1}|}">
+                        <span>이전</span>
+                    </a>
+                </li>
+                <li th:each="page: ${#numbers.sequence(0, pagingByTitle.totalPages-1)}"
+                    th:if="${page >= pagingByTitle.number-5 and page <= pagingByTitle.number+5}"
+                    th:classappend="${page == pagingByTitle.number} ? 'active'"
+                    class="page-item">
+
+                    <a th:if="${kw !=null}" th:text="${page+1}" class="page-link" th:href="@{|?kw=${kw}&page=${page}|}"></a>
+                    <a th:if="${kw ==null}" th:text="${page+1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+                </li>
+                <li class="page-item" th:classappend="${!pagingByTitle.hasNext} ? 'disabled'">
+                    <a th:if="${kw !=null}" class="page-link" th:href="@{|?kw=${kw}&page=${pagingByTitle.number+1}|}">
+                        <span>다음</span>
+                    </a>
+
+                    <a th:if="${kw ==null}" class="page-link" th:href="@{|?page=${pagingByTitle.number+1}|}">
+                        <span>다음</span>
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${!pagingByTitle.hasNext} ? 'disabled'">
+                    <a th:if="${kw ==null}"  class="page-link" th:href="@{|?page=${pagingByTitle.totalPages-1}|}">
+                        <span>끝</span>
+                    </a>
+
+                    <a th:if="${kw !=null}"  class="page-link" th:href="@{|?kw=${kw}&page=${pagingByTitle.totalPages-1}|}">
+                        <span>끝</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--        페이징 처리 끝         -->
+    </div>
+</div>
+</html>

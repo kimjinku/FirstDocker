@@ -1,0 +1,62 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<div layout:fragment="content" class="row py-5 px-4">
+    <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
+        <div>
+            <div class="container">
+                <div class="row row-cols-1">
+                    <div class="col" style="">
+                        <a type="button" class="btn btn-outline-warning" th:href="@{|/profile/myPage|}">회원 정보</a>
+                        <a type="button" class="btn btn-outline-warning" th:href="@{|/post/myPosts|}">내가 쓴 글</a>
+                        <a type="button" class="btn btn-outline-warning" th:href="@{|/comment/myComments|}">내가 쓴 댓글</a>
+                        <a type="button" class="btn btn-outline-warning" th:href="@{|/post/myLikedPosts|}">좋아요 누른 글</a>
+                        <a type="button" class="btn btn-outline-warning" th:href="@{|/comment/myLikedComments|}">좋아요 누른 댓글</a>
+                        <a type="button" class="btn btn-outline-warning" th:href="@{|/chat/myChatRoom|}">내가 참여한 채팅방 목록</a>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-md-6"> <!-- 여기서 col-md-6은 화면의 중앙에 내용을 배치하기 위한 Bootstrap의 그리드 시스템을 사용한 것입니다. -->
+                        <h2 class="text-center">회원 정보</h2> <!-- text-center를 추가하여 제목을 중앙 정렬합니다. -->
+                        <div class="card">
+                            <div class="card-body">
+                                <p th:text="${'회원 닉네임 : '+ siteMember.getNickName()}"></p>
+                                <p th:text="${'회원 전화 번호 : '+ siteMember.getPhoneNum()}"></p>
+                                <p th:text="${'회원 이메일 : '+ siteMember.getEmail()}"></p>
+                                <p th:text="${'회원 주소지 : '+ siteMember.getStreetAddress()+' '+siteMember.getDetailAddress()}"></p>
+                                <div class="text-center"> <!-- 버튼들도 중앙에 배치하기 위해 text-center 클래스를 추가합니다. -->
+                                    <a type="button" class="btn btn-primary" th:href="@{|/profile/myPage/update|}">회원 정보 수정</a>
+                                    <a type="button" class="btn btn-primary" th:href="@{|/member/resetPassword|}">비밀 번호 변경</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="notification-container"></div>
+
+    <script th:inline="javascript">
+        const userId = /*[[${siteMember.getId()}]]*/; // Thymeleaf를 사용하여 사용자 ID 가져오기
+        const eventSource = new EventSource("/notifications/subscribe/" + userId);
+
+        eventSource.onmessage = function(event) {
+            const notificationContainer = document.getElementById("notification-container");
+            const data = JSON.parse(event.data);
+
+            const notificationElement = document.createElement("div");
+            notificationElement.innerHTML = `<p>${data.message}</p>`;
+            notificationContainer.appendChild(notificationElement);
+        };
+
+        const eventSource = new EventSource('http://localhost:8888/notifications/subscribe/1');
+
+        eventSource.addEventListener('sse', event => {
+            console.log(event);
+        });
+    </script>
+
+</div>
+</html>

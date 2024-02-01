@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- head 내용 생략 -->
+</head>
+<body>
+<h2>아이디 찾기 결과</h2>
+
+<!-- 컨트롤러에서 전달받은 Member 객체를 이용하여 userName을 표시 -->
+<p>아이디: <span th:text="${foundMember.userName}"></span></p>
+<a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인 창으로</a>
+<!-- 다른 내용들 생략 -->
+</body>
+</html>

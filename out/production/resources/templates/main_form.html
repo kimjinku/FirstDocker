@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+    <head>
+
+        <meta charset="UTF-8">
+        <title>Pet Planet!</title>
+    </head>
+    <body>
+    <!-- Section-->
+    <section class="py-5" style="width: 100rem;">
+        <div class=" container px-3 px-lg-5 mt-5">
+            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center">
+<!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
+                <div th:each="post : ${postList}" class="col mb-5" th:if="${not #lists.isEmpty(post.postImages)}">
+                    <a  th:href=@{|/post/detail/${post.id}/0|} style="text-decoration: none; color:inherit; ">
+                        <div class="card h-100">
+                            <!--post image-->
+<!--                            <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">-->
+<!--                                <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">-->
+<!--                            </div>-->
+                            <div>
+                                <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
+                                    <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">
+                                </div>
+                            </div>
+                            <div th:unless="${post.postImages != null and not #lists.isEmpty(post.postImages)}">
+                                <!-- Use a default image if post.postImages is empty -->
+                                <img class="card-img-top" src="no_img.jpg" alt="default image" style="width:100%; height:300px;">
+                            </div>
+
+                            <!-- post-->
+                            <div class="card-body p-4">
+                                <span><div style="display:inline;">❤️</div>
+                                    <div th:text="${post.likeMembers.size}" style="display:inline;"></div></span>
+
+                                <div class="text-center">
+                                    <!--post title-->
+                                    <h5 class="fw-bolder" th:text="${post.title}"></h5>
+                                    <!--post content-->
+                                    <span th:text="${#strings.length(post.content) &gt; 100 ? #strings.substring(post.content, 0, 30) + ' . . . ' : post.content}"></span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+    <!-- ========================여기까지 each문으로 포스트 적용하면 됩니다=======================.-->
+            </div>
+        </div>
+    </section>
+    <!-- Footer-->
+<!--    <script type="module">-->
+<!--        // Import the functions you need from the SDKs you need-->
+<!--        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";-->
+<!--        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";-->
+<!--        // TODO: Add SDKs for Firebase products that you want to use-->
+<!--        // https://firebase.google.com/docs/web/setup#available-libraries-->
+
+<!--        // Your web app's Firebase configuration-->
+<!--        // For Firebase JS SDK v7.20.0 and later, measurementId is optional-->
+<!--        const firebaseConfig = {-->
+<!--          apiKey: "AIzaSyA-pZT-kWL_nI4UiQTsoR-4CsevaRTwlrY",-->
+<!--          authDomain: "planar-pagoda-404702.firebaseapp.com",-->
+<!--          projectId: "planar-pagoda-404702",-->
+<!--          storageBucket: "planar-pagoda-404702.appspot.com",-->
+<!--          messagingSenderId: "771786216972",-->
+<!--          appId: "1:771786216972:web:8b9f2a0055936959808029",-->
+<!--          measurementId: "G-K4M3MMG4K8"-->
+<!--        };-->
+
+<!--        // Initialize Firebase-->
+<!--        const app = initializeApp(firebaseConfig);-->
+<!--        const analytics = getAnalytics(app);-->
+
+<!--        // Initialize Firebase Cloud Messaging and get a reference to the service-->
+<!--        const messaging = getMessaging(app);-->
+
+<!--        import { getMessaging, getToken } from "firebase/messaging";-->
+
+<!--        const messaging = getMessaging();-->
+<!--        // Add the public key generated from the console here.-->
+<!--        getToken(messaging, {vapidKey: "BAESo7l-JCY4bbp1-XPPcDJi2eLmn21QBv2HpRPMvyIXlXCxZv3f2ia9v99vH0PA3q3K0BJpFzev-iub03ETvMw"});-->
+
+<!--        function requestPermission() {-->
+<!--        console.log('Requesting permission...');-->
+<!--        Notification.requestPermission().then((permission) => {-->
+<!--        if (permission === 'granted') {-->
+<!--        console.log('Notification permission granted.');-->
+
+
+<!--        import { getMessaging, getToken } from "firebase/messaging";-->
+
+
+<!--    </script>-->
+<!--    <script type="module">-->
+<!--        // Import the functions you need from the SDKs you need-->
+<!--        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";-->
+<!--        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";-->
+<!--        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";-->
+
+<!--        // Your web app's Firebase configuration-->
+<!--        // For Firebase JS SDK v7.20.0 and later, measurementId is optional-->
+<!--        const firebaseConfig = {-->
+<!--          apiKey: "AIzaSyA-pZT-kWL_nI4UiQTsoR-4CsevaRTwlrY",-->
+<!--          authDomain: "planar-pagoda-404702.firebaseapp.com",-->
+<!--          projectId: "planar-pagoda-404702",-->
+<!--          storageBucket: "planar-pagoda-404702.appspot.com",-->
+<!--          messagingSenderId: "771786216972",-->
+<!--          appId: "1:771786216972:web:8b9f2a0055936959808029",-->
+<!--          measurementId: "G-K4M3MMG4K8"-->
+<!--        };-->
+
+<!--        // Initialize Firebase-->
+<!--        const app = initializeApp(firebaseConfig);-->
+<!--        const analytics = getAnalytics(app);-->
+<!--        const messaging = getMessaging(app);-->
+
+<!--        // Add the public key generated from the console here.-->
+<!--        getToken(messaging, { vapidKey: "BAESo7l-JCY4bbp1-XPPcDJi2eLmn21QBv2HpRPMvyIXlXCxZv3f2ia9v99vH0PA3q3K0BJpFzev-iub03ETvMw" }).then((currentToken) => {-->
+<!--          if (currentToken) {-->
+<!--            console.log('Current token:', currentToken);-->
+<!--            // 서버로 토큰을 전송하거나 필요한 작업 수행-->
+<!--          } else {-->
+<!--            console.log('No registration token available. Request permission to generate one.');-->
+<!--          }-->
+<!--        }).catch((err) => {-->
+<!--          console.log('An error occurred while retrieving token. ', err);-->
+<!--        });-->
+
+<!--        // Request notification permission-->
+<!--        function requestPermission() {-->
+<!--          console.log('Requesting permission...');-->
+<!--          Notification.requestPermission().then((permission) => {-->
+<!--            if (permission === 'granted') {-->
+<!--              console.log('Notification permission granted.');-->
+<!--            } else {-->
+<!--              console.log('Notification permission denied.');-->
+<!--            }-->
+<!--          });-->
+<!--        }-->
+
+<!--        // Handle incoming messages while the app is in the foreground-->
+<!--        onMessage(messaging, (payload) => {-->
+<!--          console.log("Foreground Message received:", payload);-->
+<!--          // Customize notification handling for foreground-->
+<!--          // ...-->
+<!--        });-->
+<!--    </script>-->
+    </body>
+</div>
+</html>
